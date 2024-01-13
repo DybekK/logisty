@@ -1,31 +1,54 @@
 import React from "react";
 
-import {Menu, MenuProps, Layout} from "antd";
-import {BellOutlined, UserOutlined} from "@ant-design/icons";
+import { Menu, MenuProps, Layout } from "antd";
+import {
+  BellOutlined,
+  UserOutlined,
+  TranslationOutlined,
+} from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
-const {Header} = Layout;
-
-const items: MenuProps['items'] = [
-    {
-        label: 'Profile',
-        key: 'profile',
-        icon: <UserOutlined/>,
-    },
-    {
-        label: 'Notifications',
-        key: 'notifications',
-        icon: <BellOutlined/>
-    }
-]
+const { Header } = Layout;
 
 export const Top: React.FC = () => {
-    return (
-        <Header style={{display: 'flex', background: 'transparent'}}>
-            <Menu
-                style={{background: 'transparent', flex: 1, flexDirection: 'row-reverse'}}
-                mode="horizontal"
-                items={items}
-            />
-        </Header>
-    )
-}
+  const { t, i18n } = useTranslation("layout");
+
+  const changeLanguage = async () => {
+    const language = i18n.language;
+    const nextLanguage = language === "en" ? "pl" : "en";
+
+    return i18n.changeLanguage(nextLanguage);
+  };
+
+  const items: MenuProps["items"] = [
+    {
+      label: t("profile"),
+      key: "profile",
+      icon: <UserOutlined />,
+    },
+    {
+      label: t("notifications"),
+      key: "notifications",
+      icon: <BellOutlined />,
+    },
+    {
+      key: "translation",
+      icon: <TranslationOutlined />,
+      onClick: changeLanguage,
+    },
+  ];
+
+  return (
+    <Header style={{ display: "flex", background: "transparent" }}>
+      <Menu
+        style={{
+          background: "transparent",
+          flex: 1,
+          flexDirection: "row-reverse",
+        }}
+        mode="horizontal"
+        items={items}
+      />
+    </Header>
+  );
+};

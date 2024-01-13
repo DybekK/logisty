@@ -21,7 +21,7 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "./src",
     "paths": {
-      "services": ["pages/*", "components/*"]
+      "services": ["pages/*", "components/*", "features/*", "common/*"]
     }
   },
   "include": ["src"],
