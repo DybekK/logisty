@@ -1,11 +1,14 @@
 import axios from "axios";
 import {
+  Route,
   Feature,
   Coordinates,
   PhotonResponse,
   NominatimResponse,
+  OsrmRouteResponse,
 } from "common";
 import { QueryClient } from "@tanstack/react-query";
+import { OrderStage } from "./order.slice.ts";
 
 const getFeaturesByQueryKey = "getFeaturesByQuery";
 export const fetchFeaturesByQuery = async (
@@ -17,6 +20,7 @@ export const fetchFeaturesByQuery = async (
     axios
       .get<PhotonResponse>(
         `https://photon.komoot.io/api/?q=${query}&limit=${limit}`,
+        { timeout: 2000 },
       )
       .then(({ data }) => data.features);
 
@@ -39,11 +43,33 @@ export const fetchLocationByQuery = async (
     axios
       .get<
         NominatimResponse[]
-      >(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1}`)
+      >(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
       .then(({ data }) => extractCoordinates(data));
 
   return queryClient.fetchQuery({
     queryKey: [getLocationByQueryKey, query],
+    queryFn,
+  });
+};
+
+const getGeneratedPathByCoordinatesKey = "getGeneratedPathByCoordinates";
+export const fetchGeneratedPathByCoordinates = async (
+  queryClient: QueryClient,
+  stages: OrderStage[],
+): Promise<Route[]> => {
+  const formattedCoordinates = stages
+    .map(({ lat, lon }) => `${lon},${lat}`)
+    .join(";");
+
+  const queryFn = () =>
+    axios
+      .get<OsrmRouteResponse>(
+        `https://routing.openstreetmap.de/routed-bike/route/v1/driving/${formattedCoordinates}?overview=full&alternatives=false&steps=true`,
+      )
+      .then(({ data }) => data.routes);
+
+  return queryClient.fetchQuery({
+    queryKey: [getGeneratedPathByCoordinatesKey, formattedCoordinates],
     queryFn,
   });
 };

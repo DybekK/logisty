@@ -2,14 +2,14 @@ import { Button } from "antd";
 import React from "react";
 import {
   clearLocalizationAutoComplete,
-  LocalizationAutoComplete,
-  updateLatestStage,
+  Localization,
+  updateStage,
 } from "features/order";
-import { useAppDispatch } from "common";
+import { useAppDispatch, useAppSelector } from "common";
 
 interface LocalizationAutoCompleteElementProps {
   index: number;
-  localization: LocalizationAutoComplete;
+  localization: Localization;
 }
 
 const spanStyle: React.CSSProperties = {
@@ -23,12 +23,11 @@ const spanStyle: React.CSSProperties = {
 export const LocalizationAutoCompleteElement: React.FC<
   LocalizationAutoCompleteElementProps
 > = ({ index, localization }) => {
+  const { latestStageIndex } = useAppSelector((state) => state.orders);
   const dispatch = useAppDispatch();
 
-  const updateLocalizationAutoComplete = (
-    localization: LocalizationAutoComplete,
-  ) => {
-    dispatch(updateLatestStage(localization));
+  const updateLocalizationAutoComplete = (localization: Localization) => {
+    dispatch(updateStage({ index: latestStageIndex, localization }));
     dispatch(clearLocalizationAutoComplete());
   };
 

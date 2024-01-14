@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Route } from "common";
 
 export interface OrderStage {
   value: string;
@@ -6,7 +7,7 @@ export interface OrderStage {
   lon?: number;
 }
 
-export interface LocalizationAutoComplete {
+export interface Localization {
   value: string;
   lat?: number;
   lon?: number;
@@ -15,7 +16,8 @@ export interface LocalizationAutoComplete {
 export interface OrderState {
   latestStageIndex: number;
   stages: OrderStage[];
-  localizationsAutoComplete: LocalizationAutoComplete[];
+  routes: Route[];
+  localizationsAutoComplete: Localization[];
 }
 
 const emptyStage: OrderStage = {
@@ -25,6 +27,7 @@ const emptyStage: OrderStage = {
 const initialState: OrderState = {
   latestStageIndex: -1,
   stages: Array.from({ length: 2 }, () => emptyStage),
+  routes: [],
   localizationsAutoComplete: [],
 };
 
@@ -41,23 +44,26 @@ export const orderSlice = createSlice({
       }
       state.stages.splice(action.payload, 1);
     },
-    updateLatestStage: (
+    updateStage: (
       state,
-      action: PayloadAction<LocalizationAutoComplete>,
+      action: { payload: { index: number; localization: Localization } },
     ) => {
-      state.stages[state.latestStageIndex] = action.payload;
+      state.stages[action.payload.index] = action.payload.localization;
     },
     updateLatestStageIndex: (state, action: PayloadAction<number>) => {
       state.latestStageIndex = action.payload;
     },
     updateLocalizationAutoComplete: (
       state,
-      action: PayloadAction<LocalizationAutoComplete[]>,
+      action: PayloadAction<Localization[]>,
     ) => {
       state.localizationsAutoComplete = action.payload;
     },
     clearLocalizationAutoComplete: (state) => {
       state.localizationsAutoComplete = [];
+    },
+    updateRoutes: (state, action: PayloadAction<Route[]>) => {
+      state.routes = action.payload;
     },
   },
 });
@@ -65,10 +71,11 @@ export const orderSlice = createSlice({
 export const {
   addStage,
   removeStage,
-  updateLatestStage,
+  updateStage,
   updateLatestStageIndex,
   updateLocalizationAutoComplete,
   clearLocalizationAutoComplete,
+  updateRoutes,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

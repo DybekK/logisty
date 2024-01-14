@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Card, Form, Steps, Divider, Flex } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { Map3D } from "components";
-import { addStage } from "features/order";
-import { useAppDispatch, useAppSelector } from "common";
+import {
+  addStage,
+  fetchGeneratedPathByCoordinates,
+  updateRoutes,
+} from "features/order";
+import { Coordinates, useAppDispatch, useAppSelector } from "common";
 import { StageStep } from "./StageStep.tsx";
 import { LocalizationAutoCompleteElement } from "./LocalizationAutoCompleteElement.tsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 const cardBodyStyle: React.CSSProperties = {
   height: "100%",
@@ -26,16 +31,29 @@ const flexStyle: React.CSSProperties = {
 const buttonStyle: React.CSSProperties = { width: "100%", textAlign: "left" };
 
 export const NewOrderForm: React.FC = () => {
-  const { stages, localizationsAutoComplete } = useAppSelector(
-    (state) => state.orders,
-  );
+  const queryClient = useQueryClient();
 
+  const { stages, routes, localizationsAutoComplete, latestStageIndex } =
+    useAppSelector((state) => state.orders);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (stages.filter((stage) => !!stage.lat).length < 2) return;
+
+    fetchGeneratedPathByCoordinates(queryClient, stages).then((routes) =>
+      dispatch(updateRoutes(routes)),
+    );
+  }, [stages]);
 
   const renderStages = () =>
     stages.map((_, index) => ({
       description: <StageStep index={index} />,
     }));
+
+  const extractCoordinates = (): Coordinates => ({
+    lat: stages[latestStageIndex]?.lat || 0,
+    lon: stages[latestStageIndex]?.lon || 0,
+  });
 
   return (
     <Card bodyStyle={cardBodyStyle} style={cardStyle}>
@@ -67,7 +85,7 @@ export const NewOrderForm: React.FC = () => {
           {localizationsAutoComplete.length > 0 && <Divider />}
         </Flex>
       </Flex>
-      <Map3D />
+      <Map3D focusOnCoordinates={extractCoordinates()} routes={routes} />
     </Card>
   );
 };

@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Properties, useAppDispatch, useAppSelector } from "common";
-import { fetchFeaturesByQuery } from "features/order";
+import {
+  fetchFeaturesByQuery,
+  fetchLocationByQuery,
+  updateStage,
+} from "features/order";
 import {
   clearLocalizationAutoComplete,
   updateLatestStageIndex,
@@ -33,14 +37,19 @@ export const LocalizationAutoComplete: React.FC<
   const onSearch = useMemo(
     () =>
       debounce(async (value: string) => {
-        const features = await fetchFeaturesByQuery(queryClient, value);
-        const localizations = features.map(({ properties, geometry }) => ({
-          value: createFullName(properties),
-          lat: geometry.coordinates[1],
-          lon: geometry.coordinates[0],
-        }));
+        fetchFeaturesByQuery(queryClient, value).then((features) => {
+          const localizations = features.map(({ properties, geometry }) => ({
+            value: createFullName(properties),
+            lat: geometry.coordinates[1],
+            lon: geometry.coordinates[0],
+          }));
+          dispatch(updateLocalizationAutoComplete(localizations));
+        });
 
-        dispatch(updateLocalizationAutoComplete(localizations));
+        fetchLocationByQuery(queryClient, value).then(({ lat, lon }) => {
+          const localization = { value, lat, lon };
+          dispatch(updateStage({ index, localization }));
+        });
         dispatch(updateLatestStageIndex(index));
       }, 1000),
     [],
