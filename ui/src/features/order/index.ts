@@ -1,3 +1,3 @@
-export * from "./NewOrderForm";
-export * from "./photon.api.ts";
+export * from "./new/NewOrderForm.tsx";
+export * from "./localization.api.ts";
 export * from "./order.slice";

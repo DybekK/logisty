@@ -4,7 +4,7 @@ import { Layout, theme } from "antd";
 import { LeftSider, MainContent, Top } from "components";
 import { NewOrderForm } from "features/order";
 
-import "leaflet/dist/leaflet.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 const App: React.FC = () => {
   const {
