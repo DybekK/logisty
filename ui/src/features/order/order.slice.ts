@@ -56,6 +56,9 @@ export const orderSlice = createSlice({
     ) => {
       state.localizationsAutoComplete = action.payload;
     },
+    clearLocalizationAutoComplete: (state) => {
+      state.localizationsAutoComplete = [];
+    },
   },
 });
 
@@ -65,6 +68,7 @@ export const {
   updateLatestStage,
   updateLatestStageIndex,
   updateLocalizationAutoComplete,
+  clearLocalizationAutoComplete,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

@@ -15,7 +15,9 @@ import debounce from "lodash/debounce";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   addStage,
+  clearLocalizationAutoComplete,
   fetchFeaturesByQuery,
+  LocalizationAutoComplete,
   removeStage,
   updateLatestStage,
   updateLatestStageIndex,
@@ -35,6 +37,7 @@ const AsyncAutoComplete: React.FC<AsyncAutoCompleteProps> = ({
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
 
+  const { latestStageIndex } = useAppSelector((state) => state.orders);
   const stage = useAppSelector((state) => state.orders.stages[index]);
   const [value, setValue] = React.useState<string>("");
 
@@ -57,13 +60,20 @@ const AsyncAutoComplete: React.FC<AsyncAutoCompleteProps> = ({
     dispatch(updateLatestStageIndex(index));
   };
 
+  const onClick = () => {
+    if (latestStageIndex !== index) {
+      dispatch(clearLocalizationAutoComplete());
+    }
+    dispatch(updateLatestStageIndex(index));
+  };
+
   return (
     <AutoComplete
       style={{ width: "85%" }}
       value={value}
       onChange={setValue}
       onSearch={debounce(onSearch, 500)}
-      onClick={() => dispatch(updateLatestStageIndex(index))}
+      onClick={onClick}
     >
       <Input size="large" placeholder={placeholder} />
     </AutoComplete>
@@ -111,6 +121,13 @@ export const NewOrderForm: React.FC = () => {
       description: <StageStep index={index} />,
     }));
 
+  const updateLocalizationAutoComplete = (
+    localization: LocalizationAutoComplete,
+  ) => {
+    dispatch(updateLatestStage(localization));
+    dispatch(clearLocalizationAutoComplete());
+  };
+
   return (
     <Card
       bodyStyle={{
@@ -142,7 +159,7 @@ export const NewOrderForm: React.FC = () => {
         <Flex style={{ flexDirection: "column" }}>
           {localizationsAutoComplete.map((item, index) => (
             <Button
-              onClick={() => dispatch(updateLatestStage(item))}
+              onClick={() => updateLocalizationAutoComplete(item)}
               key={index}
               size="large"
               type="text"
@@ -150,7 +167,7 @@ export const NewOrderForm: React.FC = () => {
               <span
                 style={{
                   textAlign: "left",
-                  width: "300px", // Set a specific width
+                  width: "250px", // Set a specific width
                   overflow: "hidden", // Ensure the overflow is hidden
                   textOverflow: "ellipsis", // Use ellipsis for overflowed text
                   whiteSpace: "nowrap", // Prevent text from wrapping to next line
