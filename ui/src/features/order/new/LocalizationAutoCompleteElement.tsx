@@ -6,9 +6,9 @@ import {
   updateStage,
 } from "features/order";
 import { useAppDispatch, useAppSelector } from "common";
+import { useMap } from "react-map-gl";
 
 interface LocalizationAutoCompleteElementProps {
-  index: number;
   localization: Localization;
 }
 
@@ -22,11 +22,17 @@ const spanStyle: React.CSSProperties = {
 
 export const LocalizationAutoCompleteElement: React.FC<
   LocalizationAutoCompleteElementProps
-> = ({ index, localization }) => {
-  const { latestStageIndex } = useAppSelector((state) => state.orders);
+> = ({ localization }) => {
+  const { orderMap } = useMap();
+  const { latestStageIndex } = useAppSelector(state => state.orders);
   const dispatch = useAppDispatch();
 
   const updateLocalizationAutoComplete = (localization: Localization) => {
+    orderMap?.flyTo({
+      center: [localization.lon!, localization.lat!],
+      zoom: 15,
+    });
+
     dispatch(updateStage({ index: latestStageIndex, localization }));
     dispatch(clearLocalizationAutoComplete());
   };
@@ -36,7 +42,6 @@ export const LocalizationAutoCompleteElement: React.FC<
       size="large"
       type="text"
       onClick={() => updateLocalizationAutoComplete(localization)}
-      key={index}
     >
       <span style={spanStyle}>{localization.value}</span>
     </Button>

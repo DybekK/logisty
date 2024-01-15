@@ -5,11 +5,17 @@ export interface OsrmRouteResponse {
 }
 
 export interface Route {
+  geometry: Geometry;
   legs: Leg[];
   weight_name: string;
   weight: number;
   duration: number;
   distance: number;
+}
+
+export interface Geometry {
+  coordinates: number[][];
+  type: string;
 }
 
 export interface Leg {
@@ -21,7 +27,7 @@ export interface Leg {
 }
 
 export interface Step {
-  geometry: string;
+  geometry: Geometry;
   maneuver: Maneuver;
   mode: string;
   driving_side: string;
@@ -30,8 +36,6 @@ export interface Step {
   weight: number;
   duration: number;
   distance: number;
-  ref?: string;
-  rotary_name?: string;
 }
 
 export interface Maneuver {
@@ -40,7 +44,6 @@ export interface Maneuver {
   location: number[];
   modifier?: string;
   type: string;
-  exit?: number;
 }
 
 export interface Intersection {

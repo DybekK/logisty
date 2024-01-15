@@ -1,6 +1,5 @@
 import axios from "axios";
 import {
-  Route,
   Feature,
   Coordinates,
   PhotonResponse,
@@ -14,7 +13,7 @@ const getFeaturesByQueryKey = "getFeaturesByQuery";
 export const fetchFeaturesByQuery = async (
   queryClient: QueryClient,
   query: string,
-  limit: number = 5,
+  limit: number = 10,
 ): Promise<Feature[]> => {
   const queryFn = () =>
     axios
@@ -56,17 +55,18 @@ const getGeneratedPathByCoordinatesKey = "getGeneratedPathByCoordinates";
 export const fetchGeneratedPathByCoordinates = async (
   queryClient: QueryClient,
   stages: OrderStage[],
-): Promise<Route[]> => {
+): Promise<OsrmRouteResponse> => {
   const formattedCoordinates = stages
+    .filter(({ lat, lon }) => !!lat && !!lon)
     .map(({ lat, lon }) => `${lon},${lat}`)
     .join(";");
 
   const queryFn = () =>
     axios
       .get<OsrmRouteResponse>(
-        `https://routing.openstreetmap.de/routed-bike/route/v1/driving/${formattedCoordinates}?overview=full&alternatives=false&steps=true`,
+        `http://router.project-osrm.org/route/v1/driving/${formattedCoordinates}?geometries=geojson&overview=full&alternatives=false&steps=true`,
       )
-      .then(({ data }) => data.routes);
+      .then(({ data }) => data);
 
   return queryClient.fetchQuery({
     queryKey: [getGeneratedPathByCoordinatesKey, formattedCoordinates],

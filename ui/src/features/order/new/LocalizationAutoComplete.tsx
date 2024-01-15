@@ -13,6 +13,7 @@ import {
 } from "features/order";
 import { AutoComplete, Input } from "antd";
 import debounce from "lodash/debounce";
+import { useMap } from "react-map-gl";
 
 interface LocalizationAutoCompleteProps {
   index: number;
@@ -21,38 +22,53 @@ interface LocalizationAutoCompleteProps {
 
 const autoCompleteStyle: React.CSSProperties = { width: "85%" };
 
-const createFullName = ({ name, city }: Properties) =>
-  `${city ? city + ", " : ""}${name ? name : ""}`;
+const createFullName = ({ name, city }: Properties): string => {
+  if (name && city) {
+    return `${name}, ${city}`;
+  } else {
+    return name || (city as string);
+  }
+};
 
 export const LocalizationAutoComplete: React.FC<
   LocalizationAutoCompleteProps
 > = ({ index, placeholder }) => {
   const queryClient = useQueryClient();
+  const { orderMap } = useMap();
   const dispatch = useAppDispatch();
 
-  const { latestStageIndex } = useAppSelector((state) => state.orders);
-  const stage = useAppSelector((state) => state.orders.stages[index]);
+  const { latestStageIndex } = useAppSelector(state => state.orders);
+  const stage = useAppSelector(state => state.orders.stages[index]);
+
   const [value, setValue] = React.useState<string>("");
+  const fetchFeatures = async (value: string) => {
+    const features = await fetchFeaturesByQuery(queryClient, value);
+
+    const localizations = features
+      .filter(({ properties }) => !!properties.name || !!properties.city)
+      .map(({ properties, geometry }) => ({
+        value: createFullName(properties),
+        lat: geometry.coordinates[1],
+        lon: geometry.coordinates[0],
+      }));
+
+    dispatch(updateLocalizationAutoComplete(localizations));
+  };
+
+  const fetchLocation = async (value: string) => {
+    const { lat, lon } = await fetchLocationByQuery(queryClient, value);
+    const localization = { value, lat, lon };
+    orderMap?.flyTo({ center: [lon, lat], zoom: 15 });
+    dispatch(updateStage({ index, localization }));
+  };
 
   const onSearch = useMemo(
     () =>
       debounce(async (value: string) => {
-        fetchFeaturesByQuery(queryClient, value).then((features) => {
-          const localizations = features.map(({ properties, geometry }) => ({
-            value: createFullName(properties),
-            lat: geometry.coordinates[1],
-            lon: geometry.coordinates[0],
-          }));
-          dispatch(updateLocalizationAutoComplete(localizations));
-        });
-
-        fetchLocationByQuery(queryClient, value).then(({ lat, lon }) => {
-          const localization = { value, lat, lon };
-          dispatch(updateStage({ index, localization }));
-        });
+        await Promise.all([fetchFeatures(value), fetchLocation(value)]);
         dispatch(updateLatestStageIndex(index));
       }, 1000),
-    [],
+    [orderMap],
   );
 
   useEffect(() => {

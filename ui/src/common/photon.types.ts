@@ -16,7 +16,7 @@ export interface Geometry {
 
 export interface Properties {
   city?: string;
-  country: string;
-  name: string;
+  country?: string;
+  name?: string;
   postcode?: string;
 }

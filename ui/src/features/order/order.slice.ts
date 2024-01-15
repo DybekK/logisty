@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Route } from "common";
+import { Route, Waypoint } from "common";
+import { uniqWith } from "lodash";
 
 export interface OrderStage {
   value: string;
@@ -17,6 +18,7 @@ export interface OrderState {
   latestStageIndex: number;
   stages: OrderStage[];
   routes: Route[];
+  waypoints: Waypoint[];
   localizationsAutoComplete: Localization[];
 }
 
@@ -28,6 +30,7 @@ const initialState: OrderState = {
   latestStageIndex: -1,
   stages: Array.from({ length: 2 }, () => emptyStage),
   routes: [],
+  waypoints: [],
   localizationsAutoComplete: [],
 };
 
@@ -35,35 +38,53 @@ export const orderSlice = createSlice({
   name: "order",
   initialState,
   reducers: {
-    addStage: (state) => {
+    //stages
+    addStage: state => {
       state.stages.push(emptyStage);
     },
+
     removeStage: (state, action: PayloadAction<number>) => {
       if (state.latestStageIndex === action.payload) {
         state.latestStageIndex = -1;
       }
       state.stages.splice(action.payload, 1);
     },
+
     updateStage: (
       state,
       action: { payload: { index: number; localization: Localization } },
     ) => {
       state.stages[action.payload.index] = action.payload.localization;
     },
+
     updateLatestStageIndex: (state, action: PayloadAction<number>) => {
       state.latestStageIndex = action.payload;
     },
+
+    //localizations autocomplete
     updateLocalizationAutoComplete: (
       state,
       action: PayloadAction<Localization[]>,
     ) => {
-      state.localizationsAutoComplete = action.payload;
+      const uniqueLocalizations = uniqWith(
+        action.payload,
+        (arrVal, othVal) => arrVal.value === othVal.value,
+      );
+
+      state.localizationsAutoComplete = [...uniqueLocalizations];
     },
-    clearLocalizationAutoComplete: (state) => {
+
+    clearLocalizationAutoComplete: state => {
       state.localizationsAutoComplete = [];
     },
-    updateRoutes: (state, action: PayloadAction<Route[]>) => {
-      state.routes = action.payload;
+
+    //osrm routes and waypoints
+    updateRoutesAndWaypoints: (
+      state,
+      action: PayloadAction<{ routes: Route[]; waypoints: Waypoint[] }>,
+    ) => {
+      state.routes = action.payload.routes;
+      state.waypoints = action.payload.waypoints;
     },
   },
 });
@@ -75,7 +96,7 @@ export const {
   updateLatestStageIndex,
   updateLocalizationAutoComplete,
   clearLocalizationAutoComplete,
-  updateRoutes,
+  updateRoutesAndWaypoints,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;
