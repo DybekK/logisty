@@ -24,9 +24,10 @@ const cardStyle: React.CSSProperties = { height: "100%" };
 
 const flexStyle: React.CSSProperties = {
   flexDirection: "column",
+  zIndex: 1,
   width: 450,
   padding: 20,
-  boxShadow: "8px 0px 15px -5px rgba(0, 0, 0, 0.10)",
+  boxShadow: "8px 0px 15px -5px rgba(0, 0, 0, 0.025)",
 };
 
 const buttonStyle: React.CSSProperties = { width: "100%", textAlign: "left" };

@@ -64,7 +64,7 @@ export const fetchGeneratedPathByCoordinates = async (
   const queryFn = () =>
     axios
       .get<OsrmRouteResponse>(
-        `http://router.project-osrm.org/route/v1/driving/${formattedCoordinates}?geometries=geojson&overview=full&alternatives=false&steps=true`,
+        `http://router.project-osrm.org/route/v1/driving/${formattedCoordinates}?geometries=geojson&alternatives=false&overview=full&steps=true`,
       )
       .then(({ data }) => data);
 
