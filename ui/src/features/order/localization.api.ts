@@ -33,8 +33,12 @@ const getLocationByQueryKey = "getLocationByQuery";
 export const fetchLocationByQuery = async (
   queryClient: QueryClient,
   query: string,
-): Promise<Coordinates> => {
+): Promise<Coordinates | null> => {
   const extractCoordinates = (data: NominatimResponse[]) => {
+    if (!data.length) {
+      return null;
+    }
+
     const { lat, lon } = data[0];
     return { lat: parseFloat(lat), lon: parseFloat(lon) };
   };

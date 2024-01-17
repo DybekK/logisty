@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { Button, Card, Form, Steps, Divider, Flex } from "antd";
-import { PlusCircleOutlined } from "@ant-design/icons";
+import { PlusCircleOutlined, CheckOutlined } from "@ant-design/icons";
 import { Map3D } from "components";
 import {
   addStage,
   fetchGeneratedPathByCoordinates,
+  OrderStage,
   updateRoutesAndWaypoints,
 } from "features/order";
 import { useAppDispatch, useAppSelector } from "common";
@@ -32,6 +33,11 @@ const flexStyle: React.CSSProperties = {
 };
 
 const buttonStyle: React.CSSProperties = { width: "100%", textAlign: "left" };
+const addStageButtonStyle: React.CSSProperties = { ...buttonStyle };
+const acceptOrderButtonStyle: React.CSSProperties = {
+  ...buttonStyle,
+  marginTop: 10,
+};
 
 const mapId = "orderMap";
 
@@ -54,6 +60,11 @@ const drivers: Driver[] = [
     name: "Janusz Tracz",
   },
 ];
+
+const isStagesValid = (stages: OrderStage[]): boolean =>
+  stages.some(
+    ({ lat, lon, inputValue }) => !lat || !lon || inputValue.trim() === "",
+  );
 
 export const NewOrderForm: React.FC = () => {
   const queryClient = useQueryClient();
@@ -86,12 +97,21 @@ export const NewOrderForm: React.FC = () => {
               ))}
             </Steps>
             <Button
-              style={buttonStyle}
+              style={addStageButtonStyle}
               onClick={() => dispatch(addStage())}
               size="large"
               icon={<PlusCircleOutlined />}
             >
               {t("addStage")}
+            </Button>
+            <Button
+              style={acceptOrderButtonStyle}
+              size="large"
+              type="text"
+              icon={<CheckOutlined />}
+              disabled={isStagesValid(stages)}
+            >
+              {t("acceptOrder")}
             </Button>
           </Form>
           <Divider />

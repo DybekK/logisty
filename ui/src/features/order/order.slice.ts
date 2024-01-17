@@ -3,7 +3,8 @@ import { Route, Waypoint } from "common";
 import { uniqWith } from "lodash";
 
 export interface OrderStage {
-  value: string;
+  inputValue: string;
+  value?: string;
   lat?: number;
   lon?: number;
 }
@@ -23,7 +24,7 @@ export interface OrderState {
 }
 
 const emptyStage: OrderStage = {
-  value: "",
+  inputValue: "",
 };
 
 const initialState: OrderState = {
@@ -52,9 +53,17 @@ export const orderSlice = createSlice({
 
     updateStage: (
       state,
-      action: { payload: { index: number; localization: Localization } },
+      action: { payload: { index: number; stage: OrderStage } },
     ) => {
-      state.stages[action.payload.index] = action.payload.localization;
+      state.stages[action.payload.index] = action.payload.stage;
+    },
+
+    updateStageInputValue: (
+      state,
+      action: { payload: { index: number; inputValue: string } },
+    ) => {
+      const { index, inputValue } = action.payload;
+      state.stages[index].inputValue = inputValue;
     },
 
     updateLatestStageIndex: (state, action: PayloadAction<number>) => {
@@ -93,6 +102,7 @@ export const {
   addStage,
   removeStage,
   updateStage,
+  updateStageInputValue,
   updateLatestStageIndex,
   updateLocalizationAutoComplete,
   clearLocalizationAutoComplete,

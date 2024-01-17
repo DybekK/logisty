@@ -5,6 +5,7 @@ import {
   fetchFeaturesByQuery,
   fetchLocationByQuery,
   updateStage,
+  updateStageInputValue,
 } from "features/order";
 import {
   clearLocalizationAutoComplete,
@@ -39,8 +40,6 @@ export const LocalizationAutoComplete: React.FC<
 
   const { latestStageIndex } = useAppSelector(state => state.orders);
   const stage = useAppSelector(state => state.orders.stages[index]);
-
-  const [value, setValue] = React.useState<string>("");
   const fetchFeatures = async (value: string) => {
     const features = await fetchFeaturesByQuery(queryClient, value);
 
@@ -56,11 +55,28 @@ export const LocalizationAutoComplete: React.FC<
   };
 
   const fetchLocation = async (value: string) => {
-    const { lat, lon } = await fetchLocationByQuery(queryClient, value);
-    const localization = { value, lat, lon };
-    orderMap?.flyTo({ center: [lon, lat], zoom: 15 });
-    dispatch(updateStage({ index, localization }));
+    const coordinates = await fetchLocationByQuery(queryClient, value);
+
+    if (!coordinates) {
+      const emptyStage = { inputValue: value };
+      return dispatch(updateStage({ index, stage: emptyStage }));
+    }
+
+    const nextStage = {
+      inputValue: value,
+      lat: coordinates.lat,
+      lon: coordinates.lon,
+    };
+
+    orderMap?.flyTo({
+      center: [nextStage.lon!, nextStage.lat!],
+      zoom: 15,
+    });
+    dispatch(updateStage({ index, stage: nextStage }));
   };
+
+  const onChange = (value: string) =>
+    dispatch(updateStageInputValue({ index, inputValue: value }));
 
   const onSearch = useMemo(
     () =>
@@ -70,10 +86,6 @@ export const LocalizationAutoComplete: React.FC<
       }, 1000),
     [orderMap],
   );
-
-  useEffect(() => {
-    setValue(stage.value);
-  }, [stage]);
 
   useEffect(() => {
     return () => {
@@ -91,8 +103,8 @@ export const LocalizationAutoComplete: React.FC<
   return (
     <AutoComplete
       style={autoCompleteStyle}
-      value={value}
-      onChange={setValue}
+      value={stage.inputValue}
+      onChange={onChange}
       onSearch={onSearch}
       onClick={onClick}
     >

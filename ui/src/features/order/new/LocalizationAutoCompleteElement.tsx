@@ -28,12 +28,18 @@ export const LocalizationAutoCompleteElement: React.FC<
   const dispatch = useAppDispatch();
 
   const updateLocalizationAutoComplete = (localization: Localization) => {
+    const stage = {
+      inputValue: localization.value,
+      lat: localization.lat,
+      lon: localization.lon,
+    };
+
     orderMap?.flyTo({
       center: [localization.lon!, localization.lat!],
       zoom: 15,
     });
 
-    dispatch(updateStage({ index: latestStageIndex, localization }));
+    dispatch(updateStage({ index: latestStageIndex, stage }));
     dispatch(clearLocalizationAutoComplete());
   };
 
