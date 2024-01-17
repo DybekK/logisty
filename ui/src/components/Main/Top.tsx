@@ -1,17 +1,13 @@
 import React from "react";
 
 import { Menu, MenuProps, Layout } from "antd";
-import {
-  BellOutlined,
-  UserOutlined,
-  TranslationOutlined,
-} from "@ant-design/icons";
+import { BellOutlined, TranslationOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 
 const { Header } = Layout;
 
 export const Top: React.FC = () => {
-  const { t, i18n } = useTranslation("layout");
+  const { t, i18n } = useTranslation("layout", { keyPrefix: "navbar" });
 
   const changeLanguage = async () => {
     const language = i18n.language;
@@ -21,11 +17,6 @@ export const Top: React.FC = () => {
   };
 
   const items: MenuProps["items"] = [
-    {
-      label: t("profile"),
-      key: "profile",
-      icon: <UserOutlined />,
-    },
     {
       label: t("notifications"),
       key: "notifications",

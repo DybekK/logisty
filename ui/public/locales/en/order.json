@@ -1,3 +1,8 @@
 {
-  "createOrder": "Create order"
+  "new": {
+    "startPoint": "Select the starting point ",
+    "destinationPoint": "Select the destination point",
+    "addStage": "Add new stage",
+    "deleteStage": "Delete this stage"
+  }
 }

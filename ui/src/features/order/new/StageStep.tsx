@@ -4,6 +4,7 @@ import { Form, Tooltip } from "antd";
 import { removeStage } from "../order.slice.ts";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import { LocalizationAutoComplete } from "./LocalizationAutoComplete.tsx";
+import { useTranslation } from "react-i18next";
 
 const formItemStyle: React.CSSProperties = { marginBottom: 3 };
 const divStyle: React.CSSProperties = { display: "flex", width: "100%" };
@@ -20,14 +21,13 @@ interface StageStepProps {
 
 export const StageStep: React.FC<StageStepProps> = ({ index }) => {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation("order", { keyPrefix: "new" });
   const [isHovered, setIsHovered] = useState(false);
 
   const isFirstStage = index === 0;
   const atLeastTwoStages = index > 1;
 
-  const placeholder = isFirstStage
-    ? "Wybierz punkt początkowy zlecenia"
-    : "Wybierz punkt docelowy zlecenia";
+  const placeholder = isFirstStage ? t("startPoint") : t("destinationPoint");
 
   return (
     <Form.Item style={formItemStyle}>
@@ -38,7 +38,7 @@ export const StageStep: React.FC<StageStepProps> = ({ index }) => {
       >
         <LocalizationAutoComplete index={index} placeholder={placeholder} />
         {isHovered && atLeastTwoStages && (
-          <Tooltip title="Usuń ten etap">
+          <Tooltip title={t("deleteStage")}>
             <CloseCircleOutlined
               style={iconStyle}
               onClick={() => dispatch(removeStage(index))}

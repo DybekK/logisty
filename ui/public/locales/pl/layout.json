@@ -1,4 +1,13 @@
 {
-  "notifications": "Notyfikacje",
-  "profile": "Profil"
+  "navbar": {
+    "notifications": "Notyfikacje"
+  },
+  "leftbar": {
+    "orders": {
+      "title": "Zlecenia",
+      "new": "Dodaj zlecenie",
+      "pending": "W trakcie",
+      "completed": "Zakończone"
+    }
+  }
 }

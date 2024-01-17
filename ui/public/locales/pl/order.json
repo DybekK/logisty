@@ -1,3 +1,8 @@
 {
-  "createOrder": "Złóż zamówienie"
+  "new": {
+    "startPoint": "Wybierz punkt początkowy",
+    "destinationPoint": "Wybierz punkt docelowy",
+    "addStage": "Dodaj nowy etap",
+    "deleteStage": "Usuń ten etap"
+  }
 }

@@ -12,6 +12,7 @@ import { StageStep } from "./StageStep.tsx";
 import { LocalizationAutoCompleteElement } from "./LocalizationAutoCompleteElement.tsx";
 import { useQueryClient } from "@tanstack/react-query";
 import { MapProvider } from "react-map-gl";
+import { useTranslation } from "react-i18next";
 
 const cardBodyStyle: React.CSSProperties = {
   height: "100%",
@@ -34,10 +35,31 @@ const buttonStyle: React.CSSProperties = { width: "100%", textAlign: "left" };
 
 const mapId = "orderMap";
 
+interface Driver {
+  id: string;
+  name: string;
+}
+
+const drivers: Driver[] = [
+  {
+    id: "1",
+    name: "Jan Kowalski",
+  },
+  {
+    id: "2",
+    name: "Adam Nowak",
+  },
+  {
+    id: "3",
+    name: "Janusz Tracz",
+  },
+];
+
 export const NewOrderForm: React.FC = () => {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
 
+  const { t } = useTranslation("order", { keyPrefix: "new" });
   const { stages, routes, waypoints, localizationsAutoComplete } =
     useAppSelector(state => state.orders);
 
@@ -69,7 +91,7 @@ export const NewOrderForm: React.FC = () => {
               size="large"
               icon={<PlusCircleOutlined />}
             >
-              Dodaj nowy etap
+              {t("addStage")}
             </Button>
           </Form>
           <Divider />
@@ -81,6 +103,16 @@ export const NewOrderForm: React.FC = () => {
               />
             ))}
             {localizationsAutoComplete.length > 0 && <Divider />}
+            {drivers.map(driver => (
+              <Button
+                key={driver.id}
+                style={buttonStyle}
+                size="large"
+                type="text"
+              >
+                {driver.name}
+              </Button>
+            ))}
           </Flex>
         </Flex>
         <Map3D id={mapId} routes={routes} waypoints={waypoints} />
