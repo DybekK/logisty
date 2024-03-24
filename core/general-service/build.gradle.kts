@@ -1,6 +1,8 @@
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
+val mongodb_version = "5.0.0"
+val eventstoredb_version = "5.3.2"
 
 plugins {
     kotlin("jvm") version "1.9.23"
@@ -24,22 +26,22 @@ repositories {
 
 dependencies {
     //ktor
-    implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("io.ktor:ktor-server-core-jvm")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm")
-    implementation("io.ktor:ktor-server-config-yaml:2.3.9")
+    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
 
-    //exposed and flyway
-    implementation("org.jetbrains.exposed:exposed-core:0.41.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
-    implementation("org.flywaydb:flyway-core:10.10.0")
-    implementation("org.postgresql:postgresql:42.7.3")
+    //mongodb
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:$mongodb_version")
+
+    //eventstoredb
+    implementation("com.eventstore:db-client-java:$eventstoredb_version")
 
     //logging
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
     //testing
-    testImplementation("io.ktor:ktor-server-tests-jvm")
+    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }

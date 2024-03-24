@@ -5,7 +5,14 @@ ktor:
   deployment:
     port: 8080
 
-postgres:
-  url: jdbc:postgresql://localhost:5432/logisty
-  user: postgres
-  password: postgres
+mongodb:
+  host: "localhost"
+  port: 27017
+  database: "logisty"
+  user: "logisty"
+  password: "logisty"
+
+eventstoredb:
+  host: "localhost"
+  port: 2113
+

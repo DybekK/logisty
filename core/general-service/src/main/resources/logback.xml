@@ -9,4 +9,5 @@
     </root>
     <logger name="org.eclipse.jetty" level="INFO"/>
     <logger name="io.netty" level="INFO"/>
+    <logger name="io.grpc.netty.shaded.io.netty.util.internal" level="ERROR" />
 </configuration>

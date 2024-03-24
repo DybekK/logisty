@@ -1,24 +1,17 @@
 package org.logisty.infrastructure
 
+import com.mongodb.kotlin.client.coroutine.MongoClient
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.ktor.server.application.*
-import org.flywaydb.core.Flyway
 
 object Database {
-    data class PostgresConfig(val url: String, val user: String, val password: String) {
-        companion object {
-            fun fromEnv(environment: ApplicationEnvironment): PostgresConfig {
-                val url = environment.config.property("postgres.url").getString()
-                val user = environment.config.property("postgres.user").getString()
-                val password = environment.config.property("postgres.password").getString()
-                return PostgresConfig(url, user, password)
-            }
-        }
-    }
+    operator fun invoke(environment: ApplicationEnvironment): MongoDatabase {
+        val host = environment.config.property("mongodb.host").getString()
+        val port = environment.config.property("mongodb.port").getString()
+        val user = environment.config.property("mongodb.user").getString()
+        val password = environment.config.property("mongodb.password").getString()
+        val database = environment.config.property("mongodb.database").getString()
 
-    fun migrate(environment: ApplicationEnvironment) {
-        val (url, user, password) = PostgresConfig.fromEnv(environment)
-
-        val flyway = Flyway.configure().dataSource(url, user, password).load()
-        flyway.migrate()
+        return MongoClient.create("mongodb://$user:$password@$host:$port").getDatabase(database)
     }
 }
