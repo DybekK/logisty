@@ -1,8 +1,8 @@
-package org.logisty.domain.model
+package org.logisty.module.order.domain.model
 
 import com.mongodb.client.model.geojson.Point
+import kotlinx.datetime.LocalDateTime
 import org.bson.types.ObjectId
-import java.time.LocalDateTime
 
 data class Order(
     val id: ObjectId,

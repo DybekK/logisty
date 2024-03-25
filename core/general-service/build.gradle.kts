@@ -4,6 +4,8 @@ val logback_version: String by project
 val mongodb_version = "5.0.0"
 val eventstoredb_version = "5.3.2"
 
+val kotlinx_datetime_version = "0.6.0-RC.2"
+
 plugins {
     kotlin("jvm") version "1.9.23"
     id("io.ktor.plugin") version "2.3.9"
@@ -32,13 +34,12 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
 
-    //mongodb
+    //stores
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine:$mongodb_version")
-
-    //eventstoredb
     implementation("com.eventstore:db-client-java:$eventstoredb_version")
 
-    //logging
+    //utils
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinx_datetime_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
     //testing

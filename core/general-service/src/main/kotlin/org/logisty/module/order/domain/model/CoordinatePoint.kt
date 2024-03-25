@@ -1,4 +1,4 @@
-package org.logisty.domain.model
+package org.logisty.module.order.domain.model
 
 import kotlinx.serialization.Serializable
 
