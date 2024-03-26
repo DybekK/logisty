@@ -1,9 +1,12 @@
 val ktor_version: String by project
 val kotlin_version: String by project
-val logback_version: String by project
+
+//stores
 val mongodb_version = "5.0.0"
 val eventstoredb_version = "5.3.2"
 
+//utils
+val logback_version: String by project
 val kotlinx_datetime_version = "0.6.0-RC.2"
 
 plugins {

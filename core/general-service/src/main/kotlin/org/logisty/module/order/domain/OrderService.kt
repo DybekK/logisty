@@ -1,25 +1,22 @@
 package org.logisty.module.order.domain
 
-import com.eventstore.dbclient.AppendToStreamOptions
-import com.eventstore.dbclient.ExpectedRevision
 import kotlinx.datetime.Clock.System.now
-import kotlinx.datetime.*
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.bson.types.ObjectId
 import org.logisty.infrastructure.es.Event
 import org.logisty.infrastructure.es.EventStore
-import org.logisty.module.order.application.command.CreateOrderCommand
 import org.logisty.module.order.application.event.OrderCreated
+import org.logisty.module.order.domain.model.CoordinatePoint
 
 class OrderService(private val eventStore: EventStore) {
     private val orderStream = "order-stream"
 
-    suspend fun createOrder(command: CreateOrderCommand) {
+    suspend fun createOrder(startPoint: CoordinatePoint, endPoint: CoordinatePoint): OrderCreated {
         val createdAt = now().toLocalDateTime(TimeZone.UTC)
-        val orderCreated = OrderCreated(ObjectId().toString(), command.startPoint, command.endPoint, createdAt)
+        val orderCreated = OrderCreated(ObjectId().toString(), startPoint, endPoint, createdAt)
 
-        val options = AppendToStreamOptions.get()
-            .expectedRevision(ExpectedRevision.any())
-
-        eventStore.appendEvent(orderStream, orderCreated as Event, options)
+        eventStore.appendEvent(orderStream, orderCreated as Event)
+        return orderCreated
     }
 }

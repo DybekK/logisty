@@ -2,18 +2,20 @@ package org.logisty
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.coroutines.launch
+import org.logisty.infrastructure.es.EventStore
 import org.logisty.infrastructure.Database
 import org.logisty.module.order.application.OrderCommandHandler
+import org.logisty.module.order.application.OrderQueryHandler
 import org.logisty.module.order.application.ordersRouting
 import org.logisty.module.order.domain.OrderService
-import org.logisty.infrastructure.es.EventStore
 import org.logisty.module.order.infrastructure.OrderProjectionHandler
 import org.logisty.module.order.infrastructure.OrderRepository
 
 fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
+    EngineMain.main(args)
 }
 
 fun Application.module() {
@@ -31,12 +33,19 @@ fun Application.module() {
     //services
     val orderService = OrderService(eventStore)
 
-    //handlers
+    //queries
+    val orderQueryHandler = OrderQueryHandler(orderRepository)
+
+    //commands
     val orderCommandHandler = OrderCommandHandler(orderService)
 
+    //projections
+    val orderProjectionHandler = OrderProjectionHandler(log, orderRepository, eventStore)
+
     launch {
-        OrderProjectionHandler(orderRepository, eventStore).replay()
+        orderProjectionHandler.subscribe()
     }
 
-    ordersRouting(orderCommandHandler)
+    ordersRouting(orderCommandHandler, orderQueryHandler)
 }
+

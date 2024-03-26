@@ -21,19 +21,31 @@ class EventStore(environment: ApplicationEnvironment) {
         return EventStoreDBClient.create(settings)
     }
 
-    suspend fun appendEvent(
+    suspend fun appendEvent(streamName: String, event: Event): WriteResult {
+        val options = AppendToStreamOptions.get()
+            .expectedRevision(ExpectedRevision.streamExists())
+        return appendEvent(streamName, event, options)
+    }
+
+    private suspend fun appendEvent(
         streamName: String,
         event: Event,
         options: AppendToStreamOptions
     ): WriteResult {
         val eventData = asJson(event)
-
         return withContext(Dispatchers.IO) {
             client.appendToStream(streamName, options, eventData).get()
         }
     }
 
-    suspend fun subscribe(streamName: String, onEventReceived: suspend (Event) -> Unit): Subscription {
+    suspend fun subscribe(streamName: String, onEventReceived: suspend (Event) -> Unit): Subscription =
+        subscribe(streamName, SubscribeToStreamOptions.get().fromEnd(), onEventReceived)
+
+    private suspend fun subscribe(
+        streamName: String,
+        options: SubscribeToStreamOptions,
+        onEventReceived: suspend (Event) -> Unit
+    ): Subscription {
         val listener: SubscriptionListener = object : SubscriptionListener() {
             override fun onEvent(subscription: Subscription?, resolvedEvent: ResolvedEvent) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -45,7 +57,7 @@ class EventStore(environment: ApplicationEnvironment) {
         }
 
         return withContext(Dispatchers.IO) {
-            client.subscribeToStream(streamName, listener).get()
+            client.subscribeToStream(streamName, listener, options).get()
         }
     }
 
