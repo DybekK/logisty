@@ -9,5 +9,7 @@ class OrderRepository(mongo: MongoDatabase) {
 
     suspend fun findAll(): List<Order> =
         collection.find().toList()
-    suspend fun save(order: Order) = collection.insertOne(order)
+
+    suspend fun save(order: Order) =
+        collection.insertOne(order)
 }

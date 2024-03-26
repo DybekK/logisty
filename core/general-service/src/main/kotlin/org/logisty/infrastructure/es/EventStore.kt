@@ -23,7 +23,7 @@ class EventStore(environment: ApplicationEnvironment) {
 
     suspend fun appendEvent(streamName: String, event: Event): WriteResult {
         val options = AppendToStreamOptions.get()
-            .expectedRevision(ExpectedRevision.streamExists())
+            .expectedRevision(ExpectedRevision.any())
         return appendEvent(streamName, event, options)
     }
 
