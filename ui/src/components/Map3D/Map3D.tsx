@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Map from "react-map-gl/maplibre";
 import { FeatureCollection, LineString } from "geojson";
 import { Flex, Skeleton } from "antd";
-import { Coordinates, Route, Waypoint } from "../../common";
+import { Coordinates, OSRMRoute, OSRMWaypoint } from "../../common";
 import { SourceLayer } from "./SourceLayer.tsx";
 
 const mapStyle = "http://localhost:8080/styles/basic-preview/style.json";
@@ -16,12 +16,12 @@ const flexStyle: React.CSSProperties = {
 
 interface Map3DProps {
   id: string;
-  routes: Route[];
-  waypoints: Waypoint[];
+  routes: OSRMRoute[];
+  waypoints: OSRMWaypoint[];
 }
 
 const transformRoutesToGeoJSON = (
-  routes: Route[],
+  routes: OSRMRoute[],
 ): FeatureCollection<LineString> => {
   const features = routes.map(route => {
     return {

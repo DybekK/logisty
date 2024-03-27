@@ -1,20 +1,20 @@
 export interface PhotonResponse {
   type: string;
-  features: Feature[];
+  features: PhotonFeature[];
 }
 
-export interface Feature {
+export interface PhotonFeature {
   type: string;
-  geometry: Geometry;
-  properties: Properties;
+  geometry: PhotonGeometry;
+  properties: PhotonProperties;
 }
 
-export interface Geometry {
+export interface PhotonGeometry {
   coordinates: number[];
   type: string;
 }
 
-export interface Properties {
+export interface PhotonProperties {
   city?: string;
   country?: string;
   name?: string;

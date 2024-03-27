@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Properties, useAppDispatch, useAppSelector } from "common";
+import { PhotonProperties, useAppDispatch, useAppSelector } from "common";
 import {
   fetchFeaturesByQuery,
   fetchLocationByQuery,
@@ -23,7 +23,7 @@ interface LocalizationAutoCompleteProps {
 
 const autoCompleteStyle: React.CSSProperties = { width: "85%" };
 
-const createFullName = ({ name, city }: Properties): string => {
+const createFullName = ({ name, city }: PhotonProperties): string => {
   if (name && city) {
     return `${name}, ${city}`;
   } else {

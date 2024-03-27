@@ -1,10 +1,10 @@
 import axios from "axios";
 import {
-  Feature,
+  PhotonFeature,
   Coordinates,
   PhotonResponse,
   NominatimResponse,
-  OsrmRouteResponse,
+  OSRMRouteResponse
 } from "common";
 import { QueryClient } from "@tanstack/react-query";
 import { OrderStage } from "./order.slice.ts";
@@ -13,28 +13,28 @@ const getFeaturesByQueryKey = "getFeaturesByQuery";
 export const fetchFeaturesByQuery = async (
   queryClient: QueryClient,
   query: string,
-  limit: number = 10,
-): Promise<Feature[]> => {
+  limit: number = 10
+): Promise<PhotonFeature[]> => {
   const queryFn = () =>
     axios
       .get<PhotonResponse>(
         `https://photon.komoot.io/api/?q=${query}&limit=${limit}`,
-        { timeout: 2000 },
+        { timeout: 2000 }
       )
       .then(({ data }) => data.features);
 
   return queryClient.fetchQuery({
     queryKey: [getFeaturesByQueryKey, query, limit],
-    queryFn,
+    queryFn
   });
 };
 
 const getLocationByQueryKey = "getLocationByQuery";
 export const fetchLocationByQuery = async (
   queryClient: QueryClient,
-  query: string,
+  query: string
 ): Promise<Coordinates | null> => {
-  const extractCoordinates = (data: NominatimResponse[]) => {
+  const extractCoordinates = (data: NominatimResponse) => {
     if (!data.length) {
       return null;
     }
@@ -44,22 +44,20 @@ export const fetchLocationByQuery = async (
   };
   const queryFn = () =>
     axios
-      .get<
-        NominatimResponse[]
-      >(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
+      .get<NominatimResponse>(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
       .then(({ data }) => extractCoordinates(data));
 
   return queryClient.fetchQuery({
     queryKey: [getLocationByQueryKey, query],
-    queryFn,
+    queryFn
   });
 };
 
 const getGeneratedPathByCoordinatesKey = "getGeneratedPathByCoordinates";
 export const fetchGeneratedPathByCoordinates = async (
   queryClient: QueryClient,
-  stages: OrderStage[],
-): Promise<OsrmRouteResponse> => {
+  stages: OrderStage[]
+): Promise<OSRMRouteResponse> => {
   const formattedCoordinates = stages
     .filter(({ lat, lon }) => !!lat && !!lon)
     .map(({ lat, lon }) => `${lon},${lat}`)
@@ -67,13 +65,13 @@ export const fetchGeneratedPathByCoordinates = async (
 
   const queryFn = () =>
     axios
-      .get<OsrmRouteResponse>(
-        `http://router.project-osrm.org/route/v1/driving/${formattedCoordinates}?geometries=geojson&alternatives=false&overview=full&steps=true`,
+      .get<OSRMRouteResponse>(
+        `http://router.project-osrm.org/route/v1/driving/${formattedCoordinates}?geometries=geojson&alternatives=false&overview=full&steps=true`
       )
       .then(({ data }) => data);
 
   return queryClient.fetchQuery({
     queryKey: [getGeneratedPathByCoordinatesKey, formattedCoordinates],
-    queryFn,
+    queryFn
   });
 };

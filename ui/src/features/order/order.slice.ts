@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Route, Waypoint } from "common";
+import { OSRMRoute, OSRMWaypoint } from "common";
 import { uniqWith } from "lodash";
 
 export interface OrderStage {
@@ -18,8 +18,8 @@ export interface Localization {
 export interface OrderState {
   latestStageIndex: number;
   stages: OrderStage[];
-  routes: Route[];
-  waypoints: Waypoint[];
+  routes: OSRMRoute[];
+  waypoints: OSRMWaypoint[];
   localizationsAutoComplete: Localization[];
 }
 
@@ -90,7 +90,7 @@ export const orderSlice = createSlice({
     //osrm routes and waypoints
     updateRoutesAndWaypoints: (
       state,
-      action: PayloadAction<{ routes: Route[]; waypoints: Waypoint[] }>,
+      action: PayloadAction<{ routes: OSRMRoute[]; waypoints: OSRMWaypoint[] }>,
     ) => {
       state.routes = action.payload.routes;
       state.waypoints = action.payload.waypoints;
