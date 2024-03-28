@@ -9,6 +9,9 @@ import {
 import { QueryClient } from "@tanstack/react-query";
 import { OrderStage } from "./order.slice.ts";
 
+const { VITE_PHOTON_URL, VITE_NOMINATIM_URL, VITE_OSRM_URL } = import.meta.env;
+const DEFAULT_TIMEOUT = 2000;
+
 const getFeaturesByQueryKey = "getFeaturesByQuery";
 export const fetchFeaturesByQuery = async (
   queryClient: QueryClient,
@@ -16,12 +19,10 @@ export const fetchFeaturesByQuery = async (
   limit: number = 10
 ): Promise<PhotonFeature[]> => {
   const queryFn = () =>
-    axios
-      .get<PhotonResponse>(
-        `https://photon.komoot.io/api/?q=${query}&limit=${limit}`,
-        { timeout: 2000 }
-      )
-      .then(({ data }) => data.features);
+    axios.get<PhotonResponse>(`${VITE_PHOTON_URL}/api`, {
+      params: { q: query, limit: limit },
+      timeout: DEFAULT_TIMEOUT
+    }).then(({ data }) => data.features);
 
   return queryClient.fetchQuery({
     queryKey: [getFeaturesByQueryKey, query, limit],
@@ -43,9 +44,10 @@ export const fetchLocationByQuery = async (
     return { lat: parseFloat(lat), lon: parseFloat(lon) };
   };
   const queryFn = () =>
-    axios
-      .get<NominatimResponse>(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
-      .then(({ data }) => extractCoordinates(data));
+    axios.get<NominatimResponse>(`${VITE_NOMINATIM_URL}/search`, {
+      params: { format: "json", q: query, limit: 1 },
+      timeout: DEFAULT_TIMEOUT
+    }).then(({ data }) => extractCoordinates(data));
 
   return queryClient.fetchQuery({
     queryKey: [getLocationByQueryKey, query],
@@ -64,11 +66,10 @@ export const fetchGeneratedPathByCoordinates = async (
     .join(";");
 
   const queryFn = () =>
-    axios
-      .get<OSRMRouteResponse>(
-        `http://router.project-osrm.org/route/v1/driving/${formattedCoordinates}?geometries=geojson&alternatives=false&overview=full&steps=true`
-      )
-      .then(({ data }) => data);
+    axios.get<OSRMRouteResponse>(`${VITE_OSRM_URL}/${formattedCoordinates}`, {
+      params: { geometries: "geojson", alternatives: false, overview: "full", steps: true },
+      timeout: DEFAULT_TIMEOUT
+    }).then(({ data }) => data);
 
   return queryClient.fetchQuery({
     queryKey: [getGeneratedPathByCoordinatesKey, formattedCoordinates],
