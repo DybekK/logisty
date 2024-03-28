@@ -1,7 +1,6 @@
 import axios from "axios";
 import {
   PhotonFeature,
-  Coordinates,
   PhotonResponse,
   NominatimResponse,
   OSRMRouteResponse,
@@ -36,22 +35,14 @@ const getLocationByQueryKey = "getLocationByQuery";
 export const fetchLocationByQuery = async (
   queryClient: QueryClient,
   query: string,
-): Promise<Coordinates | null> => {
-  const extractCoordinates = (data: NominatimResponse) => {
-    if (!data.length) {
-      return null;
-    }
-
-    const { lat, lon } = data[0];
-    return { lat: parseFloat(lat), lon: parseFloat(lon) };
-  };
+): Promise<NominatimResponse> => {
   const queryFn = () =>
     axios
       .get<NominatimResponse>(`${VITE_NOMINATIM_URL}/search`, {
         params: { format: "json", q: query, limit: 1 },
         timeout: DEFAULT_TIMEOUT,
       })
-      .then(({ data }) => extractCoordinates(data));
+      .then(({ data }) => data);
 
   return queryClient.fetchQuery({
     queryKey: [getLocationByQueryKey, query],

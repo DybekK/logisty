@@ -2,14 +2,14 @@ import { Button } from "antd";
 import React from "react";
 import {
   clearLocalizationAutoComplete,
-  Localization,
+  OrderLocalization,
   updateStage,
 } from "features/order";
 import { useAppDispatch, useAppSelector } from "common";
 import { useMap } from "react-map-gl";
 
 interface LocalizationAutoCompleteElementProps {
-  localization: Localization;
+  localization: OrderLocalization;
 }
 
 const spanStyle: React.CSSProperties = {
@@ -27,7 +27,7 @@ export const LocalizationAutoCompleteElement: React.FC<
   const { latestStageIndex } = useAppSelector(state => state.orders);
   const dispatch = useAppDispatch();
 
-  const updateLocalizationAutoComplete = (localization: Localization) => {
+  const updateLocalizationAutoComplete = (localization: OrderLocalization) => {
     const stage = {
       inputValue: localization.value,
       lat: localization.lat,

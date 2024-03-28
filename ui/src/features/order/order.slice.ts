@@ -9,7 +9,7 @@ export interface OrderStage {
   lon?: number;
 }
 
-export interface Localization {
+export interface OrderLocalization {
   value: string;
   lat?: number;
   lon?: number;
@@ -20,7 +20,7 @@ export interface OrderState {
   stages: OrderStage[];
   routes: OSRMRoute[];
   waypoints: OSRMWaypoint[];
-  localizationsAutoComplete: Localization[];
+  localizationsAutoComplete: OrderLocalization[];
 }
 
 const emptyStage: OrderStage = {
@@ -73,7 +73,7 @@ export const orderSlice = createSlice({
     //localizations autocomplete
     updateLocalizationAutoComplete: (
       state,
-      action: PayloadAction<Localization[]>,
+      action: PayloadAction<OrderLocalization[]>,
     ) => {
       const uniqueLocalizations = uniqWith(
         action.payload,
