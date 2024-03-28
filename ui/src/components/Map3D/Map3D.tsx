@@ -13,7 +13,7 @@ const flexStyle: React.CSSProperties = {
   height: "100%",
   width: "100%",
   justifyContent: "center",
-  alignItems: "center"
+  alignItems: "center",
 };
 
 interface Map3DProps {
@@ -23,26 +23,26 @@ interface Map3DProps {
 }
 
 const transformRoutesToGeoJSON = (
-  routes: OSRMRoute[]
+  routes: OSRMRoute[],
 ): FeatureCollection<LineString> => {
   const features = routes.map(route => {
     return {
       type: "Feature" as const,
       properties: {},
-      geometry: route.geometry as LineString
+      geometry: route.geometry as LineString,
     };
   });
 
   return {
     type: "FeatureCollection",
-    features
+    features,
   };
 };
 
 export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
   const [coordinates, setCoordinates] = useState<Coordinates>({
     lat: 0,
-    lon: 0
+    lon: 0,
   });
   const [loadingCoordinates, setLoadingCoordinates] = useState(true);
   const { features } = transformRoutesToGeoJSON(routes);
@@ -51,7 +51,7 @@ export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
     navigator.geolocation.getCurrentPosition(position => {
       setCoordinates({
         lon: position.coords.longitude,
-        lat: position.coords.latitude
+        lat: position.coords.latitude,
       });
       setLoadingCoordinates(false);
     });
@@ -70,7 +70,7 @@ export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
       initialViewState={{
         longitude: coordinates.lon,
         latitude: coordinates.lat,
-        zoom: 14
+        zoom: 14,
       }}
       mapStyle={VITE_MAP_GL_STYLE}
     >
