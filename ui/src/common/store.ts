@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import orderReducer from "../features/order/order.slice.ts";
+import createNewOrderReducer from "features/order/slice/create-new-order.slice.ts";
+import ordersReducer from "features/order/slice/orders.slice.ts";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 export const store = configureStore({
   reducer: {
-    orders: orderReducer,
-  },
+    createNewOrder: createNewOrderReducer,
+    orders: ordersReducer
+  }
 });
 
 type RootState = ReturnType<typeof store.getState>;

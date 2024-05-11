@@ -6,7 +6,6 @@ import {
   OSRMRouteResponse,
 } from "common";
 import { QueryClient } from "@tanstack/react-query";
-import { OrderStage } from "./order.slice.ts";
 
 const { VITE_PHOTON_URL, VITE_NOMINATIM_URL, VITE_OSRM_URL } = import.meta.env;
 const DEFAULT_TIMEOUT = 2000;
@@ -53,7 +52,7 @@ export const fetchLocationByQuery = async (
 const getGeneratedPathByCoordinatesKey = "getGeneratedPathByCoordinates";
 export const fetchGeneratedPathByCoordinates = async (
   queryClient: QueryClient,
-  stages: OrderStage[],
+  stages: { lat?: number; lon?: number }[],
 ): Promise<OSRMRouteResponse> => {
   const formattedCoordinates = stages
     .filter(({ lat, lon }) => !!lat && !!lon)
