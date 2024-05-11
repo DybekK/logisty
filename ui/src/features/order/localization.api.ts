@@ -62,7 +62,7 @@ export const fetchGeneratedPathByCoordinates = async (
 
   const queryFn = () =>
     axios
-      .get<OSRMRouteResponse>(`${VITE_OSRM_URL}/${formattedCoordinates}`, {
+      .get<OSRMRouteResponse>(`${VITE_OSRM_URL}/route/v1/driving/${formattedCoordinates}`, {
         params: {
           geometries: "geojson",
           alternatives: false,
