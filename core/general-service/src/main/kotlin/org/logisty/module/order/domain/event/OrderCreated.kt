@@ -6,6 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.bson.types.ObjectId
 import org.logisty.module.order.domain.model.Order
+import org.logisty.module.order.domain.model.OrderStatus
 import org.logisty.module.order.domain.model.OrderStep
 
 @Serializable
@@ -18,5 +19,10 @@ data class OrderCreated(
     override fun eventType(): String = OrderEvent.ORDER_CREATED
 
     fun toOrder(): Order =
-        Order(ObjectId(orderId), steps, createdAt.toJavaLocalDateTime())
+        Order(
+            id = ObjectId(orderId),
+            status = OrderStatus.CREATED,
+            steps = steps,
+            createdAt = createdAt.toJavaLocalDateTime()
+        )
 }

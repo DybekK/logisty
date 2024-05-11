@@ -11,10 +11,16 @@ fun Application.ordersRouting(
     queryHandler: OrderQueryHandler,
 ) {
     routing {
-        get("/orders") { call.respond(queryHandler.handleFindAll()) }
+        get("/orders") {
+            val page = call.parameters["page"]?.toIntOrNull() ?: 0
+            val size = call.parameters["size"]?.toIntOrNull() ?: 10
+            call.respond(queryHandler.handleGetOrders(page, size))
+        }
+
         post("/orders") {
             try {
-                call.respond(commandHandler.handleCreateOrder(call.receive<CreateOrderCommand>()))
+                val command = call.receive<CreateOrderCommand>()
+                call.respond(commandHandler.handleCreateOrder(command))
             } catch (e: Exception) {
                 call.respond("Error: ${e.message}")
             }

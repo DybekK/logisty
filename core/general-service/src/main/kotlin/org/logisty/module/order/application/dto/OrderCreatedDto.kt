@@ -8,4 +8,4 @@ import org.logisty.module.order.domain.event.OrderCreated
 data class OrderCreatedDto(val orderId: String, val createdAt: LocalDateTime)
 
 fun OrderCreated.toDto(): OrderCreatedDto =
-    OrderCreatedDto(orderId, createdAt)
+    OrderCreatedDto(orderId = orderId, createdAt = createdAt)

@@ -31,10 +31,10 @@ fun Application.module() {
     val orderRepository = OrderRepository(database)
 
     //services
-    val orderService = OrderService(eventStore)
+    val orderService = OrderService(eventStore, orderRepository)
 
     //queries
-    val orderQueryHandler = OrderQueryHandler(orderRepository)
+    val orderQueryHandler = OrderQueryHandler(orderService)
 
     //commands
     val orderCommandHandler = OrderCommandHandler(orderService)

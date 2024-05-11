@@ -9,7 +9,10 @@ services:
 
   mongodb:
     container_name: mongodb
-    image: mongodb/mongodb-community-server
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: logisty
+      MONGO_INITDB_ROOT_PASSWORD: logisty
     ports:
       - "27017:27017"
 
