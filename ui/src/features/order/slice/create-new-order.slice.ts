@@ -1,61 +1,61 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { OSRMRoute, OSRMWaypoint } from "common";
+import { OSRMRoute, OSRMWaypoint } from "../../../common";
 import { uniqWith } from "lodash";
 
-export interface OrderStage {
+export interface CreateNewOrderStep {
   inputValue: string;
   value?: string;
   lat?: number;
   lon?: number;
 }
 
-export interface OrderLocalization {
+export interface CreateNewOrderLocalization {
   value: string;
   lat?: number;
   lon?: number;
 }
 
-export interface OrderState {
+export interface CreateNewOrderState {
   latestStageIndex: number;
-  stages: OrderStage[];
+  steps: CreateNewOrderStep[];
   routes: OSRMRoute[];
   waypoints: OSRMWaypoint[];
-  localizationsAutoComplete: OrderLocalization[];
+  localizationsAutoComplete: CreateNewOrderLocalization[];
 }
 
-const emptyStage: OrderStage = {
+const emptyStep: CreateNewOrderStep = {
   inputValue: "",
 };
 
-const initialState: OrderState = {
+const initialState: CreateNewOrderState = {
   latestStageIndex: -1,
-  stages: Array.from({ length: 2 }, () => emptyStage),
+  steps: Array.from({ length: 2 }, () => emptyStep),
   routes: [],
   waypoints: [],
   localizationsAutoComplete: [],
 };
 
-export const orderSlice = createSlice({
-  name: "order",
+export const createNewOrderSlice = createSlice({
+  name: "createNewOrder",
   initialState,
   reducers: {
     //stages
     addStage: state => {
-      state.stages.push(emptyStage);
+      state.steps.push(emptyStep);
     },
 
     removeStage: (state, action: PayloadAction<number>) => {
       if (state.latestStageIndex === action.payload) {
         state.latestStageIndex = -1;
       }
-      state.stages.splice(action.payload, 1);
+      state.steps.splice(action.payload, 1);
     },
 
     updateStage: (
       state,
-      action: { payload: { index: number; stage: OrderStage } },
+      action: { payload: { index: number; stage: CreateNewOrderStep } },
     ) => {
-      state.stages[action.payload.index] = action.payload.stage;
+      state.steps[action.payload.index] = action.payload.stage;
     },
 
     updateStageInputValue: (
@@ -63,7 +63,7 @@ export const orderSlice = createSlice({
       action: { payload: { index: number; inputValue: string } },
     ) => {
       const { index, inputValue } = action.payload;
-      state.stages[index].inputValue = inputValue;
+      state.steps[index].inputValue = inputValue;
     },
 
     updateLatestStageIndex: (state, action: PayloadAction<number>) => {
@@ -73,7 +73,7 @@ export const orderSlice = createSlice({
     //localizations autocomplete
     updateLocalizationAutoComplete: (
       state,
-      action: PayloadAction<OrderLocalization[]>,
+      action: PayloadAction<CreateNewOrderLocalization[]>,
     ) => {
       const uniqueLocalizations = uniqWith(
         action.payload,
@@ -107,6 +107,6 @@ export const {
   updateLocalizationAutoComplete,
   clearLocalizationAutoComplete,
   updateRoutesAndWaypoints,
-} = orderSlice.actions;
+} = createNewOrderSlice.actions;
 
-export default orderSlice.reducer;
+export default createNewOrderSlice.reducer;

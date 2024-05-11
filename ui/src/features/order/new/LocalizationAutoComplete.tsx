@@ -38,8 +38,8 @@ export const LocalizationAutoComplete: React.FC<
   const { orderMap } = useMap();
   const dispatch = useAppDispatch();
 
-  const { latestStageIndex } = useAppSelector(state => state.orders);
-  const stage = useAppSelector(state => state.orders.stages[index]);
+  const { latestStageIndex } = useAppSelector(state => state.createNewOrder);
+  const stage = useAppSelector(state => state.createNewOrder.stages[index]);
 
   const fetchFeatures = async (value: string) => {
     const features = await fetchFeaturesByQuery(queryClient, value);

@@ -2,13 +2,13 @@ import React from "react";
 
 import { Layout, theme } from "antd";
 import { LeftSider, MainContent, Top } from "components";
-import { NewOrderForm } from "features/order";
 
 import "maplibre-gl/dist/maplibre-gl.css";
+import { Outlet } from "react-router-dom";
 
 const App: React.FC = () => {
   const {
-    token: { colorBgLayout },
+    token: { colorBgLayout }
   } = theme.useToken();
 
   return (
@@ -17,7 +17,7 @@ const App: React.FC = () => {
       <Layout>
         <LeftSider />
         <MainContent>
-          <NewOrderForm />
+          <Outlet />
         </MainContent>
       </Layout>
     </Layout>
