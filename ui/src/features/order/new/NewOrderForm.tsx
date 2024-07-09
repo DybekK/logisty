@@ -5,7 +5,7 @@ import { Map3D } from "components";
 import {
   addStage,
   fetchGeneratedPathByCoordinates,
-  OrderStage,
+  CreateNewOrderStep,
   updateRoutesAndWaypoints,
 } from "features/order";
 import { useAppDispatch, useAppSelector } from "common";
@@ -61,7 +61,7 @@ const drivers: Driver[] = [
   },
 ];
 
-const isStagesValid = (stages: OrderStage[]): boolean =>
+const isStagesValid = (stages: CreateNewOrderStep[]): boolean =>
   stages.some(
     ({ lat, lon, inputValue }) => !lat || !lon || inputValue.trim() === "",
   );
@@ -72,7 +72,7 @@ export const NewOrderForm: React.FC = () => {
 
   const { t } = useTranslation("order", { keyPrefix: "new" });
   const { stages, routes, waypoints, localizationsAutoComplete } =
-    useAppSelector(state => state.orders);
+    useAppSelector(state => state.createNewOrder);
 
   useEffect(() => {
     if (stages.filter(stage => !!stage.lat).length < 2) return;

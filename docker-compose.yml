@@ -1,0 +1,25 @@
+services:
+  esdb:
+    container_name: esdb
+    image: eventstore/eventstore
+    ports:
+      - "2113:2113"
+      - "1113:1113"
+    command: ["--insecure", "--enable-atom-pub-over-http"]
+
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: logisty
+      MONGO_INITDB_ROOT_PASSWORD: logisty
+    ports:
+      - "27017:27017"
+
+  tileserver-gl:
+    image: maptiler/tileserver-gl
+    volumes:
+      - .:/data
+    ports:
+      - 8080:8080
+    command: --file poland.mbtiles

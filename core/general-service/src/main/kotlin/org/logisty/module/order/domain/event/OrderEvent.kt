@@ -1,4 +1,4 @@
-package org.logisty.module.order.application.event
+package org.logisty.module.order.domain.event
 
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable

@@ -2,7 +2,7 @@ package org.logisty.module.order.infrastructure
 
 import io.ktor.util.logging.*
 import org.logisty.infrastructure.es.EventStore
-import org.logisty.module.order.application.event.OrderCreated
+import org.logisty.module.order.domain.event.OrderCreated
 
 class OrderProjectionHandler(
     private val logger: Logger,

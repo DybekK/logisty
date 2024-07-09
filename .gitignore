@@ -32,8 +32,8 @@ nb-configuration.xml
 *.orig
 *.rej
 
+# mbtiles files
+*.mbtiles
+
 # Local environment
 .env
-
-# Plugin directory
-/.quarkus/cli/plugins/

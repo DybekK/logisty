@@ -1,6 +1,6 @@
 package org.logisty.module.order.domain.model
 
-import com.mongodb.client.model.geojson.Point
+import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import java.time.LocalDateTime
@@ -8,7 +8,16 @@ import java.time.LocalDateTime
 data class Order(
     @BsonId
     val id: ObjectId,
-    val startPoint: Point,
-    val endPoint: Point,
-    val createdAt: LocalDateTime
+    val status: OrderStatus,
+    val steps: List<OrderStep>,
+    val createdAt: LocalDateTime,
 )
+
+@Serializable
+enum class OrderStatus {
+    CREATED,
+    ACCEPTED,
+    IN_PROGRESS,
+    COMPLETED,
+    CANCELED,
+}

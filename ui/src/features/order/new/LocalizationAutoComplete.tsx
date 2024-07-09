@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Properties, useAppDispatch, useAppSelector } from "common";
+import { PhotonProperties, useAppDispatch, useAppSelector } from "common";
 import {
   fetchFeaturesByQuery,
   fetchLocationByQuery,
@@ -23,7 +23,7 @@ interface LocalizationAutoCompleteProps {
 
 const autoCompleteStyle: React.CSSProperties = { width: "85%" };
 
-const createFullName = ({ name, city }: Properties): string => {
+const createFullName = ({ name, city }: PhotonProperties): string => {
   if (name && city) {
     return `${name}, ${city}`;
   } else {
@@ -38,8 +38,9 @@ export const LocalizationAutoComplete: React.FC<
   const { orderMap } = useMap();
   const dispatch = useAppDispatch();
 
-  const { latestStageIndex } = useAppSelector(state => state.orders);
-  const stage = useAppSelector(state => state.orders.stages[index]);
+  const { latestStageIndex } = useAppSelector(state => state.createNewOrder);
+  const stage = useAppSelector(state => state.createNewOrder.steps[index]);
+
   const fetchFeatures = async (value: string) => {
     const features = await fetchFeaturesByQuery(queryClient, value);
 
@@ -55,7 +56,7 @@ export const LocalizationAutoComplete: React.FC<
   };
 
   const fetchLocation = async (value: string) => {
-    const coordinates = await fetchLocationByQuery(queryClient, value);
+    const [coordinates] = await fetchLocationByQuery(queryClient, value);
 
     if (!coordinates) {
       const emptyStage = { inputValue: value };
@@ -64,8 +65,8 @@ export const LocalizationAutoComplete: React.FC<
 
     const nextStage = {
       inputValue: value,
-      lat: coordinates.lat,
-      lon: coordinates.lon,
+      lat: parseFloat(coordinates.lat),
+      lon: parseFloat(coordinates.lon),
     };
 
     orderMap?.flyTo({

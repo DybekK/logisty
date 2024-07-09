@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAppDispatch } from "../../../common";
 import { Form, Tooltip } from "antd";
-import { removeStage } from "../order.slice.ts";
+import { removeStage } from "../slice/create-new-order.slice.ts";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import { LocalizationAutoComplete } from "./LocalizationAutoComplete.tsx";
 import { useTranslation } from "react-i18next";

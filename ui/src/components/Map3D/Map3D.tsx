@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import Map from "react-map-gl/maplibre";
 import { FeatureCollection, LineString } from "geojson";
 import { Flex, Skeleton } from "antd";
-import { Coordinates, Route, Waypoint } from "../../common";
+import { Coordinates, OSRMRoute, OSRMWaypoint } from "../../common";
 import { SourceLayer } from "./SourceLayer.tsx";
 
-const mapStyle = "http://localhost:8080/styles/basic-preview/style.json";
+const { VITE_MAP_GL_STYLE } = import.meta.env;
+
+console.log(import.meta.env);
 
 const flexStyle: React.CSSProperties = {
   height: "100%",
@@ -16,12 +18,12 @@ const flexStyle: React.CSSProperties = {
 
 interface Map3DProps {
   id: string;
-  routes: Route[];
-  waypoints: Waypoint[];
+  routes: OSRMRoute[];
+  waypoints: OSRMWaypoint[];
 }
 
 const transformRoutesToGeoJSON = (
-  routes: Route[],
+  routes: OSRMRoute[],
 ): FeatureCollection<LineString> => {
   const features = routes.map(route => {
     return {
@@ -70,7 +72,7 @@ export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
         latitude: coordinates.lat,
         zoom: 14,
       }}
-      mapStyle={mapStyle}
+      mapStyle={VITE_MAP_GL_STYLE}
     >
       {[...features].reverse().map((feature, index) => (
         <SourceLayer
