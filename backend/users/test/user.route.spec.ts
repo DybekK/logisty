@@ -1,4 +1,3 @@
-import { describe, expect, beforeAll, afterAll, it } from "@jest/globals"
 import Fastify, { FastifyInstance } from "fastify"
 import UserRoute from "@/adapter/user.route"
 import { UserService } from "@/domain/port/user.service"

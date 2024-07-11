@@ -7,12 +7,10 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run build:ts && tsc -p test/tsconfig.json && c8 node --test -r ts-node/register \"test/**/*.ts\"",
-    "start": "npm run build:ts && TS_NODE_BASEURL=./dist node -r tsconfig-paths/register dist/app.js",
-    "build:ts": "tsc",
-    "watch:ts": "tsc -w",
-    "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm run dev:start\"",
-    "dev:start": "nodemon --exec ts-node src/app.ts"
+    "build:ts": "tsc && TS_NODE_BASEURL=./dist",
+    "start": "npm run build:ts node -r tsconfig-paths/register dist/app.js",
+    "dev:start": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
