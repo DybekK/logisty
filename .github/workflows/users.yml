@@ -1,17 +1,20 @@
-name: Users Service CI
+name: Users CI
 
 on:
   push:
     paths:
-      - 'backend/services/users/**'
+      - backend/users/**
   pull_request:
     paths:
-      - 'backend/services/users/**'
+      - backend/users/**
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend/users
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -19,6 +22,6 @@ jobs:
         with:
           node-version: '20.x'
       - name: Install dependencies
-        run: cd backend/services/users && yarn
+        run: yarn
       - name: Run tests
         run: yarn test
