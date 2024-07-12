@@ -6,7 +6,7 @@ const jestConfig: JestConfigWithTsJest = {
     "^.+.tsx?$": ["ts-jest", {}],
   },
   moduleNameMapper: {
-    "@/(.*)": "<rootDir>/src/$1",
+    "@logisty/users/(.*)": "<rootDir>/src/$1",
   },
   testPathIgnorePatterns: ["/node_modules/", "/dist/"],
 }

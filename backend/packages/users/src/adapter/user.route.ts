@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from "fastify"
-import { UserService } from "@/domain/port/user.service"
+import { UserService } from "@logisty/users/domain/port/user.service"
 
 interface UsersRouteOptions {
   userService: UserService

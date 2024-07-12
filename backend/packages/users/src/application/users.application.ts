@@ -1,7 +1,7 @@
 import Fastify, { FastifyInstance } from "fastify"
-import { environment } from "@/application/env"
-import UserRoute from "@/adapter/user.route"
-import UserService from "@/domain/port/user.service"
+import { environment } from "@logisty/users/application/env"
+import UserRoute from "@logisty/users/adapter/user.route"
+import UserService from "@logisty/users/domain/port/user.service"
 
 const { port } = environment
 

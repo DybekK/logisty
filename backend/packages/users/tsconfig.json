@@ -5,7 +5,7 @@
     "baseUrl": "./src",
     "sourceMap": true,
     "paths": {
-      "@/*": ["*"],
+      "@logisty/users/*": ["*"],
     }
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],

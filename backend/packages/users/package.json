@@ -1,6 +1,6 @@
 {
-  "name": "users",
-  "version": "1.0.0",
+  "name": "@logisty/users",
+  "version": "0.0.1",
   "description": "Service responsible for user management and authentication.",
   "scripts": {
     "build:ts": "tsc -p tsconfig.build.json && TS_NODE_BASEURL=./dist",

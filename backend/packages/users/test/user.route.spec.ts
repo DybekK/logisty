@@ -1,6 +1,6 @@
 import Fastify, { FastifyInstance } from "fastify"
-import UserRoute from "@/adapter/user.route"
-import { UserService } from "@/domain/port/user.service"
+import UserRoute from "@logisty/users/adapter/user.route"
+import { UserService } from "@logisty/users/domain/port/user.service"
 
 const FakeUserService = (): UserService => {
   const getUsers = async () => [

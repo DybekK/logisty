@@ -1,4 +1,4 @@
-import { User } from "@/domain/model/user"
+import { User } from "@logisty/users/domain/model/user"
 
 export interface UserService {
   getUsers(): Promise<User[]>

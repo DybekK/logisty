@@ -3,10 +3,10 @@ name: Users CI
 on:
   push:
     paths:
-      - backend/users/**
+      - backend/packages/users/**
   pull_request:
     paths:
-      - backend/users/**
+      - backend/packages/users/**
   workflow_dispatch:
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend/users
+        working-directory: ./backend/packages/users
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
