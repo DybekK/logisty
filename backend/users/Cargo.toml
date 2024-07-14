@@ -1,0 +1,16 @@
+[package]
+name = "users"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-trait = { workspace = true }
+dotenvy = { workspace = true }
+cuid = { workspace = true }
+chrono = { workspace = true }
+lambda_http = { workspace = true }
+thiserror = { workspace = true }
+serde_json = { workspace = true }
+serde = { workspace = true }
+tokio = { workspace = true }
+sqlx = { workspace = true }
