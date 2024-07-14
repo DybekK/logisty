@@ -1,12 +1,5 @@
-# Gradle
-.gradle/
-build/
-
-# Eclipse
-.project
-.classpath
-.settings/
-bin/
+# Compiled source
+target
 
 # IntelliJ
 .idea
