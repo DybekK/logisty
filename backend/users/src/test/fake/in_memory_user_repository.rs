@@ -1,6 +1,7 @@
-use async_trait::async_trait;
 use std::error::Error;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
+
+use async_trait::async_trait;
 
 use crate::domain::model::User;
 use crate::domain::port::user_repository::UserRepository;
@@ -19,7 +20,7 @@ impl InMemoryUserRepository {
 }
 
 #[async_trait]
-impl UserRepository for Arc<InMemoryUserRepository> {
+impl UserRepository for InMemoryUserRepository {
     async fn find_by_id(&self, id: UserId) -> Result<Option<User>, Box<dyn Error>> {
         let users = self.users.lock().unwrap();
         let user = users.iter().find(|user| user.id == id).cloned();
