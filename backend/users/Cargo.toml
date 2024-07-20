@@ -8,7 +8,9 @@ async-trait = { workspace = true }
 dotenvy = { workspace = true }
 cuid = { workspace = true }
 chrono = { workspace = true }
+aws_lambda_events = { workspace = true }
 lambda_http = { workspace = true }
+lambda_runtime = { workspace = true }
 thiserror = { workspace = true }
 serde_json = { workspace = true }
 serde = { workspace = true }
