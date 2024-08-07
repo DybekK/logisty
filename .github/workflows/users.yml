@@ -3,10 +3,10 @@ name: Users CI
 on:
   push:
     paths:
-      - backend/packages/users/**
+      - backend/users/**
   pull_request:
     paths:
-      - backend/packages/users/**
+      - backend/users/**
   workflow_dispatch:
 
 jobs:
@@ -14,14 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend/packages/users
+        working-directory: ./backend/users
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
         with:
-          node-version: '20.x'
+          profile: minimal
+          toolchain: stable
+          override: true
       - name: Install dependencies
-        run: yarn
+        run: cargo build --verbose
       - name: Run tests
-        run: yarn test
+        run: cargo test --verbose

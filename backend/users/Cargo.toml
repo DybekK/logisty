@@ -4,13 +4,23 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+shared = { path = "../shared" }
+
 async-trait = { workspace = true }
 dotenvy = { workspace = true }
 cuid = { workspace = true }
 chrono = { workspace = true }
+aws_lambda_events = { workspace = true }
 lambda_http = { workspace = true }
+lambda_runtime = { workspace = true }
 thiserror = { workspace = true }
 serde_json = { workspace = true }
 serde = { workspace = true }
 tokio = { workspace = true }
 sqlx = { workspace = true }
+auto_impl = { workspace = true }
+axum = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing = { workspace = true }

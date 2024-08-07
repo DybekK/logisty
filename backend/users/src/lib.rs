@@ -1,8 +1,16 @@
 use std::env;
+use std::sync::Arc;
+use axum::extract::FromRef;
+use crate::adapter::outbound::user_repository_impl::UserRepositoryImpl;
+use crate::domain::service::user_service_impl::UserServiceImpl;
 
 pub mod adapter;
-pub mod application;
 pub mod domain;
+
+#[cfg(test)]
+pub mod test {
+    pub mod fake;
+}
 
 pub struct Config {
     pub database_url: String,
@@ -17,3 +25,14 @@ impl Default for Config {
         }
     }
 }
+
+type UserRepositoryArc = Arc<UserRepositoryImpl>;
+type UserServiceArc = Arc<UserServiceImpl<UserRepositoryArc>>;
+
+#[derive(Clone, FromRef)]
+pub struct AppState {
+    pub user_repository: UserRepositoryArc,
+    pub user_service: UserServiceArc,
+}
+
+
