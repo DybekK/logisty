@@ -4,5 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = { workspace = true }
+# utils
+cuid = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+
+# json
 serde_json = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+
+# server
+axum = { workspace = true, features = ["macros"] }
+sqlx = { workspace = true, features = ["runtime-tokio", "postgres", "chrono"] }

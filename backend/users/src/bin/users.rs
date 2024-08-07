@@ -6,7 +6,7 @@ use lambda_http::{run, tracing, Error};
 use sqlx::migrate;
 use sqlx::postgres::PgPoolOptions;
 
-use shared::health::health_router;
+use shared::infra::health::health_router;
 use users::adapter::inbound::user_handler::{get_user_handler, register_user_handler};
 use users::adapter::outbound::user_repository_impl::UserRepositoryImpl;
 use users::domain::service::user_service_impl::UserServiceImpl;

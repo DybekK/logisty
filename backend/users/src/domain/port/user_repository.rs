@@ -2,8 +2,8 @@ use async_trait::async_trait;
 use std::error::Error;
 use auto_impl::auto_impl;
 
+use shared::domain::types::id::UserId;
 use crate::domain::model::User;
-use crate::domain::UserId;
 
 #[async_trait]
 #[auto_impl(Arc)]

@@ -1,11 +1,10 @@
 use std::error::Error;
 use std::sync::Mutex;
-
 use async_trait::async_trait;
 
+use shared::domain::types::id::UserId;
 use crate::domain::model::User;
 use crate::domain::port::user_repository::UserRepository;
-use crate::domain::UserId;
 
 pub struct InMemoryUserRepository {
     pub users: Mutex<Vec<User>>,

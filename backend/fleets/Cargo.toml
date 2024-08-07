@@ -1,12 +1,11 @@
 [package]
-name = "users"
+name = "fleets"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 shared = { path = "../shared" }
 
-# utils
 async-trait = { workspace = true }
 dotenvy = { workspace = true }
 cuid = { workspace = true }
@@ -31,3 +30,6 @@ axum = { workspace = true, features = ["macros"] }
 tower = { workspace = true, features = ["full"] }
 tokio = { workspace = true, features = ["macros"] }
 sqlx = { workspace = true, features = ["runtime-tokio", "postgres", "chrono"] }
+
+# tests
+axum-test = { workspace = true }
