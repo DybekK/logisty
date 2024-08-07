@@ -5,10 +5,10 @@ use axum::Json;
 use axum::response::IntoResponse;
 use lambda_http::http::StatusCode;
 
+use shared::domain::types::id::UserId;
 use crate::adapter::dto::RegisterNewUser;
 use crate::AppState;
 use crate::domain::port::user_service::UserService;
-use crate::domain::UserId;
 
 pub async fn get_user_handler(
     State(AppState { user_service, .. }): State<AppState>,

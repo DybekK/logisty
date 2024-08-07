@@ -1,0 +1,47 @@
+use std::error::Error;
+
+use async_trait::async_trait;
+use chrono::Utc;
+use sqlx::PgPool;
+
+use shared::domain::types::id::FleetId;
+use crate::domain::model::Fleet;
+use crate::domain::port::fleet_repository::FleetRepository;
+
+pub struct FleetRepositoryImpl {
+    pool: PgPool,
+}
+
+impl FleetRepositoryImpl {
+    pub fn new(pool: PgPool) -> FleetRepositoryImpl {
+        FleetRepositoryImpl { pool }
+    }
+}
+
+#[async_trait]
+impl FleetRepository for FleetRepositoryImpl {
+    async fn find_by_id(&self, id: FleetId) -> Result<Option<Fleet>, Box<dyn Error>> {
+        let user = sqlx::query_as::<_, Fleet>(r#"SELECT * FROM fleets WHERE id = $1"#)
+            .bind(id)
+            .fetch_optional(&self.pool)
+            .await?;
+
+        Ok(user)
+    }
+
+    async fn insert(&self, fleet_name: String) -> Result<FleetId, Box<dyn Error>> {
+        let id = FleetId::default();
+        let created_at = Utc::now();
+        let updated_at = created_at;
+
+        sqlx::query(r#"INSERT INTO fleets (id, fleet_name, created_at, updated_at) VALUES ($1, $2, $3, $4)"#)
+            .bind(id.clone())
+            .bind(fleet_name)
+            .bind(created_at)
+            .bind(updated_at)
+            .execute(&self.pool)
+            .await?;
+
+        Ok(id)
+    }
+}

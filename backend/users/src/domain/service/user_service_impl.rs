@@ -1,9 +1,10 @@
 use async_trait::async_trait;
 use std::error::Error;
+
+use shared::domain::types::id::UserId;
 use crate::domain::model::User;
 use crate::domain::port::user_repository::UserRepository;
 use crate::domain::port::user_service::UserService;
-use crate::domain::UserId;
 
 pub struct UserServiceImpl<T: UserRepository> {
     repository: T,

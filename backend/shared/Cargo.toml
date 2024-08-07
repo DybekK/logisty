@@ -5,4 +5,8 @@ edition = "2021"
 
 [dependencies]
 axum = { workspace = true }
+serde = { workspace = true }
 serde_json = { workspace = true }
+sqlx = { workspace = true }
+cuid = { workspace = true }
+chrono = { workspace = true }
