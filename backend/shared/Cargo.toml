@@ -5,9 +5,23 @@ edition = "2021"
 
 [dependencies]
 # utils
+async-trait = { workspace = true }
 cuid = { workspace = true }
+uuid = { workspace = true }
 chrono = { workspace = true }
 thiserror = { workspace = true }
+auto_impl = { workspace = true }
+
+# reqwest
+reqwest = { workspace = true }
+reqwest-tracing = { workspace = true }
+reqwest-middleware = { workspace = true }
+reqwest-retry = { workspace = true }
+
+# AWS
+aws_lambda_events = { workspace = true }
+aws-sdk-sns = { workspace = true }
+aws-config = { workspace = true }
 
 # json
 serde_json = { workspace = true }

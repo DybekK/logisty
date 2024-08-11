@@ -10,7 +10,7 @@ use shared::infra::database::error::DatabaseError;
 
 #[derive(Clone)]
 pub struct InMemoryFleetRepository {
-    pub fleets: Arc<Mutex<Vec<Fleet>>>,
+    fleets: Arc<Mutex<Vec<Fleet>>>,
 }
 
 impl InMemoryFleetRepository {

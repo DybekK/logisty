@@ -1,2 +1,2 @@
 mod fleet_service_impl_test;
-mod member_service_impl_test;
+mod member_invitation_dispatcher_impl_test;

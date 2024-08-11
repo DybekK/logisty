@@ -2,7 +2,7 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
-use shared::domain::types::id::{CarId, DriverFleetId, DriverId, FleetId, FleetMemberId, RoleId, StatusId, UserId};
+use shared::domain::types::id::{CarId, DriverFleetId, DriverId, FleetId, FleetMemberId, UserId};
 
 #[derive(Clone, Serialize, Deserialize, FromRow)]
 pub struct Fleet {
@@ -17,8 +17,6 @@ pub struct FleetMember {
     pub fleet_member_id: FleetMemberId,
     pub fleet_id: FleetId,
     pub user_id: UserId,
-    pub role_id: RoleId,
-    pub status_id: StatusId,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
