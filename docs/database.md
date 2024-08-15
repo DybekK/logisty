@@ -70,6 +70,7 @@ CREATE TABLE fleet_members
     user_id         CUID,     -- This will be referenced from the users microservice
     role_id         CUID,     -- This will be referenced from the users microservice
     status_id       CUID,     -- This will be referenced from the users microservice
+    email           VARCHAR(255),
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 

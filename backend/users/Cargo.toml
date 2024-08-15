@@ -6,21 +6,28 @@ edition = "2021"
 [dependencies]
 shared = { path = "../shared" }
 
+# utils
 async-trait = { workspace = true }
 dotenvy = { workspace = true }
 cuid = { workspace = true }
+thiserror = { workspace = true }
 chrono = { workspace = true }
-aws_lambda_events = { workspace = true }
+auto_impl = { workspace = true }
+
+# AWS
 lambda_http = { workspace = true }
 lambda_runtime = { workspace = true }
-thiserror = { workspace = true }
+aws_lambda_events = { workspace = true }
+
+# json
 serde_json = { workspace = true }
-serde = { workspace = true }
-tokio = { workspace = true }
-sqlx = { workspace = true }
-auto_impl = { workspace = true }
-axum = { workspace = true }
-tower = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+
+# server
 tower-http = { workspace = true }
 tracing-subscriber = { workspace = true }
 tracing = { workspace = true }
+axum = { workspace = true, features = ["macros"] }
+tower = { workspace = true, features = ["full"] }
+tokio = { workspace = true, features = ["macros"] }
+sqlx = { workspace = true, features = ["runtime-tokio", "postgres", "chrono"] }

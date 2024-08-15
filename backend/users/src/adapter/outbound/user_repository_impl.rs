@@ -4,9 +4,9 @@ use async_trait::async_trait;
 use chrono::Utc;
 use sqlx::PgPool;
 
+use shared::domain::types::id::UserId;
 use crate::domain::model::User;
 use crate::domain::port::user_repository::UserRepository;
-use crate::domain::UserId;
 
 pub struct UserRepositoryImpl {
     pool: PgPool,

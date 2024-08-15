@@ -1,5 +1,6 @@
-use crate::domain::UserId;
 use serde::{Deserialize, Serialize};
+
+use shared::domain::types::id::UserId;
 
 #[derive(Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct User {
