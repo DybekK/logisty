@@ -36,6 +36,24 @@ variable "rds_database" {
   type        = string
 }
 
+# sns
+
+variable "user_invited_subscribers" {
+  description = "The ARNs of the SQS queues to subscribe to the user_invited SNS topic"
+  type        = list(string)
+  default     = []
+}
+
+variable "sns_exec_role" {
+  description = "The name of the SNS execution role"
+  type        = string
+}
+
+variable "sns_exec_role_arn" {
+  description = "The ARN of the SNS execution role"
+  type        = string
+}
+
 # lambda
 
 variable "lambda_exec_role" {

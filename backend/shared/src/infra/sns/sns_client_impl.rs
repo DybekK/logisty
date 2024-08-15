@@ -2,16 +2,17 @@ use async_trait::async_trait;
 use aws_sdk_sns::Client;
 
 use crate::infra::sns::error::SNSError;
-use crate::infra::sns::sns_client::{SNSClient, SNSMessage, transform_message_type};
+use crate::infra::sns::sns_client::{transform_message_type, SNSClient, SNSMessage};
 
 #[derive(Clone)]
 pub struct SNSClientImpl {
     client: Client,
+    topic_arn: String,
 }
 
 impl SNSClientImpl {
-    pub fn new(client: Client) -> Self {
-        Self { client }
+    pub fn new(client: Client, topic_arn: String) -> Self {
+        Self { client, topic_arn }
     }
 }
 
@@ -19,8 +20,9 @@ impl SNSClientImpl {
 impl SNSClient for SNSClientImpl {
     async fn publish<T: SNSMessage>(&self, message: T) -> Result<Option<String>, SNSError> {
         let message_str = transform_message_type(message)?;
+        let topic_arn = self.topic_arn.clone();
 
-        let request = self.client.publish().message(message_str);
+        let request = self.client.publish().topic_arn(topic_arn).message(message_str);
         let response = request.send().await?;
 
         Ok(response.message_id)

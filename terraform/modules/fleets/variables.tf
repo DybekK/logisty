@@ -1,27 +1,13 @@
-# credentials
-
-variable "aws_access_key_id" {
-  description = "The AWS access key ID"
-  type        = string
-  sensitive   = true
-}
-
-variable "aws_secret_access_key" {
-  description = "The AWS secret access key"
-  type        = string
-  sensitive   = true
-}
-
 # rds
 
 variable "security_group_ids" {
   description = "The IDs of the security groups"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "subnet_group_ids" {
   description = "The ids of the subnet groups"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "rds_username" {
@@ -47,6 +33,23 @@ variable "rds_host" {
 
 variable "rds_database" {
   description = "The name of the fleets database"
+  type        = string
+}
+
+# sns
+
+variable "sns_exec_role" {
+  description = "The name of the SNS execution role"
+  type        = string
+}
+
+variable "sns_exec_role_arn" {
+  description = "The ARN of the SNS execution role"
+  type        = string
+}
+
+variable "user_invited_topic_arn" {
+  description = "The ARN of the user_invited SNS topic"
   type        = string
 }
 

@@ -29,3 +29,26 @@ resource "aws_lambda_permission" "fleets_service_invoke_function_url" {
   principal              = "*"
   function_url_auth_type = "NONE"
 }
+
+resource "aws_iam_policy" "fleets_service_sns_policy" {
+  name        = "fleets_service_sns_policy"
+  description = "Policy to allow SNS operations to the fleets service"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "sns:Publish",
+          "sns:Subscribe"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "fleets_service_sns_policy_attachment" {
+  role       = var.sns_exec_role
+  policy_arn = aws_iam_policy.fleets_service_sns_policy.arn
+}

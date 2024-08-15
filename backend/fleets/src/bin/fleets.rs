@@ -1,18 +1,18 @@
 use std::sync::Arc;
 
-use aws_sdk_sns::config::{Credentials, Region};
+use aws_sdk_sns::config::Region;
 use axum::Router;
-use lambda_http::{Error, run, tracing};
+use lambda_http::{run, tracing, Error};
 use sqlx::migrate;
 use sqlx::postgres::PgPoolOptions;
 
-use fleets::{Config, FleetHandlerState, MemberHandlerState};
 use fleets::adapter::inbound::fleet_handler::fleet_router;
 use fleets::adapter::inbound::member_handler::member_router;
 use fleets::adapter::outbound::fleet_repository_impl::FleetRepositoryImpl;
 use fleets::adapter::outbound::user_http_client_impl::UserHttpClientImpl;
 use fleets::domain::service::fleet_service_impl::FleetServiceImpl;
 use fleets::domain::service::member_invitation_dispatcher_impl::MemberInvitationDispatcherImpl;
+use fleets::{Config, FleetHandlerState, MemberHandlerState};
 use shared::infra::health::health_router;
 use shared::infra::sns::sns_client_impl::SNSClientImpl;
 
@@ -23,20 +23,12 @@ async fn main() -> Result<(), Error> {
 
     let Config {
         aws_config,
-        aws_credentials_config,
         database_config,
         http_client_config,
+        topic_arns,
     } = Config::default();
 
-    let aws_sdk_config = aws_config::from_env()
-        .region(Region::new(aws_config.region))
-        .credentials_provider(Credentials::from_keys(
-            aws_credentials_config.access_key_id,
-            aws_credentials_config.secret_access_key,
-            None,
-        ))
-        .load()
-        .await;
+    let aws_sdk_config = aws_config::from_env().region(Region::new(aws_config.region)).load().await;
 
     let pool = PgPoolOptions::new()
         .max_connections(database_config.max_connections)
@@ -47,7 +39,7 @@ async fn main() -> Result<(), Error> {
 
     // SNS
     let sns_client = aws_sdk_sns::Client::new(&aws_sdk_config);
-    let member_invitation_sns_client = Arc::new(SNSClientImpl::new(sns_client));
+    let member_invitation_sns_client = Arc::new(SNSClientImpl::new(sns_client, topic_arns.user_invited));
 
     // Http
     let user_http_client = Arc::new(UserHttpClientImpl::new(http_client_config.users_url));
