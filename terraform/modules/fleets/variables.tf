@@ -2,12 +2,12 @@
 
 variable "security_group_ids" {
   description = "The IDs of the security groups"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "subnet_group_ids" {
   description = "The ids of the subnet groups"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "rds_username" {

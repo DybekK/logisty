@@ -1,15 +1,15 @@
 extern crate serde_json;
 
-use axum::extract::State;
-use axum::response::IntoResponse;
-use axum::routing::post;
 use axum::{Json, Router};
+use axum::extract::State;
+use axum::response::Response;
+use axum::routing::post;
 use lambda_http::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use shared::domain::types::id::FleetId;
-use shared::infra::error_json;
+use shared::infra::{error_response, internal_server_error_response, success_response};
 
 use crate::domain::error::MemberInvitationError::{FleetNotExists, MemberAlreadyExists};
 use crate::domain::port::member_invitation_dispatcher::MemberInvitationDispatcher;
@@ -19,11 +19,11 @@ pub fn member_router<MemberInvitationDispatcherI>() -> Router<MemberHandlerState
 where
     MemberInvitationDispatcherI: MemberInvitationDispatcher + 'static,
 {
-    Router::new().route("/member/invite", post(invite_member_handler::<MemberInvitationDispatcherI>))
+    Router::new().route("/members/invite", post(invite_member_handler::<MemberInvitationDispatcherI>))
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct InviteMember {
+pub struct InviteMemberRequest {
     fleet_id: FleetId,
     first_name: String,
     last_name: String,
@@ -32,12 +32,12 @@ pub struct InviteMember {
 
 async fn invite_member_handler<MemberInvitationDispatcherI>(
     State(state): State<MemberHandlerState<MemberInvitationDispatcherI>>,
-    Json(payload): Json<InviteMember>,
-) -> impl IntoResponse
+    Json(payload): Json<InviteMemberRequest>,
+) -> Response
 where
     MemberInvitationDispatcherI: MemberInvitationDispatcher,
 {
-    let InviteMember {
+    let InviteMemberRequest {
         fleet_id,
         first_name,
         last_name,
@@ -49,9 +49,10 @@ where
         .invite_member(fleet_id, first_name, last_name, email)
         .await
     {
-        Ok(_) => (StatusCode::OK, Json(json!({"message": "Invitation has been sent"}))).into_response(),
-        Err(MemberAlreadyExists) => (StatusCode::BAD_REQUEST, error_json(MemberAlreadyExists.to_string())).into_response(),
-        Err(FleetNotExists) => (StatusCode::BAD_REQUEST, error_json(FleetNotExists.to_string())).into_response(),
-        _ => StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+        Ok(_) => success_response(StatusCode::OK, json!({"message": "Invitation has been sent"})),
+        Err(MemberAlreadyExists) => error_response(StatusCode::BAD_REQUEST, MemberAlreadyExists.into()),
+        Err(FleetNotExists) => error_response(StatusCode::BAD_REQUEST, FleetNotExists.into()),
+
+        Err(unknown_error) => internal_server_error_response(unknown_error.into()),
     }
 }

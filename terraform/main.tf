@@ -61,7 +61,7 @@ module "fleets" {
   security_group_ids = [module.vpc.logisty_lambda_security_group_id]
   subnet_group_ids   = module.vpc.logisty_db_subnet_group_ids
 
-  users_service_url    = module.users.function_url
+  users_service_url = module.users.function_url
 
   lambda_exec_role     = module.roles.lambda_exec_role
   lambda_exec_role_arn = module.roles.lambda_exec_role_arn

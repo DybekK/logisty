@@ -1,42 +1,57 @@
-use std::error::Error;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+
 use async_trait::async_trait;
+use chrono::NaiveDateTime;
 
 use shared::domain::types::id::UserId;
-use crate::domain::model::User;
+use shared::infra::database::error::DatabaseError;
+
+use crate::domain::model::{Role, User};
 use crate::domain::port::user_repository::UserRepository;
 
+#[derive(Clone)]
 pub struct InMemoryUserRepository {
-    pub users: Mutex<Vec<User>>,
+    users: Arc<Mutex<Vec<User>>>,
 }
 
 impl InMemoryUserRepository {
     pub fn new() -> Self {
         InMemoryUserRepository {
-            users: Mutex::new(Vec::new()),
+            users: Arc::new(Mutex::new(Vec::new())),
         }
     }
 }
 
 #[async_trait]
 impl UserRepository for InMemoryUserRepository {
-    async fn find_by_id(&self, id: UserId) -> Result<Option<User>, Box<dyn Error>> {
+    async fn find_by_id(&self, user_id: UserId) -> Result<Option<User>, DatabaseError> {
         let users = self.users.lock().unwrap();
-        let user = users.iter().find(|user| user.id == id).cloned();
+        let user = users.iter().find(|user| user.user_id == user_id).cloned();
 
         Ok(user)
     }
 
-    async fn insert(&self, email: String, password: String) -> Result<UserId, Box<dyn Error>> {
-        let id = UserId::default();
+    async fn find_by_email(&self, email: String) -> Result<Option<User>, DatabaseError> {
+        let users = self.users.lock().unwrap();
+        let user = users.iter().find(|user| user.email == email).cloned();
+
+        Ok(user)
+    }
+
+    async fn insert(&self, email: String, password: String, role: Role) -> Result<UserId, DatabaseError> {
+        let mut users = self.users.lock().unwrap();
+
+        let user_id = UserId::default();
         let user = User {
-            id: id.clone(),
+            user_id: user_id.clone(),
             email,
             password,
+            role,
+            created_at: NaiveDateTime::default(),
+            updated_at: NaiveDateTime::default(),
         };
-        let mut users = self.users.lock().unwrap();
         users.push(user);
 
-        Ok(id)
+        Ok(user_id)
     }
 }

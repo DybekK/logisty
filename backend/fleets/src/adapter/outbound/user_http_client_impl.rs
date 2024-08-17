@@ -1,20 +1,21 @@
 use async_trait::async_trait;
-use reqwest::{Client, StatusCode};
+use reqwest_middleware::ClientWithMiddleware;
 
 use shared::domain::port::user_http_client::{User, UserHttpClient};
 use shared::infra::http::error::HttpClientError;
+use shared::infra::http::http_client::new_client;
 
 #[derive(Clone)]
 pub struct UserHttpClientImpl {
     base_url: String,
-    client: Client,
+    client: ClientWithMiddleware,
 }
 
 impl UserHttpClientImpl {
     pub fn new(base_url: String) -> Self {
         UserHttpClientImpl {
             base_url,
-            client: Client::new(),
+            client: new_client(),
         }
     }
 }
@@ -23,11 +24,10 @@ impl UserHttpClientImpl {
 impl UserHttpClient for UserHttpClientImpl {
     async fn get_user_by_email(&self, email: String) -> Result<Option<User>, HttpClientError> {
         let url = format!("{}/users", self.base_url);
-        let response = self.client.get(&url).form(&[("email", email)]).send().await?;
+        let params = [("email", email)];
 
-        match response.status() {
-            StatusCode::NOT_FOUND => Ok(None),
-            _ => Ok(response.json::<Option<User>>().await?),
-        }
+        let response = self.client.get(&url).query(&params).send().await?;
+
+        Ok(response.json::<Option<User>>().await?)
     }
 }

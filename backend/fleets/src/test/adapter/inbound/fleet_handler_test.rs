@@ -27,7 +27,7 @@ mod tests {
         let body = json!({ "fleet_name": "new_fleet" });
 
         // when
-        let response = client.post("/fleet/create").json(&body).await;
+        let response = client.post("/fleets/create").json(&body).await;
 
         // then
         response.assert_status_ok();
@@ -40,8 +40,8 @@ mod tests {
         let body = json!({ "fleet_name": "new_fleet" });
 
         // when
-        let _ = client.post("/fleet/create").json(&body).await;
-        let response = client.post("/fleet/create").json(&body).await;
+        let _ = client.post("/fleets/create").json(&body).await;
+        let response = client.post("/fleets/create").json(&body).await;
 
         // then
         response.assert_status_bad_request();

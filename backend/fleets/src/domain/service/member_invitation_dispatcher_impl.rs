@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use serde_json::json;
 
 use shared::domain::port::user_http_client::UserHttpClient;
 use shared::domain::types::id::FleetId;
@@ -7,6 +6,7 @@ use shared::infra::sns::sns_client::SNSClient;
 
 use crate::domain::error::MemberInvitationError;
 use crate::domain::error::MemberInvitationError::{FleetNotExists, MemberAlreadyExists};
+use crate::domain::event::user_invited_event::UserInvitedEvent;
 use crate::domain::port::fleet_repository::FleetRepository;
 use crate::domain::port::member_invitation_dispatcher::MemberInvitationDispatcher;
 
@@ -75,14 +75,8 @@ where
         self.validate_fleet(fleet_id.clone()).await?;
         self.validate_member(email.clone()).await?;
 
-        self.sns_client
-            .publish(json!({
-                "fleet_id": fleet_id,
-                "first_name": first_name,
-                "last_name": last_name,
-                "email": email
-            }))
-            .await?;
+        let event = UserInvitedEvent::new(fleet_id.clone(), first_name.clone(), last_name.clone(), email.clone());
+        self.sns_client.publish(event).await?;
 
         Ok(())
     }

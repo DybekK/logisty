@@ -1,9 +1,11 @@
-use crate::infra::sns::error::SNSError;
-use crate::infra::sns::sns_client::{transform_message_type, SNSClient, SNSMessage};
+use std::sync::{Arc, Mutex};
 
 use async_trait::async_trait;
-use std::sync::{Arc, Mutex};
+use serde_json::to_string;
 use uuid::Uuid;
+
+use crate::infra::sns::error::SNSError;
+use crate::infra::sns::sns_client::{SNSClient, SNSMessage};
 
 #[derive(Clone)]
 pub struct Message {
@@ -33,7 +35,7 @@ impl SNSClient for InMemorySNSClient {
     async fn publish<T: SNSMessage>(&self, message: T) -> Result<Option<String>, SNSError> {
         let message = Message {
             message_id: Uuid::new_v4().to_string(),
-            message: transform_message_type(message)?,
+            message: to_string(&message)?,
         };
         self.messages.lock().unwrap().push(message.clone());
 

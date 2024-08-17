@@ -11,7 +11,8 @@ resource "aws_lambda_function" "users_service" {
 
   environment {
     variables = {
-      DATABASE_URL = "postgres://${var.rds_username}:${var.rds_password}@${var.rds_host}:${var.rds_port}/${var.rds_database}"
+      APP_AWS_REGION = "eu-west-3"
+      DATABASE_URL   = "postgres://${var.rds_username}:${var.rds_password}@${var.rds_host}:${var.rds_port}/${var.rds_database}"
     }
   }
 

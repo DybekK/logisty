@@ -1,38 +1,42 @@
 use std::env;
 use std::sync::Arc;
-use axum::extract::FromRef;
-use crate::adapter::outbound::user_repository_impl::UserRepositoryImpl;
-use crate::domain::service::user_service_impl::UserServiceImpl;
+
+use crate::domain::port::user_service::UserService;
 
 pub mod adapter;
 pub mod domain;
 
 #[cfg(test)]
 pub mod test {
+    mod adapter;
+    mod domain;
     pub mod fake;
 }
 
+pub struct DatabaseConfig {
+    pub url: String,
+    pub max_connections: u32,
+}
+
 pub struct Config {
-    pub database_url: String,
-    pub database_max_connections: u32,
+    pub database_config: DatabaseConfig,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Config {
-            database_url: env::var("DATABASE_URL").unwrap(),
-            database_max_connections: 5,
+            database_config: DatabaseConfig {
+                url: env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
+                max_connections: 5,
+            },
         }
     }
 }
 
-type UserRepositoryArc = Arc<UserRepositoryImpl>;
-type UserServiceArc = Arc<UserServiceImpl<UserRepositoryArc>>;
-
-#[derive(Clone, FromRef)]
-pub struct AppState {
-    pub user_repository: UserRepositoryArc,
-    pub user_service: UserServiceArc,
+#[derive(Clone)]
+pub struct UserHandlerState<UserServiceI>
+where
+    UserServiceI: UserService,
+{
+    pub user_service: Arc<UserServiceI>,
 }
-
-

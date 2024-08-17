@@ -7,7 +7,7 @@ use shared::infra::sns::error::SNSError;
 #[derive(Error, Debug)]
 #[non_exhaustive]
 pub enum MemberInvitationError {
-    #[error("Fleet of given email already exists")]
+    #[error("Member of given email already exists")]
     MemberAlreadyExists,
 
     #[error("Fleet of given id does not exist")]

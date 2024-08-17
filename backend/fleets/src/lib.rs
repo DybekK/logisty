@@ -42,17 +42,20 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             aws_config: AWSConfig {
-                region: env::var("AWS_REGION").unwrap(),
+                region: env::var("APP_AWS_REGION").expect("APP_AWS_REGION must be set"),
             },
             database_config: DatabaseConfig {
-                url: env::var("DATABASE_URL").unwrap(),
+                url: env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
                 max_connections: 5,
             },
             http_client_config: HttpClientConfig {
-                users_url: env::var("USERS_URL").unwrap(),
+                users_url: env::var("USERS_URL")
+                    .expect("USERS_URL must be set")
+                    .trim_end_matches('/')
+                    .to_string(),
             },
             topic_arns: SNSTopicArns {
-                user_invited: env::var("TOPIC_ARN_USER_INVITED").unwrap(),
+                user_invited: env::var("TOPIC_ARN_USER_INVITED").expect("TOPIC_ARN_USER_INVITED must be set"),
             },
         }
     }

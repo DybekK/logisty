@@ -11,10 +11,10 @@ resource "aws_lambda_function" "fleets_service" {
 
   environment {
     variables = {
-      AWS_REGION   = "eu-west-3"
-      USERS_URL    = var.users_service_url
+      APP_AWS_REGION         = "eu-west-3"
+      USERS_URL              = var.users_service_url
       TOPIC_ARN_USER_INVITED = var.user_invited_topic_arn
-      DATABASE_URL = "postgres://${var.rds_username}:${var.rds_password}@${var.rds_host}:${var.rds_port}/${var.rds_database}"
+      DATABASE_URL           = "postgres://${var.rds_username}:${var.rds_password}@${var.rds_host}:${var.rds_port}/${var.rds_database}"
     }
   }
 

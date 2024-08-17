@@ -22,9 +22,9 @@ resource "aws_iam_role_policy_attachment" "user_invited_topic_policy_attachment"
   policy_arn = aws_iam_policy.user_invited_topic_policy.arn
 }
 
-resource "aws_sns_topic_subscription" "user_invited_topic_subscription" {
-  count     = length(var.user_invited_subscribers)
-  topic_arn = aws_sns_topic.user_invited_topic.arn
-  protocol  = "sqs"
-  endpoint  = element(var.user_invited_subscribers, count.index)
-}
+# resource "aws_sns_topic_subscription" "user_invited_topic_subscription" {
+#   count     = length(var.user_invited_subscribers)
+#   topic_arn = aws_sns_topic.user_invited_topic.arn
+#   protocol  = "sqs"
+#   endpoint  = element(var.user_invited_subscribers, count.index)
+# }

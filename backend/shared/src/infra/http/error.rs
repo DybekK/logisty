@@ -3,8 +3,8 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub enum HttpClientError {
     #[error(transparent)]
-    RequestError(#[from] reqwest::Error),
+    RequestError(#[from] reqwest_middleware::Error),
 
     #[error(transparent)]
-    JsonError(#[from] serde_json::Error),
+    JsonError(#[from] reqwest::Error),
 }

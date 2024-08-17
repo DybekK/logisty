@@ -67,7 +67,7 @@ mod tests {
         });
 
         // when
-        let response = client.post("/member/invite").json(&body).await;
+        let response = client.post("/members/invite").json(&body).await;
 
         // then
         response.assert_status_ok();
@@ -92,7 +92,7 @@ mod tests {
             "email": email
         });
 
-        let response = client.post("/member/invite").json(&body).await;
+        let response = client.post("/members/invite").json(&body).await;
 
         // then
         response.assert_status_bad_request();
@@ -120,7 +120,7 @@ mod tests {
             "email": email
         });
 
-        let response = client.post("/member/invite").json(&body).await;
+        let response = client.post("/members/invite").json(&body).await;
 
         // then
         response.assert_status_bad_request();

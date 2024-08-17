@@ -2,13 +2,14 @@
 mod tests {
     use std::sync::Arc;
 
-    use serde_json::json;
+    use serde_json::to_string;
 
     use shared::domain::types::id::FleetId;
     use shared::test::fake::in_memory_sns_client::InMemorySNSClient;
     use shared::test::fake::in_memory_user_http_client::InMemoryUserHttpClient;
 
     use crate::domain::error::MemberInvitationError::{FleetNotExists, MemberAlreadyExists};
+    use crate::domain::event::user_invited_event::UserInvitedEvent;
     use crate::domain::port::fleet_repository::FleetRepository;
     use crate::domain::port::member_invitation_dispatcher::MemberInvitationDispatcher;
     use crate::domain::service::member_invitation_dispatcher_impl::MemberInvitationDispatcherImpl;
@@ -57,16 +58,11 @@ mod tests {
             .unwrap();
 
         // then
-        let expected = json!({
-            "fleet_id": fleet_id,
-            "first_name": first_name,
-            "last_name": last_name,
-            "email": email
-        });
+        let expected = UserInvitedEvent::new(fleet_id.clone(), first_name.clone(), last_name.clone(), email.clone());
         let messages = sns_client.get_messages();
 
         assert_eq!(messages.len(), 1);
-        assert_eq!(messages[0].message, expected.to_string());
+        assert_eq!(messages[0].message, to_string(&expected).unwrap());
     }
 
     #[tokio::test]

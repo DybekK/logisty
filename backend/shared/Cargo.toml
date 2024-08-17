@@ -29,4 +29,5 @@ serde = { workspace = true, features = ["derive"] }
 
 # server
 axum = { workspace = true, features = ["macros"] }
+tracing = { workspace = true }
 sqlx = { workspace = true, features = ["runtime-tokio", "postgres", "chrono"] }
