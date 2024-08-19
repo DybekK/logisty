@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 use aws_sdk_sns::Client;
 use serde_json::to_string;
+use tracing::{error, info};
 
 use crate::infra::sns::error::SNSError;
 use crate::infra::sns::sns_client::{SNSClient, SNSMessage};
@@ -22,6 +23,8 @@ impl SNSClient for SNSClientImpl {
     async fn publish<T: SNSMessage>(&self, message: T) -> Result<Option<String>, SNSError> {
         let message_str = to_string(&message)?;
         let topic_arn = self.topic_arn.clone();
+
+        info!("Publishing message to SNS: {}", message_str);
 
         let request = self.client.publish().topic_arn(topic_arn).message(message_str);
         let response = request.send().await?;

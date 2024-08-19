@@ -1,3 +1,9 @@
+variable "region" {
+  description = "The region to deploy the infrastructure to"
+  type        = string
+  default     = "eu-west-3"
+}
+
 # rds
 
 variable "rds_username" {

@@ -49,10 +49,7 @@ impl Default for Config {
                 max_connections: 5,
             },
             http_client_config: HttpClientConfig {
-                users_url: env::var("USERS_URL")
-                    .expect("USERS_URL must be set")
-                    .trim_end_matches('/')
-                    .to_string(),
+                users_url: env::var("USERS_URL").expect("USERS_URL must be set")
             },
             topic_arns: SNSTopicArns {
                 user_invited: env::var("TOPIC_ARN_USER_INVITED").expect("TOPIC_ARN_USER_INVITED must be set"),

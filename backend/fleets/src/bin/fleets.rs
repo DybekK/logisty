@@ -18,7 +18,7 @@ use shared::infra::sns::sns_client_impl::SNSClientImpl;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    dotenvy::dotenv()?;
+    dotenvy::dotenv().ok();
     tracing::init_default_subscriber();
 
     let Config {
