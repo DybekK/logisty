@@ -98,9 +98,9 @@ resource "aws_vpc_endpoint" "logisty_api_gateway_endpoint" {
 }
 
 resource "aws_vpc_endpoint" "logisty_sns_endpoint" {
-  vpc_id            = aws_vpc.logisty_vpc.id
-  service_name      = "com.amazonaws.${var.region}.sns"
-  vpc_endpoint_type = "Interface"
+  vpc_id              = aws_vpc.logisty_vpc.id
+  service_name        = "com.amazonaws.${var.region}.sns"
+  vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
 
   security_group_ids = [aws_security_group.logisty_lambda_security_group.id]

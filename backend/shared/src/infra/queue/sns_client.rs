@@ -1,10 +1,11 @@
 use async_trait::async_trait;
 use auto_impl::auto_impl;
 use serde::Serialize;
+use std::fmt::Debug;
 
-use crate::infra::sns::error::SNSError;
+use crate::infra::queue::error::SNSError;
 
-pub trait SNSMessage: Serialize + Clone + Sync + Send + 'static {}
+pub trait SNSMessage: Serialize + Clone + Debug + Sync + Send + 'static {}
 
 #[async_trait]
 #[auto_impl(Arc)]

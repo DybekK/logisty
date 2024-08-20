@@ -14,7 +14,7 @@ resource "aws_lambda_function" "fleets_service" {
       APP_AWS_REGION                       = var.region
       AWS_LAMBDA_HTTP_IGNORE_STAGE_IN_PATH = "true"
       USERS_URL                            = var.users_service_url
-      TOPIC_ARN_USER_INVITED               = var.user_invited_topic_arn
+      USER_INVITED_EVENT_TOPIC_ARN         = var.user_invited_event_topic_arn
       DATABASE_URL                         = "postgres://${var.rds_username}:${var.rds_password}@${var.rds_host}:${var.rds_port}/${var.rds_database}"
     }
   }

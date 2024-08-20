@@ -1,12 +1,12 @@
 use async_trait::async_trait;
-
+use shared::domain::event::Event;
 use shared::domain::port::user_http_client::UserHttpClient;
 use shared::domain::types::id::FleetId;
-use shared::infra::sns::sns_client::SNSClient;
+use shared::domain::types::Role;
+use shared::infra::queue::sns_client::SNSClient;
 
 use crate::domain::error::MemberInvitationError;
 use crate::domain::error::MemberInvitationError::{FleetNotExists, MemberAlreadyExists};
-use crate::domain::event::user_invited_event::UserInvitedEvent;
 use crate::domain::port::fleet_repository::FleetRepository;
 use crate::domain::port::member_invitation_dispatcher::MemberInvitationDispatcher;
 
@@ -68,6 +68,7 @@ where
     async fn invite_member(
         &self,
         fleet_id: FleetId,
+        role: Role,
         first_name: String,
         last_name: String,
         email: String,
@@ -75,8 +76,15 @@ where
         self.validate_fleet(fleet_id.clone()).await?;
         self.validate_member(email.clone()).await?;
 
-        let event = UserInvitedEvent::new(fleet_id.clone(), first_name.clone(), last_name.clone(), email.clone());
-        self.sns_client.publish(event).await?;
+        self.sns_client
+            .publish(Event::user_invited(
+                fleet_id.clone(),
+                role.clone(),
+                first_name.clone(),
+                last_name.clone(),
+                email.clone(),
+            ))
+            .await?;
 
         Ok(())
     }

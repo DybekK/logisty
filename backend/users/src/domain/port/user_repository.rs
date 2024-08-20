@@ -2,9 +2,10 @@ use async_trait::async_trait;
 use auto_impl::auto_impl;
 
 use shared::domain::types::id::UserId;
+use shared::domain::types::Role;
 use shared::infra::database::error::DatabaseError;
 
-use crate::domain::model::{Role, User};
+use crate::domain::model::User;
 
 #[async_trait]
 #[auto_impl(Arc)]

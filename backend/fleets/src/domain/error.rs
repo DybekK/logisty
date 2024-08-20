@@ -2,7 +2,7 @@ use thiserror::Error;
 
 use shared::infra::database::error::DatabaseError;
 use shared::infra::http::error::HttpClientError;
-use shared::infra::sns::error::SNSError;
+use shared::infra::queue::error::SNSError;
 
 #[derive(Error, Debug)]
 #[non_exhaustive]

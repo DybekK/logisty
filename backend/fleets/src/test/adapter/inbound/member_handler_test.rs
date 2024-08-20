@@ -7,6 +7,7 @@ mod tests {
     use serde_json::json;
 
     use shared::domain::types::id::FleetId;
+    use shared::domain::types::Role::Admin;
     use shared::test::fake::in_memory_sns_client::InMemorySNSClient;
     use shared::test::fake::in_memory_user_http_client::InMemoryUserHttpClient;
 
@@ -51,6 +52,7 @@ mod tests {
         let (_, _, fleet_repository, _, router) = setup();
         let client = TestServer::new(router).unwrap();
 
+        let role = Admin;
         let fleet_name = "fleet_name".to_string();
         let first_name = "first_name".to_string();
         let last_name = "last_name".to_string();
@@ -60,6 +62,7 @@ mod tests {
         let fleet_id = fleet_repository.insert(fleet_name).await.unwrap();
 
         let body = json!({
+            "role": role,
             "fleet_id": fleet_id,
             "first_name": first_name,
             "last_name": last_name,
@@ -79,6 +82,7 @@ mod tests {
         let (_, _, _, _, router) = setup();
         let client = TestServer::new(router).unwrap();
 
+        let role = Admin;
         let fleet_id = FleetId::default();
         let first_name = "first_name".to_string();
         let last_name = "last_name".to_string();
@@ -86,6 +90,7 @@ mod tests {
 
         // when
         let body = json!({
+            "role": role,
             "fleet_id": fleet_id,
             "first_name": first_name,
             "last_name": last_name,
@@ -104,6 +109,7 @@ mod tests {
         let (_, user_http_client, fleet_repository, _, router) = setup();
         let client = TestServer::new(router).unwrap();
 
+        let role = Admin;
         let fleet_name = "fleet_name".to_string();
         let first_name = "first_name".to_string();
         let last_name = "last_name".to_string();
@@ -114,6 +120,7 @@ mod tests {
         user_http_client.insert(email.clone());
 
         let body = json!({
+            "role": role,
             "fleet_id": fleet_id,
             "first_name": first_name,
             "last_name": last_name,

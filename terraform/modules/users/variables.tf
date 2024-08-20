@@ -58,8 +58,8 @@ variable "rds_database" {
 
 # sns
 
-variable "user_invited_subscribers" {
-  description = "The ARNs of the SQS queues to subscribe to the user_invited SNS topic"
+variable "user_invited_event_subscribers" {
+  description = "The ARNs of the SQS queues to subscribe to the user_invited_event SNS topic"
   type        = list(string)
   default     = []
 }

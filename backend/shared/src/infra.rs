@@ -9,7 +9,7 @@ use tracing::error;
 pub mod database;
 pub mod health;
 pub mod http;
-pub mod sns;
+pub mod queue;
 
 #[derive(Deserialize, Serialize)]
 pub struct ErrorResponse {

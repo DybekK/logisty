@@ -75,8 +75,8 @@ module "fleets" {
   rds_port     = var.rds_port
   rds_database = "fleets"
 
-  users_service_url      = module.users.users_service_url
-  user_invited_topic_arn = module.users.user_invited_topic_arn
+  users_service_url            = module.users.users_service_url
+  user_invited_event_topic_arn = module.users.user_invited_event_topic_arn
 
   security_group_ids = [module.vpc.logisty_lambda_security_group_id]
   subnet_group_ids   = module.vpc.logisty_db_subnet_group_ids

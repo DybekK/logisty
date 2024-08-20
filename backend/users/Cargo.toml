@@ -3,6 +3,14 @@ name = "users"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "users"
+path = "src/bin/users.rs"
+
+[[bin]]
+name = "users_event_consumer"
+path = "src/bin/users_event_consumer.rs"
+
 [dependencies]
 shared = { path = "../shared" }
 

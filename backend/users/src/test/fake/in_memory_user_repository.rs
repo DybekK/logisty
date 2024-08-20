@@ -4,9 +4,10 @@ use async_trait::async_trait;
 use chrono::NaiveDateTime;
 
 use shared::domain::types::id::UserId;
+use shared::domain::types::Role;
 use shared::infra::database::error::DatabaseError;
 
-use crate::domain::model::{Role, User};
+use crate::domain::model::User;
 use crate::domain::port::user_repository::UserRepository;
 
 #[derive(Clone)]

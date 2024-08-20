@@ -1,14 +1,15 @@
 extern crate serde_json;
 
-use axum::{Json, Router};
 use axum::extract::State;
 use axum::response::Response;
 use axum::routing::post;
+use axum::{Json, Router};
 use lambda_http::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use shared::domain::types::id::FleetId;
+use shared::domain::types::Role;
 use shared::infra::{error_response, internal_server_error_response, success_response};
 
 use crate::domain::error::MemberInvitationError::{FleetNotExists, MemberAlreadyExists};
@@ -25,6 +26,7 @@ where
 #[derive(Deserialize, Serialize)]
 pub struct InviteMemberRequest {
     fleet_id: FleetId,
+    role: Role,
     first_name: String,
     last_name: String,
     email: String,
@@ -39,6 +41,7 @@ where
 {
     let InviteMemberRequest {
         fleet_id,
+        role,
         first_name,
         last_name,
         email,
@@ -46,7 +49,7 @@ where
 
     match state
         .invitation_dispatcher
-        .invite_member(fleet_id, first_name, last_name, email)
+        .invite_member(fleet_id, role, first_name, last_name, email)
         .await
     {
         Ok(_) => success_response(StatusCode::OK, json!({"message": "Invitation has been sent"})),

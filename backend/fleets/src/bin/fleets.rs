@@ -14,7 +14,7 @@ use fleets::domain::service::fleet_service_impl::FleetServiceImpl;
 use fleets::domain::service::member_invitation_dispatcher_impl::MemberInvitationDispatcherImpl;
 use fleets::{Config, FleetHandlerState, MemberHandlerState};
 use shared::infra::health::health_router;
-use shared::infra::sns::sns_client_impl::SNSClientImpl;
+use shared::infra::queue::sns_client_impl::SNSClientImpl;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {

@@ -4,8 +4,8 @@ use async_trait::async_trait;
 use serde_json::to_string;
 use uuid::Uuid;
 
-use crate::infra::sns::error::SNSError;
-use crate::infra::sns::sns_client::{SNSClient, SNSMessage};
+use crate::infra::queue::error::SNSError;
+use crate::infra::queue::sns_client::{SNSClient, SNSMessage};
 
 #[derive(Clone)]
 pub struct Message {

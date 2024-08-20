@@ -1,13 +1,12 @@
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
     use crate::domain::error::UserError::InvalidUserSearchCriteria;
-    use crate::domain::model::Role::Admin;
     use crate::domain::port::user_repository::UserRepository;
     use crate::domain::port::user_service::UserService;
     use crate::domain::service::user_service_impl::UserServiceImpl;
     use crate::test::fake::in_memory_user_repository::InMemoryUserRepository;
+    use shared::domain::types::Role::Admin;
+    use std::sync::Arc;
 
     type UserRepositoryArc = Arc<InMemoryUserRepository>;
     type UserServiceArc = Arc<UserServiceImpl<UserRepositoryArc>>;
@@ -36,6 +35,7 @@ mod tests {
         // then
         assert_eq!(result.user_id, user_id);
         assert_eq!(result.email, email);
+        assert!(matches!(result.role, Admin));
     }
 
     #[tokio::test]
@@ -55,6 +55,7 @@ mod tests {
         // then
         assert_eq!(result.user_id, user_id);
         assert_eq!(result.email, email);
+        assert!(matches!(result.role, Admin));
     }
 
     #[tokio::test]

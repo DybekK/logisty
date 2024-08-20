@@ -52,7 +52,7 @@ impl Default for Config {
                 users_url: env::var("USERS_URL").expect("USERS_URL must be set")
             },
             topic_arns: SNSTopicArns {
-                user_invited: env::var("TOPIC_ARN_USER_INVITED").expect("TOPIC_ARN_USER_INVITED must be set"),
+                user_invited: env::var("USER_INVITED_EVENT_TOPIC_ARN").expect("USER_INVITED_EVENT_TOPIC_ARN must be set"),
             },
         }
     }

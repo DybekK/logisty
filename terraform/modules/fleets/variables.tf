@@ -53,8 +53,8 @@ variable "rds_database" {
 
 # sns
 
-variable "user_invited_topic_arn" {
-  description = "The ARN of the user_invited SNS topic"
+variable "user_invited_event_topic_arn" {
+  description = "The ARN of the user_invited_event SNS topic"
   type        = string
 }
 

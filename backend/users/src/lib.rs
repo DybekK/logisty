@@ -1,7 +1,6 @@
+use crate::domain::port::user_service::UserService;
 use std::env;
 use std::sync::Arc;
-
-use crate::domain::port::user_service::UserService;
 
 pub mod adapter;
 pub mod domain;

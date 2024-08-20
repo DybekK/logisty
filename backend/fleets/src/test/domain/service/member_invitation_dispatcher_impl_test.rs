@@ -3,13 +3,13 @@ mod tests {
     use std::sync::Arc;
 
     use serde_json::to_string;
-
+    use shared::domain::event::Event;
     use shared::domain::types::id::FleetId;
+    use shared::domain::types::Role::Admin;
     use shared::test::fake::in_memory_sns_client::InMemorySNSClient;
     use shared::test::fake::in_memory_user_http_client::InMemoryUserHttpClient;
 
     use crate::domain::error::MemberInvitationError::{FleetNotExists, MemberAlreadyExists};
-    use crate::domain::event::user_invited_event::UserInvitedEvent;
     use crate::domain::port::fleet_repository::FleetRepository;
     use crate::domain::port::member_invitation_dispatcher::MemberInvitationDispatcher;
     use crate::domain::service::member_invitation_dispatcher_impl::MemberInvitationDispatcherImpl;
@@ -44,6 +44,7 @@ mod tests {
         // given
         let (sns_client, _, fleet_repository, invitation_dispatcher) = setup();
 
+        let role = Admin;
         let fleet_name = "fleet_name".to_string();
         let first_name = "first_name".to_string();
         let last_name = "last_name".to_string();
@@ -53,12 +54,24 @@ mod tests {
         let fleet_id = fleet_repository.insert(fleet_name).await.unwrap();
 
         invitation_dispatcher
-            .invite_member(fleet_id.clone(), first_name.clone(), last_name.clone(), email.clone())
+            .invite_member(
+                fleet_id.clone(),
+                role.clone(),
+                first_name.clone(),
+                last_name.clone(),
+                email.clone(),
+            )
             .await
             .unwrap();
 
         // then
-        let expected = UserInvitedEvent::new(fleet_id.clone(), first_name.clone(), last_name.clone(), email.clone());
+        let expected = Event::user_invited(
+            fleet_id.clone(),
+            role.clone(),
+            first_name.clone(),
+            last_name.clone(),
+            email.clone(),
+        );
         let messages = sns_client.get_messages();
 
         assert_eq!(messages.len(), 1);
@@ -70,6 +83,7 @@ mod tests {
         // given
         let (sns_client, _, _, invitation_dispatcher) = setup();
 
+        let role = Admin;
         let fleet_id = FleetId::default();
         let first_name = "first_name".to_string();
         let last_name = "last_name".to_string();
@@ -77,7 +91,13 @@ mod tests {
 
         // when
         let result = invitation_dispatcher
-            .invite_member(fleet_id.clone(), first_name.clone(), last_name.clone(), email.clone())
+            .invite_member(
+                fleet_id.clone(),
+                role.clone(),
+                first_name.clone(),
+                last_name.clone(),
+                email.clone(),
+            )
             .await
             .unwrap_err();
 
@@ -93,6 +113,7 @@ mod tests {
         // given
         let (sns_client, user_http_client, fleet_repository, invitation_dispatcher) = setup();
 
+        let role = Admin;
         let fleet_name = "fleet_name".to_string();
         let first_name = "first_name".to_string();
         let last_name = "last_name".to_string();
@@ -103,7 +124,13 @@ mod tests {
         user_http_client.insert(email.clone());
 
         let result = invitation_dispatcher
-            .invite_member(fleet_id.clone(), first_name.clone(), last_name.clone(), email.clone())
+            .invite_member(
+                fleet_id.clone(),
+                role.clone(),
+                first_name.clone(),
+                last_name.clone(),
+                email.clone(),
+            )
             .await
             .unwrap_err();
 

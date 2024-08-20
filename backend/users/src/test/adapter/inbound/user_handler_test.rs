@@ -5,14 +5,13 @@ mod tests {
     use axum::Router;
     use axum_test::TestServer;
 
-    use shared::domain::types::id::UserId;
-
     use crate::adapter::inbound::user_handler::user_router;
-    use crate::domain::model::Role::Admin;
     use crate::domain::port::user_repository::UserRepository;
     use crate::domain::service::user_service_impl::UserServiceImpl;
     use crate::test::fake::in_memory_user_repository::InMemoryUserRepository;
     use crate::UserHandlerState;
+    use shared::domain::types::id::UserId;
+    use shared::domain::types::Role::Admin;
 
     type UserRepositoryArc = Arc<InMemoryUserRepository>;
     type UserServiceArc = Arc<UserServiceImpl<UserRepositoryArc>>;

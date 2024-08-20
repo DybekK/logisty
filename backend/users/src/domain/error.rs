@@ -11,3 +11,10 @@ pub enum UserError {
     #[error(transparent)]
     DatabaseError(#[from] DatabaseError),
 }
+
+#[derive(Error, Debug)]
+#[non_exhaustive]
+pub enum InvitationError {
+    #[error(transparent)]
+    DatabaseError(#[from] DatabaseError),
+}
