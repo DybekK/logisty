@@ -8,6 +8,8 @@ use shared::domain::types::Role;
 #[async_trait]
 #[auto_impl(Arc)]
 pub trait InvitationService: Clone + Sync + Send {
+    async fn is_invitation_active(&self, invitation_id: InvitationId) -> Result<bool, InvitationError>;
+
     async fn create_invitation(
         &self,
         fleet_id: FleetId,

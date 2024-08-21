@@ -2,8 +2,10 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, Type};
 
+use crate::domain::model::InvitationStatus::Pending;
 use shared::domain::types::id::{FleetId, InvitationId, UserId};
 use shared::domain::types::Role;
+use shared::infra::time::TimeProvider;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct User {
@@ -15,7 +17,7 @@ pub struct User {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Type)]
 #[sqlx(type_name = "VARCHAR")]
 pub enum InvitationStatus {
     Pending,
@@ -36,4 +38,10 @@ pub struct Invitation {
     pub created_at: NaiveDateTime,
     pub accepted_at: Option<NaiveDateTime>,
     pub denied_at: Option<NaiveDateTime>,
+}
+
+impl Invitation {
+    pub fn is_active<TimeProviderI: TimeProvider>(&self, time_provider: &TimeProviderI) -> bool {
+        self.status == Pending && self.due_at > time_provider.now()
+    }
 }

@@ -10,6 +10,7 @@ pub mod database;
 pub mod health;
 pub mod http;
 pub mod queue;
+pub mod time;
 
 #[derive(Deserialize, Serialize)]
 pub struct ErrorResponse {

@@ -15,6 +15,9 @@ pub enum UserError {
 #[derive(Error, Debug)]
 #[non_exhaustive]
 pub enum InvitationError {
+    #[error("Invitation not found")]
+    InvitationNotFound,
+    
     #[error(transparent)]
     DatabaseError(#[from] DatabaseError),
 }

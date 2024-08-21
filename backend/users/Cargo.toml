@@ -14,6 +14,7 @@ path = "src/bin/users_event_consumer.rs"
 [dependencies]
 shared = { path = "../shared" }
 
+# utils
 async-trait = { workspace = true }
 dotenvy = { workspace = true }
 cuid = { workspace = true }
@@ -22,6 +23,7 @@ thiserror = { workspace = true }
 chrono = { workspace = true }
 auto_impl = { workspace = true }
 reqwest = { workspace = true }
+mockall = { workspace = true }
 
 # AWS
 lambda_http = { workspace = true }

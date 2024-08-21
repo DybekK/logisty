@@ -6,15 +6,21 @@ mod tests {
     use shared::domain::event::UserInvitedPayload;
     use shared::domain::types::id::FleetId;
     use shared::domain::types::Role::Admin;
+    use shared::infra::time::FakeTimeProvider;
     use std::sync::Arc;
 
-    type InvitationRepositoryArc = Arc<InMemoryInvitationRepository>;
-    type InvitationServiceArc = Arc<InvitationServiceImpl<InvitationRepositoryArc>>;
+    type TimeProviderArc = Arc<FakeTimeProvider>;
+    type InvitationRepositoryArc = Arc<InMemoryInvitationRepository<TimeProviderArc>>;
+    type InvitationServiceArc = Arc<InvitationServiceImpl<TimeProviderArc, InvitationRepositoryArc>>;
     type UserInvitedEventHandlerArc = Arc<UserInvitedEventHandler<InvitationServiceArc>>;
 
     fn setup() -> (InvitationRepositoryArc, InvitationServiceArc, UserInvitedEventHandlerArc) {
-        let invitation_repository = Arc::new(InMemoryInvitationRepository::new());
-        let invitation_service = Arc::new(InvitationServiceImpl::new(invitation_repository.clone()));
+        let time_provider = Arc::new(FakeTimeProvider::new());
+        let invitation_repository = Arc::new(InMemoryInvitationRepository::new(time_provider.clone()));
+        let invitation_service = Arc::new(InvitationServiceImpl::new(
+            time_provider.clone(),
+            invitation_repository.clone(),
+        ));
         let handler = Arc::new(UserInvitedEventHandler::new(invitation_service.clone()));
 
         (invitation_repository, invitation_service, handler)

@@ -6,24 +6,31 @@ mod tests {
     use crate::test::fake::in_memory_invitation_repository::InMemoryInvitationRepository;
 
     use crate::domain::model::InvitationStatus::Pending;
+    use chrono::Duration;
     use shared::domain::types::id::FleetId;
     use shared::domain::types::Role::Admin;
+    use shared::infra::time::FakeTimeProvider;
     use std::sync::Arc;
 
-    type InvitationRepositoryArc = Arc<InMemoryInvitationRepository>;
-    type InvitationServiceArc = Arc<InvitationServiceImpl<InvitationRepositoryArc>>;
+    type TimeProviderArc = Arc<FakeTimeProvider>;
+    type InvitationRepositoryArc = Arc<InMemoryInvitationRepository<TimeProviderArc>>;
+    type InvitationServiceArc = Arc<InvitationServiceImpl<TimeProviderArc, InvitationRepositoryArc>>;
 
-    fn setup() -> (InvitationRepositoryArc, InvitationServiceArc) {
-        let invitation_repository = Arc::new(InMemoryInvitationRepository::new());
-        let invitation_service = Arc::new(InvitationServiceImpl::new(invitation_repository.clone()));
+    fn setup() -> (TimeProviderArc, InvitationRepositoryArc, InvitationServiceArc) {
+        let time_provider = Arc::new(FakeTimeProvider::new());
+        let invitation_repository = Arc::new(InMemoryInvitationRepository::new(time_provider.clone()));
+        let invitation_service = Arc::new(InvitationServiceImpl::new(
+            time_provider.clone(),
+            invitation_repository.clone(),
+        ));
 
-        (invitation_repository, invitation_service)
+        (time_provider, invitation_repository, invitation_service)
     }
 
     #[tokio::test]
     async fn should_create_invitation() {
         // given
-        let (invitation_repository, invitation_service) = setup();
+        let (_, invitation_repository, invitation_service) = setup();
 
         let fleet_id = FleetId::default();
         let role = Admin;
@@ -61,4 +68,66 @@ mod tests {
         assert!(invitation.denied_at.is_none());
         assert!(invitation.due_at > invitation.created_at);
     }
+
+    #[tokio::test]
+    async fn should_check_if_invitation_is_active() {
+        // given
+        let (_, _, invitation_service) = setup();
+
+        let fleet_id = FleetId::default();
+        let role = Admin;
+        let first_name = "John".to_string();
+        let last_name = "Doe".to_string();
+        let email = "john.doe@example.com".to_string();
+
+        // when
+        let invitation_id = invitation_service
+            .create_invitation(
+                fleet_id.clone(),
+                role.clone(),
+                first_name.clone(),
+                last_name.clone(),
+                email.clone(),
+            )
+            .await
+            .unwrap();
+
+        let is_active = invitation_service.is_invitation_active(invitation_id).await.unwrap();
+
+        // then
+        assert!(is_active);
+    }
+
+    #[tokio::test]
+    async fn should_check_if_invitation_is_not_active_due_to_expiration() {
+        // given
+        let (time_provider, _, invitation_service) = setup();
+
+        let fleet_id = FleetId::default();
+        let role = Admin;
+        let first_name = "John".to_string();
+        let last_name = "Doe".to_string();
+        let email = "john.doe@example.com".to_string();
+
+        // when
+        let invitation_id = invitation_service
+            .create_invitation(
+                fleet_id.clone(),
+                role.clone(),
+                first_name.clone(),
+                last_name.clone(),
+                email.clone(),
+            )
+            .await
+            .unwrap();
+
+        time_provider.advance(Duration::days(8));
+
+        let is_active = invitation_service.is_invitation_active(invitation_id).await.unwrap();
+
+        // then
+        assert!(!is_active)
+    }
+
+    // TODO! should_check_if_invitation_is_not_active_due_to_status_change
 }

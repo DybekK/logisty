@@ -1,6 +1,6 @@
+use crate::domain::port::invitation_service::InvitationService;
 use crate::domain::port::user_service::UserService;
 use std::env;
-use std::sync::Arc;
 
 pub mod adapter;
 pub mod domain;
@@ -37,5 +37,13 @@ pub struct UserHandlerState<UserServiceI>
 where
     UserServiceI: UserService,
 {
-    pub user_service: Arc<UserServiceI>,
+    pub user_service: UserServiceI,
+}
+
+#[derive(Clone)]
+pub struct InvitationHandlerState<InvitationServiceI>
+where
+    InvitationServiceI: InvitationService,
+{
+    pub invitation_service: InvitationServiceI,
 }

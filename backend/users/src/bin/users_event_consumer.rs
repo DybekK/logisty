@@ -4,6 +4,7 @@ use lambda_runtime::{run, service_fn, tracing, LambdaEvent};
 use serde_json::from_str;
 use shared::domain::event::Event;
 use shared::domain::event::Event::UserInvited;
+use shared::infra::time::SystemTimeProvider;
 use sqlx::migrate;
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
@@ -27,11 +28,16 @@ async fn main() -> Result<(), lambda_runtime::Error> {
         .expect("Failed to create pool");
     migrate!().run(&pool).await.expect("Failed to migrate");
 
+    let system_time_provider = SystemTimeProvider;
+
     // Repositories
-    let invitation_repository = Arc::new(InvitationRepositoryImpl::new(pool));
+    let invitation_repository = Arc::new(InvitationRepositoryImpl::new(system_time_provider.clone(), pool));
 
     // Services
-    let invitation_service = Arc::new(InvitationServiceImpl::new(invitation_repository.clone()));
+    let invitation_service = Arc::new(InvitationServiceImpl::new(
+        system_time_provider.clone(),
+        invitation_repository.clone(),
+    ));
     let user_invited_event_handler = UserInvitedEventHandler::new(invitation_service.clone());
 
     run(service_fn(|event| consumer(user_invited_event_handler.clone(), event))).await

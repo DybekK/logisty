@@ -1,30 +1,41 @@
 use std::sync::{Arc, Mutex};
 
+use crate::domain::model::{Invitation, InvitationStatus};
+use crate::domain::port::invitation_repository::InvitationRepository;
 use async_trait::async_trait;
-use chrono::{Duration, NaiveDateTime};
+use chrono::Duration;
 use shared::domain::types::id::{FleetId, InvitationId};
 use shared::domain::types::Role;
 use shared::infra::database::error::DatabaseError;
+use shared::infra::time::TimeProvider;
 use InvitationStatus::Pending;
 
-use crate::domain::model::{Invitation, InvitationStatus};
-use crate::domain::port::invitation_repository::InvitationRepository;
-
 #[derive(Clone)]
-pub struct InMemoryInvitationRepository {
+pub struct InMemoryInvitationRepository<TimeProviderI>
+where
+    TimeProviderI: TimeProvider,
+{
+    time_provider: TimeProviderI,
     invitations: Arc<Mutex<Vec<Invitation>>>,
 }
 
-impl InMemoryInvitationRepository {
-    pub fn new() -> Self {
+impl<TimeProviderI> InMemoryInvitationRepository<TimeProviderI>
+where
+    TimeProviderI: TimeProvider,
+{
+    pub fn new(time_provider: TimeProviderI) -> Self {
         InMemoryInvitationRepository {
+            time_provider,
             invitations: Arc::new(Mutex::new(Vec::new())),
         }
     }
 }
 
 #[async_trait]
-impl InvitationRepository for InMemoryInvitationRepository {
+impl<TimeProviderI> InvitationRepository for InMemoryInvitationRepository<TimeProviderI>
+where
+    TimeProviderI: TimeProvider,
+{
     async fn find_by_id(&self, invitation_id: InvitationId) -> Result<Option<Invitation>, DatabaseError> {
         let invitations = self.invitations.lock().unwrap();
         let invitation = invitations.iter().find(|inv| inv.invitation_id == invitation_id).cloned();
@@ -44,7 +55,7 @@ impl InvitationRepository for InMemoryInvitationRepository {
 
         let invitation_id = InvitationId::default();
         let status = Pending;
-        let created_at = NaiveDateTime::default();
+        let created_at = self.time_provider.now();
         let due_at = created_at + Duration::days(7);
 
         let invitation = Invitation {
