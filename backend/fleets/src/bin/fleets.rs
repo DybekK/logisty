@@ -15,6 +15,7 @@ use fleets::domain::service::member_invitation_dispatcher_impl::MemberInvitation
 use fleets::{Config, FleetHandlerState, MemberHandlerState};
 use shared::infra::health::health_router;
 use shared::infra::queue::sns_client_impl::SNSClientImpl;
+use shared::infra::time::SystemTimeProvider;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -37,9 +38,11 @@ async fn main() -> Result<(), Error> {
         .expect("Failed to create pool");
     migrate!().run(&pool).await.expect("Failed to migrate");
 
+    let time_provider = SystemTimeProvider;
+
     // SNS
     let sns_client = aws_sdk_sns::Client::new(&aws_sdk_config);
-    let member_invitation_sns_client = Arc::new(SNSClientImpl::new(sns_client, topic_arns.user_invited));
+    let default_sns_client = Arc::new(SNSClientImpl::new(sns_client));
 
     // Http
     let user_http_client = Arc::new(UserHttpClientImpl::new(http_client_config.users_url));
@@ -50,7 +53,9 @@ async fn main() -> Result<(), Error> {
     // Services
     let fleet_service = Arc::new(FleetServiceImpl::new(fleet_repository.clone()));
     let invitation_dispatcher = Arc::new(MemberInvitationDispatcherImpl::new(
-        member_invitation_sns_client.clone(),
+        topic_arns.clone(),
+        time_provider.clone(),
+        default_sns_client.clone(),
         user_http_client.clone(),
         fleet_repository.clone(),
     ));

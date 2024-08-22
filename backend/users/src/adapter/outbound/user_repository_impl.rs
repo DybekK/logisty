@@ -1,8 +1,8 @@
 use async_trait::async_trait;
-use chrono::Utc;
+use chrono::NaiveDateTime;
 use sqlx::PgPool;
 
-use shared::domain::types::id::UserId;
+use shared::domain::types::id::{FleetId, UserId};
 use shared::domain::types::Role;
 use shared::infra::database::error::DatabaseError;
 
@@ -40,15 +40,29 @@ impl UserRepository for UserRepositoryImpl {
         Ok(user)
     }
 
-    async fn insert(&self, email: String, password: String, role: Role) -> Result<UserId, DatabaseError> {
+    async fn insert(
+        &self,
+        fleet_id: FleetId,
+        first_name: String,
+        last_name: String,
+        email: String,
+        password: String,
+        role: Role,
+        created_at: NaiveDateTime,
+    ) -> Result<UserId, DatabaseError> {
         let user_id = UserId::default();
-        let created_at = Utc::now();
         let updated_at = created_at;
 
         sqlx::query(
-            r#"INSERT INTO users (user_id, email, password, role_name, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)"#,
+            r#"
+            INSERT INTO users (user_id, fleet_id, first_name, last_name, email, password, role, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            "#,
         )
         .bind(user_id.clone())
+        .bind(fleet_id)
+        .bind(first_name)
+        .bind(last_name)
         .bind(email)
         .bind(password)
         .bind(role)

@@ -8,6 +8,7 @@ use shared::infra::time::SystemTimeProvider;
 use sqlx::migrate;
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
+use tracing::info;
 use users::adapter::inbound::user_invited_event_handler::UserInvitedEventHandler;
 use users::adapter::outbound::invitation_repository_impl::InvitationRepositoryImpl;
 use users::domain::port::invitation_service::InvitationService;
@@ -19,7 +20,7 @@ async fn main() -> Result<(), lambda_runtime::Error> {
     dotenvy::dotenv().ok();
     tracing::init_default_subscriber();
 
-    let Config { database_config } = Config::default();
+    let Config { database_config, .. } = Config::default();
 
     let pool = PgPoolOptions::new()
         .max_connections(database_config.max_connections)
@@ -31,7 +32,7 @@ async fn main() -> Result<(), lambda_runtime::Error> {
     let system_time_provider = SystemTimeProvider;
 
     // Repositories
-    let invitation_repository = Arc::new(InvitationRepositoryImpl::new(system_time_provider.clone(), pool));
+    let invitation_repository = Arc::new(InvitationRepositoryImpl::new(pool));
 
     // Services
     let invitation_service = Arc::new(InvitationServiceImpl::new(
@@ -55,6 +56,7 @@ where
 
         match from_str::<Event>(&raw_message)? {
             UserInvited(payload) => user_invited_event_handler.handle(payload).await?,
+            _ => info!("Event {} is not supported by users_event_consumer", raw_message),
         }
     }
 

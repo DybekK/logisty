@@ -56,14 +56,6 @@ variable "rds_database" {
   type        = string
 }
 
-# sns
-
-variable "user_invited_event_subscribers" {
-  description = "The ARNs of the SQS queues to subscribe to the user_invited_event SNS topic"
-  type        = list(string)
-  default     = []
-}
-
 # lambda
 
 variable "lambda_security_group_ids" {

@@ -7,6 +7,9 @@ use shared::infra::queue::error::SNSError;
 #[derive(Error, Debug)]
 #[non_exhaustive]
 pub enum MemberInvitationError {
+    #[error("Member of given email has been already invited")]
+    InvitationAlreadyExists,
+    
     #[error("Member of given email already exists")]
     MemberAlreadyExists,
 

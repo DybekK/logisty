@@ -1,9 +1,9 @@
 extern crate serde_json;
 
-use axum::{Json, Router};
 use axum::extract::State;
 use axum::response::Response;
 use axum::routing::post;
+use axum::{Json, Router};
 use lambda_http::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -36,7 +36,7 @@ where
     match state.fleet_service.create_new_fleet(payload.fleet_name).await {
         Ok(fleet_id) => success_response(StatusCode::OK, json!({"fleet_id": fleet_id})),
         Err(FleetAlreadyExists) => error_response(StatusCode::BAD_REQUEST, FleetAlreadyExists.into()),
-        
+
         Err(unknown_error) => internal_server_error_response(unknown_error.into()),
     }
 }

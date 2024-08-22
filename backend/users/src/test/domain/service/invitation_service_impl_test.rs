@@ -5,38 +5,118 @@ mod tests {
     use crate::domain::service::invitation_service_impl::InvitationServiceImpl;
     use crate::test::fake::in_memory_invitation_repository::InMemoryInvitationRepository;
 
-    use crate::domain::model::InvitationStatus::Pending;
-    use chrono::Duration;
+    use crate::domain::error::InvitationError::InvitationInactive;
+    use crate::domain::model::Invitation;
+    use chrono::{Duration, NaiveDateTime};
     use shared::domain::types::id::FleetId;
     use shared::domain::types::Role::Admin;
-    use shared::infra::time::FakeTimeProvider;
+    use shared::infra::time::{FakeTimeProvider, TimeProvider};
     use std::sync::Arc;
 
     type TimeProviderArc = Arc<FakeTimeProvider>;
-    type InvitationRepositoryArc = Arc<InMemoryInvitationRepository<TimeProviderArc>>;
+
+    type InvitationRepositoryArc = Arc<InMemoryInvitationRepository>;
+
     type InvitationServiceArc = Arc<InvitationServiceImpl<TimeProviderArc, InvitationRepositoryArc>>;
 
-    fn setup() -> (TimeProviderArc, InvitationRepositoryArc, InvitationServiceArc) {
+    struct TestDependencies {
+        pub time_provider: TimeProviderArc,
+
+        pub invitation_repository: InvitationRepositoryArc,
+
+        pub invitation_service: InvitationServiceArc,
+    }
+
+    fn setup() -> TestDependencies {
         let time_provider = Arc::new(FakeTimeProvider::new());
-        let invitation_repository = Arc::new(InMemoryInvitationRepository::new(time_provider.clone()));
+
+        // Repositories
+        let invitation_repository = Arc::new(InMemoryInvitationRepository::new());
+
+        // Services
         let invitation_service = Arc::new(InvitationServiceImpl::new(
             time_provider.clone(),
             invitation_repository.clone(),
         ));
 
-        (time_provider, invitation_repository, invitation_service)
+        TestDependencies {
+            time_provider,
+            invitation_repository,
+            invitation_service,
+        }
     }
+
+    // get invitation by
+
+    #[tokio::test]
+    async fn should_find_invitation_by() {
+        // given
+        let TestDependencies {
+            time_provider,
+            invitation_service,
+            ..
+        } = setup();
+
+        let fleet_id = FleetId::default();
+        let first_name = "John".to_string();
+        let last_name = "Doe".to_string();
+        let email = "john.doe@gmail.com".to_string();
+        let role = Admin;
+        let created_at = time_provider.now();
+
+        let invitation_id = invitation_service
+            .create_invitation(
+                fleet_id.clone(),
+                role.clone(),
+                first_name.clone(),
+                last_name.clone(),
+                email.clone(),
+                created_at,
+            )
+            .await
+            .unwrap();
+
+        // when
+        let invitation = invitation_service
+            .get_invitation_by(Some(email.clone()))
+            .await
+            .unwrap()
+            .unwrap();
+
+        // then
+        let expected_invitation = Invitation {
+            invitation_id,
+            email,
+            fleet_id,
+            role,
+            first_name,
+            last_name,
+            due_at: time_provider.now() + Duration::days(7),
+            created_at: time_provider.now(),
+            accepted_at: None,
+        };
+
+        assert_eq!(invitation, expected_invitation);
+    }
+
+    // create invitation
 
     #[tokio::test]
     async fn should_create_invitation() {
         // given
-        let (_, invitation_repository, invitation_service) = setup();
+        let TestDependencies {
+            time_provider,
+            invitation_repository,
+            invitation_service,
+            ..
+        } = setup();
 
         let fleet_id = FleetId::default();
         let role = Admin;
         let first_name = "John".to_string();
         let last_name = "Doe".to_string();
         let email = "john.doe@example.com".to_string();
+        let created_at = time_provider.now();
 
         // when
         let invitation_id = invitation_service
@@ -46,6 +126,7 @@ mod tests {
                 first_name.clone(),
                 last_name.clone(),
                 email.clone(),
+                created_at,
             )
             .await
             .unwrap();
@@ -57,28 +138,36 @@ mod tests {
             .unwrap();
 
         // then
-        assert_eq!(invitation.invitation_id, invitation_id);
-        assert_eq!(invitation.email, email);
-        assert_eq!(invitation.fleet_id, fleet_id);
-        assert_eq!(invitation.first_name, first_name);
-        assert_eq!(invitation.last_name, last_name);
-        assert!(matches!(invitation.role, Admin));
-        assert!(matches!(invitation.status, Pending));
-        assert!(invitation.accepted_at.is_none());
-        assert!(invitation.denied_at.is_none());
-        assert!(invitation.due_at > invitation.created_at);
+        let expected_invitation = Invitation {
+            invitation_id,
+            email,
+            fleet_id,
+            role,
+            first_name,
+            last_name,
+            due_at: NaiveDateTime::default() + Duration::days(7),
+            created_at: NaiveDateTime::default(),
+            accepted_at: None,
+        };
+
+        assert_eq!(invitation, expected_invitation);
     }
 
     #[tokio::test]
-    async fn should_check_if_invitation_is_active() {
+    async fn should_get_active_invitation() {
         // given
-        let (_, _, invitation_service) = setup();
+        let TestDependencies {
+            time_provider,
+            invitation_service,
+            ..
+        } = setup();
 
         let fleet_id = FleetId::default();
         let role = Admin;
         let first_name = "John".to_string();
         let last_name = "Doe".to_string();
         let email = "john.doe@example.com".to_string();
+        let created_at = time_provider.now();
 
         // when
         let invitation_id = invitation_service
@@ -88,26 +177,44 @@ mod tests {
                 first_name.clone(),
                 last_name.clone(),
                 email.clone(),
+                created_at,
             )
             .await
             .unwrap();
 
-        let is_active = invitation_service.is_invitation_active(invitation_id).await.unwrap();
+        let invitation = invitation_service.get_active_invitation(invitation_id.clone()).await.unwrap();
 
         // then
-        assert!(is_active);
+        let expected_invitation = Invitation {
+            invitation_id,
+            first_name,
+            last_name,
+            email,
+            fleet_id,
+            role,
+            due_at: NaiveDateTime::default() + Duration::days(7),
+            created_at: NaiveDateTime::default(),
+            accepted_at: None,
+        };
+
+        assert_eq!(invitation, expected_invitation);
     }
 
     #[tokio::test]
-    async fn should_check_if_invitation_is_not_active_due_to_expiration() {
+    async fn should_return_error_for_not_active_invitation_due_to_expiration() {
         // given
-        let (time_provider, _, invitation_service) = setup();
+        let TestDependencies {
+            time_provider,
+            invitation_service,
+            ..
+        } = setup();
 
         let fleet_id = FleetId::default();
         let role = Admin;
         let first_name = "John".to_string();
         let last_name = "Doe".to_string();
         let email = "john.doe@example.com".to_string();
+        let created_at = time_provider.now();
 
         // when
         let invitation_id = invitation_service
@@ -117,17 +224,66 @@ mod tests {
                 first_name.clone(),
                 last_name.clone(),
                 email.clone(),
+                created_at,
             )
             .await
             .unwrap();
 
         time_provider.advance(Duration::days(8));
 
-        let is_active = invitation_service.is_invitation_active(invitation_id).await.unwrap();
+        let error = invitation_service
+            .get_active_invitation(invitation_id.clone())
+            .await
+            .unwrap_err();
 
         // then
-        assert!(!is_active)
+        assert!(matches!(error, InvitationInactive));
     }
 
-    // TODO! should_check_if_invitation_is_not_active_due_to_status_change
+    // accept invitation
+
+    #[tokio::test]
+    async fn should_accept_invitation() {
+        // given
+        let TestDependencies {
+            time_provider,
+            invitation_repository,
+            invitation_service,
+            ..
+        } = setup();
+
+        let fleet_id = FleetId::default();
+        let role = Admin;
+        let first_name = "John".to_string();
+        let last_name = "Doe".to_string();
+        let email = "john.doe@gmail.com".to_string();
+        let created_at = time_provider.now();
+
+        // when
+        let invitation_id = invitation_service
+            .create_invitation(
+                fleet_id.clone(),
+                role.clone(),
+                first_name.clone(),
+                last_name.clone(),
+                email.clone(),
+                created_at,
+            )
+            .await
+            .unwrap();
+
+        invitation_service
+            .accept_invitation(invitation_id.clone(), created_at)
+            .await
+            .unwrap();
+
+        // then
+        let invitation = invitation_repository
+            .find_by_id(invitation_id.clone())
+            .await
+            .unwrap()
+            .unwrap();
+
+        assert!(invitation.accepted_at.is_some());
+    }
 }

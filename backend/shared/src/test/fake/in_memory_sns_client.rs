@@ -5,10 +5,11 @@ use serde_json::to_string;
 use uuid::Uuid;
 
 use crate::infra::queue::error::SNSError;
-use crate::infra::queue::sns_client::{SNSClient, SNSMessage};
+use crate::infra::queue::sns_client::{SNSClient, SerializableMessage};
 
 #[derive(Clone)]
 pub struct Message {
+    pub topic_arn: String,
     pub message_id: String,
     pub message: String,
 }
@@ -32,8 +33,9 @@ impl InMemorySNSClient {
 
 #[async_trait]
 impl SNSClient for InMemorySNSClient {
-    async fn publish<T: SNSMessage>(&self, message: T) -> Result<Option<String>, SNSError> {
+    async fn publish<T: SerializableMessage>(&self, topic_arn: &String, message: T) -> Result<Option<String>, SNSError> {
         let message = Message {
+            topic_arn: topic_arn.to_string(),
             message_id: Uuid::new_v4().to_string(),
             message: to_string(&message)?,
         };

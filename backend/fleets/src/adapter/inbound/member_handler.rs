@@ -12,7 +12,7 @@ use shared::domain::types::id::FleetId;
 use shared::domain::types::Role;
 use shared::infra::{error_response, internal_server_error_response, success_response};
 
-use crate::domain::error::MemberInvitationError::{FleetNotExists, MemberAlreadyExists};
+use crate::domain::error::MemberInvitationError::{FleetNotExists, InvitationAlreadyExists, MemberAlreadyExists};
 use crate::domain::port::member_invitation_dispatcher::MemberInvitationDispatcher;
 use crate::MemberHandlerState;
 
@@ -32,6 +32,7 @@ pub struct InviteMemberRequest {
     email: String,
 }
 
+//todo: write adapter tests
 async fn invite_member_handler<MemberInvitationDispatcherI>(
     State(state): State<MemberHandlerState<MemberInvitationDispatcherI>>,
     Json(payload): Json<InviteMemberRequest>,
@@ -54,6 +55,7 @@ where
     {
         Ok(_) => success_response(StatusCode::OK, json!({"message": "Invitation has been sent"})),
         Err(MemberAlreadyExists) => error_response(StatusCode::BAD_REQUEST, MemberAlreadyExists.into()),
+        Err(InvitationAlreadyExists) => error_response(StatusCode::BAD_REQUEST, InvitationAlreadyExists.into()),
         Err(FleetNotExists) => error_response(StatusCode::BAD_REQUEST, FleetNotExists.into()),
 
         Err(unknown_error) => internal_server_error_response(unknown_error.into()),

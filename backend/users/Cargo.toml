@@ -8,6 +8,10 @@ name = "users"
 path = "src/bin/users.rs"
 
 [[bin]]
+name = "users_projection_consumer"
+path = "src/bin/users_projection_consumer.rs"
+
+[[bin]]
 name = "users_event_consumer"
 path = "src/bin/users_event_consumer.rs"
 
@@ -23,7 +27,6 @@ thiserror = { workspace = true }
 chrono = { workspace = true }
 auto_impl = { workspace = true }
 reqwest = { workspace = true }
-mockall = { workspace = true }
 
 # AWS
 lambda_http = { workspace = true }

@@ -1,6 +1,7 @@
 use async_trait::async_trait;
-
-use shared::domain::types::id::UserId;
+use chrono::NaiveDateTime;
+use shared::domain::types::id::{FleetId, UserId};
+use shared::domain::types::Role;
 use UserError::InvalidUserSearchCriteria;
 
 use crate::domain::error::UserError;
@@ -36,5 +37,23 @@ where
             (None, Some(email)) => Ok(self.user_repository.find_by_email(email).await?),
             _ => Err(InvalidUserSearchCriteria),
         }
+    }
+
+    async fn register_user(
+        &self,
+        fleet_id: FleetId,
+        first_name: String,
+        last_name: String,
+        email: String,
+        password: String,
+        role: Role,
+        accepted_at: NaiveDateTime,
+    ) -> Result<UserId, UserError> {
+        let user_id = self
+            .user_repository
+            .insert(fleet_id, first_name, last_name, email, password, role, accepted_at)
+            .await?;
+
+        Ok(user_id)
     }
 }

@@ -4,7 +4,7 @@ use sqlx::FromRow;
 
 use shared::domain::types::id::{CarId, DriverFleetId, DriverId, FleetId, FleetMemberId, UserId};
 
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, FromRow)]
 pub struct Fleet {
     pub fleet_id: FleetId,
     pub fleet_name: String,
@@ -12,7 +12,7 @@ pub struct Fleet {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, FromRow)]
 pub struct FleetMember {
     pub fleet_member_id: FleetMemberId,
     pub fleet_id: FleetId,

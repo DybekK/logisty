@@ -25,7 +25,6 @@ resource "aws_subnet" "logisty_subnets" {
   cidr_block = "10.0.${count.index}.0/24"
 
   vpc_id                  = aws_vpc.logisty_vpc.id
-  map_public_ip_on_launch = true
   availability_zone       = element(data.aws_availability_zones.logisty_available_zones.names, count.index)
 }
 

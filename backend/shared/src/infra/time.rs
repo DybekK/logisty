@@ -28,7 +28,7 @@ impl Clone for FakeTimeProvider {
 impl FakeTimeProvider {
     pub fn new() -> Self {
         FakeTimeProvider {
-            now: Mutex::new(Utc::now().naive_utc()),
+            now: Mutex::new(NaiveDateTime::default()),
         }
     }
 

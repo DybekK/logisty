@@ -1,6 +1,6 @@
 use crate::domain::error::InvitationError;
 use crate::domain::port::invitation_service::InvitationService;
-use shared::domain::event::UserInvitedPayload;
+use shared::domain::event::users::UserInvitedPayload;
 use tracing::info;
 
 #[derive(Clone)]
@@ -29,6 +29,7 @@ where
                 payload.first_name,
                 payload.last_name,
                 payload.email,
+                payload.created_at,
             )
             .await?;
 

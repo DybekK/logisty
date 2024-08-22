@@ -27,8 +27,17 @@ pub struct HttpClientConfig {
     pub users_url: String,
 }
 
+#[derive(Clone)]
 pub struct SNSTopicArns {
     pub user_invited: String,
+}
+
+impl Default for SNSTopicArns {
+    fn default() -> Self {
+        SNSTopicArns {
+            user_invited: "user_invited".to_string(),
+        }
+    }
 }
 
 pub struct Config {
@@ -49,7 +58,7 @@ impl Default for Config {
                 max_connections: 5,
             },
             http_client_config: HttpClientConfig {
-                users_url: env::var("USERS_URL").expect("USERS_URL must be set")
+                users_url: env::var("USERS_URL").expect("USERS_URL must be set"),
             },
             topic_arns: SNSTopicArns {
                 user_invited: env::var("USER_INVITED_EVENT_TOPIC_ARN").expect("USER_INVITED_EVENT_TOPIC_ARN must be set"),

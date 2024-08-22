@@ -1,8 +1,8 @@
 use async_trait::async_trait;
 use auto_impl::auto_impl;
 
-use shared::domain::types::id::FleetId;
 use crate::domain::error::FleetError;
+use shared::domain::types::id::FleetId;
 
 #[async_trait]
 #[auto_impl(Arc)]

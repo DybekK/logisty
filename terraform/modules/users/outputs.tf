@@ -3,5 +3,5 @@ output "users_service_url" {
 }
 
 output "user_invited_event_topic_arn" {
-  value = aws_sns_topic.user_invited_event_topic.arn
+  value = aws_sns_topic.users_user_invited_event_topic.arn
 }

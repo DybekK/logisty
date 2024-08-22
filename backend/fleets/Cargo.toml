@@ -14,7 +14,6 @@ uuid = { workspace = true }
 thiserror = { workspace = true }
 chrono = { workspace = true }
 auto_impl = { workspace = true }
-mockall = { workspace = true }
 
 # reqwest
 reqwest = { workspace = true }

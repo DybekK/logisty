@@ -8,6 +8,7 @@ mod tests {
 
     use shared::domain::types::id::FleetId;
     use shared::domain::types::Role::Admin;
+    use shared::infra::time::FakeTimeProvider;
     use shared::test::fake::in_memory_sns_client::InMemorySNSClient;
     use shared::test::fake::in_memory_user_http_client::InMemoryUserHttpClient;
 
@@ -15,41 +16,58 @@ mod tests {
     use crate::domain::port::fleet_repository::FleetRepository;
     use crate::domain::service::member_invitation_dispatcher_impl::MemberInvitationDispatcherImpl;
     use crate::test::fake::in_memory_fleet_repository::InMemoryFleetRepository;
-    use crate::MemberHandlerState;
+    use crate::{MemberHandlerState, SNSTopicArns};
 
-    type SNSClientArc = Arc<InMemorySNSClient>;
-    type UserHttpClientArc = Arc<InMemoryUserHttpClient>;
+    type TimeProviderArc = Arc<FakeTimeProvider>;
+    type UserHttpClientArc = Arc<InMemoryUserHttpClient<TimeProviderArc>>;
+
     type FleetRepositoryArc = Arc<InMemoryFleetRepository>;
-    type MemberInvitationDispatcherArc = Arc<MemberInvitationDispatcherImpl<SNSClientArc, UserHttpClientArc, FleetRepositoryArc>>;
 
-    fn setup() -> (
-        SNSClientArc,
-        UserHttpClientArc,
-        FleetRepositoryArc,
-        MemberInvitationDispatcherArc,
-        Router,
-    ) {
+    struct TestDependencies {
+        user_http_client: UserHttpClientArc,
+        fleet_repository: FleetRepositoryArc,
+        router: Router,
+    }
+
+    fn setup() -> TestDependencies {
+        let time_provider = Arc::new(FakeTimeProvider::new());
+
+        // Clients
         let sns_client = Arc::new(InMemorySNSClient::new());
-        let user_http_client = Arc::new(InMemoryUserHttpClient::new());
+        let user_http_client = Arc::new(InMemoryUserHttpClient::new(time_provider.clone()));
+
+        // Repositories
         let fleet_repository = Arc::new(InMemoryFleetRepository::new());
 
+        // Services
         let invitation_dispatcher = Arc::new(MemberInvitationDispatcherImpl::new(
+            SNSTopicArns::default(),
+            time_provider.clone(),
             sns_client.clone(),
             user_http_client.clone(),
             fleet_repository.clone(),
         ));
 
+        // Router
         let router = member_router().with_state(MemberHandlerState {
             invitation_dispatcher: invitation_dispatcher.clone(),
         });
 
-        (sns_client, user_http_client, fleet_repository, invitation_dispatcher, router)
+        TestDependencies {
+            user_http_client,
+            fleet_repository,
+            router,
+        }
     }
 
     #[tokio::test]
     async fn should_return_ok_when_inviting_new_member() {
         // given
-        let (_, _, fleet_repository, _, router) = setup();
+        let TestDependencies {
+            fleet_repository,
+            router,
+            ..
+        } = setup();
         let client = TestServer::new(router).unwrap();
 
         let role = Admin;
@@ -79,7 +97,7 @@ mod tests {
     #[tokio::test]
     async fn should_return_bad_request_when_inviting_member_to_non_existing_fleet() {
         // given
-        let (_, _, _, _, router) = setup();
+        let TestDependencies { router, .. } = setup();
         let client = TestServer::new(router).unwrap();
 
         let role = Admin;
@@ -106,7 +124,12 @@ mod tests {
     #[tokio::test]
     async fn should_return_bad_request_when_inviting_member_that_already_exists() {
         // given
-        let (_, user_http_client, fleet_repository, _, router) = setup();
+        let TestDependencies {
+            fleet_repository,
+            user_http_client,
+            router,
+            ..
+        } = setup();
         let client = TestServer::new(router).unwrap();
 
         let role = Admin;
@@ -117,7 +140,7 @@ mod tests {
 
         // when
         let fleet_id = fleet_repository.insert(fleet_name).await.unwrap();
-        user_http_client.insert(email.clone());
+        user_http_client.insert_user(email.clone());
 
         let body = json!({
             "role": role,

@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use async_trait::async_trait;
 use chrono::NaiveDateTime;
 
-use shared::domain::types::id::UserId;
+use shared::domain::types::id::{FleetId, UserId};
 use shared::domain::types::Role;
 use shared::infra::database::error::DatabaseError;
 
@@ -39,17 +39,30 @@ impl UserRepository for InMemoryUserRepository {
         Ok(user)
     }
 
-    async fn insert(&self, email: String, password: String, role: Role) -> Result<UserId, DatabaseError> {
+    async fn insert(
+        &self,
+        fleet_id: FleetId,
+        first_name: String,
+        last_name: String,
+        email: String,
+        password: String,
+        role: Role,
+        created_at: NaiveDateTime,
+    ) -> Result<UserId, DatabaseError> {
         let mut users = self.users.lock().unwrap();
+        let updated_at = created_at;
 
         let user_id = UserId::default();
         let user = User {
             user_id: user_id.clone(),
+            fleet_id,
+            first_name,
+            last_name,
             email,
             password,
             role,
-            created_at: NaiveDateTime::default(),
-            updated_at: NaiveDateTime::default(),
+            created_at,
+            updated_at,
         };
         users.push(user);
 
