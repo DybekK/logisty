@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - backend/fleets/**
-  pull_request:
+  pull_request_target:
     paths:
       - backend/fleets/**
   workflow_dispatch:

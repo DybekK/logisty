@@ -21,9 +21,9 @@ impl FleetRepositoryImpl {
 
 #[async_trait]
 impl FleetRepository for FleetRepositoryImpl {
-    async fn find_by_id(&self, id: FleetId) -> Result<Option<Fleet>, DatabaseError> {
-        let user = sqlx::query_as::<_, Fleet>(r#"SELECT * FROM fleets WHERE id = $1"#)
-            .bind(id)
+    async fn find_by_id(&self, fleet_id: FleetId) -> Result<Option<Fleet>, DatabaseError> {
+        let user = sqlx::query_as::<_, Fleet>(r#"SELECT * FROM fleets WHERE fleet_id = $1"#)
+            .bind(fleet_id)
             .fetch_optional(&self.pool)
             .await?;
 
@@ -40,18 +40,18 @@ impl FleetRepository for FleetRepositoryImpl {
     }
 
     async fn insert(&self, fleet_name: String) -> Result<FleetId, DatabaseError> {
-        let id = FleetId::default();
+        let fleet_id = FleetId::default();
         let created_at = Utc::now();
         let updated_at = created_at;
 
-        sqlx::query(r#"INSERT INTO fleets (id, fleet_name, created_at, updated_at) VALUES ($1, $2, $3, $4)"#)
-            .bind(id.clone())
+        sqlx::query(r#"INSERT INTO fleets (fleet_id, fleet_name, created_at, updated_at) VALUES ($1, $2, $3, $4)"#)
+            .bind(fleet_id.clone())
             .bind(fleet_name)
             .bind(created_at)
             .bind(updated_at)
             .execute(&self.pool)
             .await?;
 
-        Ok(id)
+        Ok(fleet_id)
     }
 }

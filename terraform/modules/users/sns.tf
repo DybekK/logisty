@@ -1,30 +1,26 @@
-resource "aws_sns_topic" "user_invited_topic" {
-  name = "user_invited_topic"
+resource "aws_sns_topic" "users_user_invited_event_topic" {
+  name = "users_user_invited_event_topic"
 }
 
-resource "aws_iam_policy" "user_invited_topic_policy" {
-  name        = "user_invited_topic_policy"
-  description = "Policy to allow publishing to the user_invited_topic"
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = "sns:Publish"
-        Resource = aws_sns_topic.user_invited_topic.arn
-      }
-    ]
-  })
+resource "aws_sns_topic" "users_user_registered_event_topic" {
+  name = "users_user_registered_event_topic"
 }
 
-resource "aws_iam_role_policy_attachment" "user_invited_topic_policy_attachment" {
-  role       = var.sns_exec_role
-  policy_arn = aws_iam_policy.user_invited_topic_policy.arn
+locals {
+  user_invited_event_subscribers =    [aws_sqs_queue.users_user_invited_event_queue.arn]
+  user_registered_event_subscribers = [aws_sqs_queue.users_user_registered_event_queue.arn]
 }
 
-resource "aws_sns_topic_subscription" "user_invited_topic_subscription" {
-  count     = length(var.user_invited_subscribers)
-  topic_arn = aws_sns_topic.user_invited_topic.arn
+resource "aws_sns_topic_subscription" "users_user_invited_topic_subscription" {
+  count     = length(local.user_invited_event_subscribers)
+  topic_arn = aws_sns_topic.users_user_invited_event_topic.arn
   protocol  = "sqs"
-  endpoint  = element(var.user_invited_subscribers, count.index)
+  endpoint  = element(local.user_invited_event_subscribers, count.index)
+}
+
+resource "aws_sns_topic_subscription" "users_user_registered_topic_subscription" {
+  count     = length(local.user_registered_event_subscribers)
+  topic_arn = aws_sns_topic.users_user_registered_event_topic.arn
+  protocol  = "sqs"
+  endpoint  = element(local.user_registered_event_subscribers, count.index)
 }

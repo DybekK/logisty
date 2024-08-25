@@ -7,9 +7,5 @@ use shared::infra::database::error::DatabaseError;
 #[async_trait]
 #[auto_impl(Arc)]
 pub trait MemberRepository: Sync + Send {
-    async fn insert(
-        &self,
-        fleet_id: FleetId,
-        user_id: UserId,
-    ) -> Result<FleetMemberId, DatabaseError>;
+    async fn insert(&self, fleet_id: FleetId, user_id: UserId) -> Result<FleetMemberId, DatabaseError>;
 }

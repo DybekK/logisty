@@ -3,6 +3,18 @@ name = "users"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "users"
+path = "src/bin/users.rs"
+
+[[bin]]
+name = "users_projection_consumer"
+path = "src/bin/users_projection_consumer.rs"
+
+[[bin]]
+name = "users_event_consumer"
+path = "src/bin/users_event_consumer.rs"
+
 [dependencies]
 shared = { path = "../shared" }
 
@@ -10,14 +22,19 @@ shared = { path = "../shared" }
 async-trait = { workspace = true }
 dotenvy = { workspace = true }
 cuid = { workspace = true }
+uuid = { workspace = true }
 thiserror = { workspace = true }
 chrono = { workspace = true }
 auto_impl = { workspace = true }
+reqwest = { workspace = true }
 
 # AWS
 lambda_http = { workspace = true }
 lambda_runtime = { workspace = true }
 aws_lambda_events = { workspace = true }
+aws-sdk-sns = { workspace = true }
+aws-credential-types = { workspace = true }
+aws-config = { workspace = true }
 
 # json
 serde_json = { workspace = true }
@@ -31,3 +48,6 @@ axum = { workspace = true, features = ["macros"] }
 tower = { workspace = true, features = ["full"] }
 tokio = { workspace = true, features = ["macros"] }
 sqlx = { workspace = true, features = ["runtime-tokio", "postgres", "chrono"] }
+
+# tests
+axum-test = { workspace = true }

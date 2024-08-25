@@ -27,8 +27,17 @@ pub struct HttpClientConfig {
     pub users_url: String,
 }
 
+#[derive(Clone)]
 pub struct SNSTopicArns {
     pub user_invited: String,
+}
+
+impl Default for SNSTopicArns {
+    fn default() -> Self {
+        SNSTopicArns {
+            user_invited: "user_invited".to_string(),
+        }
+    }
 }
 
 pub struct Config {
@@ -42,17 +51,17 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             aws_config: AWSConfig {
-                region: env::var("AWS_REGION").unwrap(),
+                region: env::var("APP_AWS_REGION").expect("APP_AWS_REGION must be set"),
             },
             database_config: DatabaseConfig {
-                url: env::var("DATABASE_URL").unwrap(),
+                url: env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
                 max_connections: 5,
             },
             http_client_config: HttpClientConfig {
-                users_url: env::var("USERS_URL").unwrap(),
+                users_url: env::var("USERS_URL").expect("USERS_URL must be set"),
             },
             topic_arns: SNSTopicArns {
-                user_invited: env::var("TOPIC_ARN_USER_INVITED").unwrap(),
+                user_invited: env::var("USER_INVITED_EVENT_TOPIC_ARN").expect("USER_INVITED_EVENT_TOPIC_ARN must be set"),
             },
         }
     }

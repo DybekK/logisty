@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 shared = { path = "../shared" }
 
+# utils
 async-trait = { workspace = true }
 dotenvy = { workspace = true }
 cuid = { workspace = true }
@@ -13,7 +14,12 @@ uuid = { workspace = true }
 thiserror = { workspace = true }
 chrono = { workspace = true }
 auto_impl = { workspace = true }
+
+# reqwest
 reqwest = { workspace = true }
+reqwest-tracing = { workspace = true }
+reqwest-middleware = { workspace = true }
+reqwest-retry = { workspace = true }
 
 # AWS
 lambda_http = { workspace = true }

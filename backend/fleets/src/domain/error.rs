@@ -2,12 +2,15 @@ use thiserror::Error;
 
 use shared::infra::database::error::DatabaseError;
 use shared::infra::http::error::HttpClientError;
-use shared::infra::sns::error::SNSError;
+use shared::infra::queue::error::SNSError;
 
 #[derive(Error, Debug)]
 #[non_exhaustive]
 pub enum MemberInvitationError {
-    #[error("Fleet of given email already exists")]
+    #[error("Member of given email has been already invited")]
+    InvitationAlreadyExists,
+    
+    #[error("Member of given email already exists")]
     MemberAlreadyExists,
 
     #[error("Fleet of given id does not exist")]

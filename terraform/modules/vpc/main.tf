@@ -25,7 +25,6 @@ resource "aws_subnet" "logisty_subnets" {
   cidr_block = "10.0.${count.index}.0/24"
 
   vpc_id                  = aws_vpc.logisty_vpc.id
-  map_public_ip_on_launch = true
   availability_zone       = element(data.aws_availability_zones.logisty_available_zones.names, count.index)
 }
 
@@ -46,7 +45,8 @@ resource "aws_security_group" "logisty_db_security_group" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = split(",", var.ingress_ips)
+    cidr_blocks = ["0.0.0.0/0"]
+    # todo: change to defined variable
   }
 
   egress {
@@ -61,6 +61,13 @@ resource "aws_security_group" "logisty_lambda_security_group" {
   name        = "logisty_lambda_security_group"
   description = "Security group for Lambda function to access RDS"
   vpc_id      = aws_vpc.logisty_vpc.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   egress {
     from_port   = 0
@@ -77,4 +84,24 @@ resource "aws_security_group_rule" "logisty_lambda_security_group_rule" {
   protocol                 = "tcp"
   security_group_id        = aws_security_group.logisty_db_security_group.id
   source_security_group_id = aws_security_group.logisty_lambda_security_group.id
+}
+
+resource "aws_vpc_endpoint" "logisty_api_gateway_endpoint" {
+  vpc_id              = aws_vpc.logisty_vpc.id
+  service_name        = "com.amazonaws.${var.region}.execute-api"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+
+  security_group_ids = [aws_security_group.logisty_lambda_security_group.id]
+  subnet_ids         = aws_subnet.logisty_subnets.*.id
+}
+
+resource "aws_vpc_endpoint" "logisty_sns_endpoint" {
+  vpc_id              = aws_vpc.logisty_vpc.id
+  service_name        = "com.amazonaws.${var.region}.sns"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+
+  security_group_ids = [aws_security_group.logisty_lambda_security_group.id]
+  subnet_ids         = aws_subnet.logisty_subnets.*.id
 }

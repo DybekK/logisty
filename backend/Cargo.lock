@@ -1033,6 +1033,9 @@ dependencies = [
  "lambda_http",
  "lambda_runtime",
  "reqwest",
+ "reqwest-middleware",
+ "reqwest-retry",
+ "reqwest-tracing",
  "serde",
  "serde_json",
  "shared",
@@ -2813,6 +2816,7 @@ dependencies = [
  "serde_json",
  "sqlx",
  "thiserror",
+ "tracing",
  "uuid",
 ]
 
@@ -3356,6 +3360,7 @@ dependencies = [
  "pin-project-lite",
  "tower-layer",
  "tower-service",
+ "tracing",
 ]
 
 [[package]]
@@ -3534,13 +3539,18 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "auto_impl",
+ "aws-config",
+ "aws-credential-types",
+ "aws-sdk-sns",
  "aws_lambda_events",
  "axum",
+ "axum-test",
  "chrono",
  "cuid",
  "dotenvy",
  "lambda_http",
  "lambda_runtime",
+ "reqwest",
  "serde",
  "serde_json",
  "shared",
@@ -3551,6 +3561,7 @@ dependencies = [
  "tower-http",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

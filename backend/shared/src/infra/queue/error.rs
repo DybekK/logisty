@@ -4,9 +4,9 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum SNSError {
-    #[error("Error while publishing message: {0}")]
+    #[error(transparent)]
     PublishMessage(#[from] SdkError<PublishError>),
 
-    #[error("Invalid message type")]
-    InvalidMessageType
+    #[error(transparent)]
+    InvalidMessageFormat(#[from] serde_json::Error),
 }

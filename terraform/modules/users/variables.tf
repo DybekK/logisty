@@ -1,3 +1,23 @@
+variable "caller_identity" {
+  description = "The caller identity"
+  type        = string
+}
+
+variable "vpc_id" {
+  description = "The ID of the VPC"
+  type        = string
+}
+
+variable "vpc_endpoint_id" {
+  description = "The ID of the VPC endpoint"
+  type        = string
+}
+
+variable "region" {
+  description = "The region to deploy the infrastructure to"
+  type        = string
+}
+
 # rds
 
 variable "security_group_ids" {
@@ -36,25 +56,17 @@ variable "rds_database" {
   type        = string
 }
 
-# sns
-
-variable "user_invited_subscribers" {
-  description = "The ARNs of the SQS queues to subscribe to the user_invited SNS topic"
-  type        = list(string)
-  default     = []
-}
-
-variable "sns_exec_role" {
-  description = "The name of the SNS execution role"
-  type        = string
-}
-
-variable "sns_exec_role_arn" {
-  description = "The ARN of the SNS execution role"
-  type        = string
-}
-
 # lambda
+
+variable "lambda_security_group_ids" {
+  description = "The IDs of the security groups"
+  type        = list(string)
+}
+
+variable "lambda_subnet_group_ids" {
+  description = "The ids of the subnet groups"
+  type        = list(string)
+}
 
 variable "lambda_exec_role" {
   description = "The name of the Lambda execution role"

@@ -62,11 +62,11 @@ impl Default for RoleId {
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, sqlx::Type)]
 #[sqlx(transparent)]
-pub struct StatusId(pub String);
+pub struct InvitationId(pub String);
 
-impl Default for StatusId {
+impl Default for InvitationId {
     fn default() -> Self {
-        StatusId(cuid::cuid2())
+        InvitationId(cuid::cuid2())
     }
 }
 
