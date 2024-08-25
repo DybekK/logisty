@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - backend/users/**
-  pull_request:
+  pull_request_target:
     paths:
       - backend/users/**
   workflow_dispatch:
