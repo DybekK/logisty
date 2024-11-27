@@ -1,0 +1,38 @@
+# Compiled source
+target
+
+# IntelliJ
+.idea
+*.ipr
+*.iml
+*.iws
+
+# NetBeans
+nb-configuration.xml
+
+# Visual Studio Code
+.vscode
+.factorypath
+
+# OSX
+.DS_Store
+
+# Vim
+*.swp
+*.swo
+
+# patch
+*.orig
+*.rej
+
+# mbtiles files
+*.mbtiles
+
+# terraform files
+*.tfstate
+*.tfstate.backup
+*.tfstate.backup.*
+.terraform/
+
+# Local environment
+.env

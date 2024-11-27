@@ -1,0 +1,13 @@
+{
+  "navbar": {
+    "notifications": "Notifications"
+  },
+  "leftbar": {
+    "orders": {
+      "title": "Orders",
+      "new": "Add order",
+      "pending": "Pending",
+      "completed": "Completed"
+    }
+  }
+}

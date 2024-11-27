@@ -1,0 +1,8 @@
+services:
+  tileserver-gl:
+    image: maptiler/tileserver-gl
+    volumes:
+      - .:/data
+    ports:
+      - 8080:8080
+    command: --file poland.mbtiles
