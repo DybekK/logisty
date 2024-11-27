@@ -1,0 +1,29 @@
+name: Fleet CI
+
+on:
+  push:
+    paths:
+      - backend/fleet/**
+  pull_request_target:
+    paths:
+      - backend/fleet/**
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend/fleet
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: Prepare environment
+        run: cp .env.test .env
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-scripts
+      - name: Run tests
+        run: vendor/bin/phpunit --verbose

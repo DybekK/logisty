@@ -6,4 +6,5 @@
 /var/
 /vendor/
 
+/bin/.phpunit/
 .phpunit.result.cache
