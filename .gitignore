@@ -28,11 +28,5 @@ nb-configuration.xml
 # mbtiles files
 *.mbtiles
 
-# terraform files
-*.tfstate
-*.tfstate.backup
-*.tfstate.backup.*
-.terraform/
-
 # Local environment
 .env
