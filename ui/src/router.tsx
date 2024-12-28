@@ -1,11 +1,14 @@
-import App from "./App.tsx";
 import { createBrowserRouter } from "react-router-dom";
-import { NewOrderForm, OrderStatus, OrderTable } from "./features/order";
+
+import App from "@/App";
+import { OrderStatus } from "@/features/order";
+import { OrderTable } from "@/features/order/filter";
+import { NewOrderForm } from "@/features/order/new";
 
 export enum Routes {
   NEW_ORDER = "/orders/new",
   PENDING_ORDERS = "/orders/pending",
-  COMPLETED_ORDERS = "/orders/completed"
+  COMPLETED_ORDERS = "/orders/completed",
 }
 
 export const router = createBrowserRouter([
@@ -15,16 +18,16 @@ export const router = createBrowserRouter([
     children: [
       {
         path: Routes.PENDING_ORDERS,
-        element: <OrderTable orderStatus={OrderStatus.PENDING}/>
+        element: <OrderTable orderStatus={OrderStatus.PENDING} />,
       },
       {
         path: Routes.COMPLETED_ORDERS,
-        element: <OrderTable orderStatus={OrderStatus.COMPLETED}/>
+        element: <OrderTable orderStatus={OrderStatus.COMPLETED} />,
       },
       {
         path: Routes.NEW_ORDER,
-        element: <NewOrderForm />
-      }
-    ]
-  }
+        element: <NewOrderForm />,
+      },
+    ],
+  },
 ]);

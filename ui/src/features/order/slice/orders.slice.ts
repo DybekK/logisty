@@ -1,8 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export enum OrderStatus {
   PENDING = "pending",
-  COMPLETED = "completed"
+  COMPLETED = "completed",
 }
 
 interface Location {
@@ -43,4 +43,4 @@ export const ordersSlice = createSlice({
 
 export const { setOrders } = ordersSlice.actions;
 
-export default ordersSlice.reducer;
+export const ordersReducer = ordersSlice.reducer;

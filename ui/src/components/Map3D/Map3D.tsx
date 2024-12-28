@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Map from "react-map-gl/maplibre";
-import { FeatureCollection, LineString } from "geojson";
+
 import { Flex, Skeleton } from "antd";
-import { Coordinates, OSRMRoute, OSRMWaypoint } from "../../common";
-import { SourceLayer } from "./SourceLayer.tsx";
+
+import { FeatureCollection, LineString } from "geojson";
+
+import { OSRMRoute, OSRMWaypoint } from "@/common";
+import { SourceLayer } from "@/components";
 
 const { VITE_MAP_GL_STYLE } = import.meta.env;
 
@@ -38,6 +41,11 @@ const transformRoutesToGeoJSON = (
     features,
   };
 };
+
+interface Coordinates {
+  lat: number;
+  lon: number;
+}
 
 export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
   const [coordinates, setCoordinates] = useState<Coordinates>({

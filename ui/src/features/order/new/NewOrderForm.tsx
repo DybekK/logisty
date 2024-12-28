@@ -1,19 +1,20 @@
-import React, { useEffect } from "react";
-import { Button, Card, Form, Steps, Divider, Flex } from "antd";
-import { PlusCircleOutlined, CheckOutlined } from "@ant-design/icons";
-import { Map3D } from "components";
-import {
-  addStage,
-  fetchGeneratedPathByCoordinates,
-  CreateNewOrderStep,
-  updateRoutesAndWaypoints,
-} from "features/order";
-import { useAppDispatch, useAppSelector } from "common";
-import { StageStep } from "./StageStep.tsx";
-import { LocalizationAutoCompleteElement } from "./LocalizationAutoCompleteElement.tsx";
 import { useQueryClient } from "@tanstack/react-query";
-import { MapProvider } from "react-map-gl";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { MapProvider } from "react-map-gl";
+
+import { CheckOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { Button, Card, Divider, Flex, Form, Steps } from "antd";
+
+import { useAppDispatch, useAppSelector } from "@/common";
+import { Map3D } from "@/components";
+import {
+  CreateNewOrderStep,
+  addStep,
+  fetchGeneratedPathByCoordinates,
+  updateRoutesAndWaypoints,
+} from "@/features/order";
+import { LocalizationAutoCompleteElement, Step } from "@/features/order/new";
 
 const cardBodyStyle: React.CSSProperties = {
   height: "100%",
@@ -33,7 +34,7 @@ const flexStyle: React.CSSProperties = {
 };
 
 const buttonStyle: React.CSSProperties = { width: "100%", textAlign: "left" };
-const addStageButtonStyle: React.CSSProperties = { ...buttonStyle };
+const addStepButtonStyle: React.CSSProperties = { ...buttonStyle };
 const acceptOrderButtonStyle: React.CSSProperties = {
   ...buttonStyle,
   marginTop: 10,
@@ -61,8 +62,8 @@ const drivers: Driver[] = [
   },
 ];
 
-const isStagesValid = (stages: CreateNewOrderStep[]): boolean =>
-  stages.some(
+const isStepsValid = (steps: CreateNewOrderStep[]): boolean =>
+  steps.some(
     ({ lat, lon, inputValue }) => !lat || !lon || inputValue.trim() === "",
   );
 
@@ -71,45 +72,42 @@ export const NewOrderForm: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { t } = useTranslation("order", { keyPrefix: "new" });
-  const { stages, routes, waypoints, localizationsAutoComplete } =
+  const { steps, routes, waypoints, localizationsAutoComplete } =
     useAppSelector(state => state.createNewOrder);
 
   useEffect(() => {
-    if (stages.filter(stage => !!stage.lat).length < 2) return;
+    if (steps.filter(step => !!step.lat).length < 2) return;
 
-    fetchGeneratedPathByCoordinates(queryClient, stages).then(
+    fetchGeneratedPathByCoordinates(queryClient, steps).then(
       ({ routes, waypoints }) =>
         dispatch(updateRoutesAndWaypoints({ routes, waypoints })),
     );
-  }, [stages]);
+  }, [steps]);
 
   return (
     <MapProvider>
       <Card bodyStyle={cardBodyStyle} style={cardStyle}>
         <Flex style={flexStyle}>
           <Form>
-            <Steps progressDot direction="vertical" current={stages.length - 1}>
-              {stages.map((_, index) => (
-                <Steps.Step
-                  key={index}
-                  description={<StageStep index={index} />}
-                />
+            <Steps progressDot direction="vertical" current={steps.length - 1}>
+              {steps.map((_, index) => (
+                <Steps.Step key={index} description={<Step index={index} />} />
               ))}
             </Steps>
             <Button
-              style={addStageButtonStyle}
-              onClick={() => dispatch(addStage())}
+              style={addStepButtonStyle}
+              onClick={() => dispatch(addStep())}
               size="large"
               icon={<PlusCircleOutlined />}
             >
-              {t("addStage")}
+              {t("addStep")}
             </Button>
             <Button
               style={acceptOrderButtonStyle}
               size="large"
               type="text"
               icon={<CheckOutlined />}
-              disabled={isStagesValid(stages)}
+              disabled={isStepsValid(steps)}
             >
               {t("acceptOrder")}
             </Button>

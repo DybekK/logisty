@@ -1,7 +1,8 @@
 import React from "react";
 import { Layer, Source } from "react-map-gl";
-import { LineLayout } from "mapbox-gl";
+
 import { Feature } from "geojson";
+import { LineLayout } from "mapbox-gl";
 
 interface SourceLayerProps {
   index: number;

@@ -1,21 +1,22 @@
 import React from "react";
-
-import { Menu, Layout, theme, MenuProps } from "antd";
-import {
-  LaptopOutlined,
-  AppstoreAddOutlined,
-  CarryOutOutlined,
-  Loading3QuartersOutlined
-} from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Routes } from "../../router.tsx";
+
+import {
+  AppstoreAddOutlined,
+  CarryOutOutlined,
+  LaptopOutlined,
+  Loading3QuartersOutlined,
+} from "@ant-design/icons";
+import { Layout, Menu, MenuProps, theme } from "antd";
+
+import { Routes } from "@/router";
 
 const { Sider } = Layout;
 
 export const LeftSider: React.FC = () => {
   const {
-    token: { colorBgLayout }
+    token: { colorBgLayout },
   } = theme.useToken();
   const { t } = useTranslation("layout", { keyPrefix: "leftbar" });
   const navigate = useNavigate();
@@ -30,22 +31,22 @@ export const LeftSider: React.FC = () => {
           label: t("orders.new"),
           key: "new",
           icon: <AppstoreAddOutlined />,
-          onClick: () => navigate(Routes.NEW_ORDER)
+          onClick: () => navigate(Routes.NEW_ORDER),
         },
         {
           label: t("orders.pending"),
           key: "pending",
           icon: <Loading3QuartersOutlined />,
-          onClick: () => navigate(Routes.PENDING_ORDERS)
+          onClick: () => navigate(Routes.PENDING_ORDERS),
         },
         {
           label: t("orders.completed"),
           key: "completed",
           icon: <CarryOutOutlined />,
-          onClick: () => navigate(Routes.COMPLETED_ORDERS)
-        }
-      ]
-    }
+          onClick: () => navigate(Routes.COMPLETED_ORDERS),
+        },
+      ],
+    },
   ];
 
   return (

@@ -2,8 +2,8 @@
   "new": {
     "startPoint": "Select the starting point ",
     "destinationPoint": "Select the destination point",
-    "addStage": "Add new stage",
-    "deleteStage": "Delete this stage",
+    "addStep": "Add new step",
+    "deleteStep": "Delete this step",
     "acceptOrder": "Accept saving order"
   }
 }

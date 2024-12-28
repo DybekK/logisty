@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { useAppDispatch } from "../../../common";
-import { Form, Tooltip } from "antd";
-import { removeStage } from "../slice/create-new-order.slice.ts";
-import { CloseCircleOutlined } from "@ant-design/icons";
-import { LocalizationAutoComplete } from "./LocalizationAutoComplete.tsx";
 import { useTranslation } from "react-i18next";
+
+import { CloseCircleOutlined } from "@ant-design/icons";
+import { Form, Tooltip } from "antd";
+
+import { useAppDispatch } from "@/common";
+import { removeStep } from "@/features/order";
+import { LocalizationAutoComplete } from "@/features/order/new";
 
 const formItemStyle: React.CSSProperties = { marginBottom: 3 };
 const divStyle: React.CSSProperties = { display: "flex", width: "100%" };
@@ -15,19 +17,19 @@ const iconStyle: React.CSSProperties = {
   left: 15,
 };
 
-interface StageStepProps {
+interface StepProps {
   index: number;
 }
 
-export const StageStep: React.FC<StageStepProps> = ({ index }) => {
+export const Step: React.FC<StepProps> = ({ index }) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation("order", { keyPrefix: "new" });
   const [isHovered, setIsHovered] = useState(false);
 
-  const isFirstStage = index === 0;
-  const atLeastTwoStages = index > 1;
+  const isFirstStep = index === 0;
+  const atLeastTwoSteps = index > 1;
 
-  const placeholder = isFirstStage ? t("startPoint") : t("destinationPoint");
+  const placeholder = isFirstStep ? t("startPoint") : t("destinationPoint");
 
   return (
     <Form.Item style={formItemStyle}>
@@ -37,11 +39,11 @@ export const StageStep: React.FC<StageStepProps> = ({ index }) => {
         style={divStyle}
       >
         <LocalizationAutoComplete index={index} placeholder={placeholder} />
-        {isHovered && atLeastTwoStages && (
-          <Tooltip title={t("deleteStage")}>
+        {isHovered && atLeastTwoSteps && (
+          <Tooltip title={t("deleteStep")}>
             <CloseCircleOutlined
               style={iconStyle}
-              onClick={() => dispatch(removeStage(index))}
+              onClick={() => dispatch(removeStep(index))}
             />
           </Tooltip>
         )}

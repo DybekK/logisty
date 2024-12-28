@@ -1,7 +1,9 @@
 import React from "react";
+
 import { Table } from "antd";
-import { OrderStatus } from "../slice/orders.slice.ts"
-import { StatusTag } from "./StatusTag.tsx";
+
+import { OrderStatus } from "@/features/order";
+import { StatusTag } from "@/features/order/filter";
 
 const dataSource = [
   {
@@ -12,7 +14,7 @@ const dataSource = [
     driver: "John Doe",
     createdBy: "Admin",
     createdAt: "2022-01-01",
-    dueAt: "2022-01-02"
+    dueAt: "2022-01-02",
   },
   {
     key: "2",
@@ -22,8 +24,8 @@ const dataSource = [
     driver: "Jane Doe",
     createdBy: "User",
     createdAt: "2022-01-03",
-    dueAt: "2022-01-04"
-  }
+    dueAt: "2022-01-04",
+  },
 ];
 
 const columns = [
@@ -31,44 +33,44 @@ const columns = [
     title: "Status",
     dataIndex: "status",
     key: "status",
-    render: (status: OrderStatus) => <StatusTag status={status} />
+    render: (status: OrderStatus) => <StatusTag status={status} />,
   },
   {
     title: "Order Start",
     dataIndex: "orderStart",
-    key: "orderStart"
+    key: "orderStart",
   },
   {
     title: "Order End",
     dataIndex: "orderEnd",
-    key: "orderEnd"
+    key: "orderEnd",
   },
   {
     title: "Driver",
     dataIndex: "driver",
-    key: "driver"
+    key: "driver",
   },
   {
     title: "Created By",
     dataIndex: "createdBy",
-    key: "createdBy"
+    key: "createdBy",
   },
   {
     title: "Created At",
     dataIndex: "createdAt",
-    key: "createdAt"
+    key: "createdAt",
   },
   {
     title: "Due At",
     dataIndex: "dueAt",
-    key: "dueAt"
-  }
+    key: "dueAt",
+  },
 ];
 
 interface OrderTableProps {
   orderStatus: OrderStatus; //TODO: move to domain level
 }
 
-export const OrderTable: React.FC<OrderTableProps> = ({orderStatus}) => {
+export const OrderTable: React.FC<OrderTableProps> = () => {
   return <Table dataSource={dataSource} columns={columns} />;
 };

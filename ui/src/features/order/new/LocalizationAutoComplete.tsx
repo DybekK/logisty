@@ -1,20 +1,23 @@
-import React, { useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { PhotonProperties, useAppDispatch, useAppSelector } from "common";
+import React, { useEffect, useMemo } from "react";
+import { useMap } from "react-map-gl";
+
+import { AutoComplete, Input } from "antd";
+
+import debounce from "lodash/debounce";
+
+import { PhotonProperties, useAppDispatch, useAppSelector } from "@/common";
 import {
   fetchFeaturesByQuery,
   fetchLocationByQuery,
-  updateStage,
-  updateStageInputValue,
-} from "features/order";
+  updateStep,
+  updateStepInputValue,
+} from "@/features/order";
 import {
   clearLocalizationAutoComplete,
-  updateLatestStageIndex,
+  updateLatestStepIndex,
   updateLocalizationAutoComplete,
-} from "features/order";
-import { AutoComplete, Input } from "antd";
-import debounce from "lodash/debounce";
-import { useMap } from "react-map-gl";
+} from "@/features/order";
 
 interface LocalizationAutoCompleteProps {
   index: number;
@@ -38,8 +41,8 @@ export const LocalizationAutoComplete: React.FC<
   const { orderMap } = useMap();
   const dispatch = useAppDispatch();
 
-  const { latestStageIndex } = useAppSelector(state => state.createNewOrder);
-  const stage = useAppSelector(state => state.createNewOrder.steps[index]);
+  const { latestStepIndex } = useAppSelector(state => state.createNewOrder);
+  const step = useAppSelector(state => state.createNewOrder.steps[index]);
 
   const fetchFeatures = async (value: string) => {
     const features = await fetchFeaturesByQuery(queryClient, value);
@@ -59,31 +62,31 @@ export const LocalizationAutoComplete: React.FC<
     const [coordinates] = await fetchLocationByQuery(queryClient, value);
 
     if (!coordinates) {
-      const emptyStage = { inputValue: value };
-      return dispatch(updateStage({ index, stage: emptyStage }));
+      const emptyStep = { inputValue: value };
+      return dispatch(updateStep({ index, step: emptyStep }));
     }
 
-    const nextStage = {
+    const nextStep = {
       inputValue: value,
       lat: parseFloat(coordinates.lat),
       lon: parseFloat(coordinates.lon),
     };
 
     orderMap?.flyTo({
-      center: [nextStage.lon!, nextStage.lat!],
+      center: [nextStep.lon!, nextStep.lat!],
       zoom: 15,
     });
-    dispatch(updateStage({ index, stage: nextStage }));
+    dispatch(updateStep({ index, step: nextStep }));
   };
 
   const onChange = (value: string) =>
-    dispatch(updateStageInputValue({ index, inputValue: value }));
+    dispatch(updateStepInputValue({ index, inputValue: value }));
 
   const onSearch = useMemo(
     () =>
       debounce(async (value: string) => {
         await Promise.all([fetchFeatures(value), fetchLocation(value)]);
-        dispatch(updateLatestStageIndex(index));
+        dispatch(updateLatestStepIndex(index));
       }, 1000),
     [orderMap],
   );
@@ -95,16 +98,16 @@ export const LocalizationAutoComplete: React.FC<
   }, [onSearch]);
 
   const onClick = () => {
-    if (latestStageIndex !== index) {
+    if (latestStepIndex !== index) {
       dispatch(clearLocalizationAutoComplete());
     }
-    dispatch(updateLatestStageIndex(index));
+    dispatch(updateLatestStepIndex(index));
   };
 
   return (
     <AutoComplete
       style={autoCompleteStyle}
-      value={stage.inputValue}
+      value={step.inputValue}
       onChange={onChange}
       onSearch={onSearch}
       onClick={onClick}

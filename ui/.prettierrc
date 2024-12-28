@@ -1,3 +1,16 @@
 {
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "importOrder": [
+    "^react|^@tanstack",
+    "^antd|^@ant-design",
+    "<THIRD_PARTY_MODULES>", 
+    "@/", 
+    "^@/common", 
+    "^@/components",
+    "^@/features",
+    "^../(.*)$"
+  ],
+  "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }

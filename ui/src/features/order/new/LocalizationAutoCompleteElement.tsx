@@ -1,12 +1,14 @@
-import { Button } from "antd";
 import React from "react";
-import {
-  clearLocalizationAutoComplete,
-  CreateNewOrderLocalization,
-  updateStage,
-} from "features/order";
-import { useAppDispatch, useAppSelector } from "common";
 import { useMap } from "react-map-gl";
+
+import { Button } from "antd";
+
+import { useAppDispatch, useAppSelector } from "@/common";
+import {
+  CreateNewOrderLocalization,
+  clearLocalizationAutoComplete,
+  updateStep,
+} from "@/features/order";
 
 interface LocalizationAutoCompleteElementProps {
   localization: CreateNewOrderLocalization;
@@ -24,11 +26,13 @@ export const LocalizationAutoCompleteElement: React.FC<
   LocalizationAutoCompleteElementProps
 > = ({ localization }) => {
   const { orderMap } = useMap();
-  const { latestStageIndex } = useAppSelector(state => state.createNewOrder);
+  const { latestStepIndex } = useAppSelector(state => state.createNewOrder);
   const dispatch = useAppDispatch();
 
-  const updateLocalizationAutoComplete = (localization: CreateNewOrderLocalization) => {
-    const stage = {
+  const updateLocalizationAutoComplete = (
+    localization: CreateNewOrderLocalization,
+  ) => {
+    const step = {
       inputValue: localization.value,
       lat: localization.lat,
       lon: localization.lon,
@@ -39,7 +43,7 @@ export const LocalizationAutoCompleteElement: React.FC<
       zoom: 15,
     });
 
-    dispatch(updateStage({ index: latestStageIndex, stage }));
+    dispatch(updateStep({ index: latestStepIndex, step }));
     dispatch(clearLocalizationAutoComplete());
   };
 

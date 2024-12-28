@@ -1,11 +1,13 @@
+import { QueryClient } from "@tanstack/react-query";
+
 import axios from "axios";
+
 import {
-  PhotonFeature,
-  PhotonResponse,
   NominatimResponse,
   OSRMRouteResponse,
-} from "common";
-import { QueryClient } from "@tanstack/react-query";
+  PhotonFeature,
+  PhotonResponse,
+} from "@/common";
 
 const { VITE_PHOTON_URL, VITE_NOMINATIM_URL, VITE_OSRM_URL } = import.meta.env;
 const DEFAULT_TIMEOUT = 2000;
@@ -52,24 +54,27 @@ export const fetchLocationByQuery = async (
 const getGeneratedPathByCoordinatesKey = "getGeneratedPathByCoordinates";
 export const fetchGeneratedPathByCoordinates = async (
   queryClient: QueryClient,
-  stages: { lat?: number; lon?: number }[],
+  steps: { lat?: number; lon?: number }[],
 ): Promise<OSRMRouteResponse> => {
-  const formattedCoordinates = stages
+  const formattedCoordinates = steps
     .filter(({ lat, lon }) => !!lat && !!lon)
     .map(({ lat, lon }) => `${lon},${lat}`)
     .join(";");
 
   const queryFn = () =>
     axios
-      .get<OSRMRouteResponse>(`${VITE_OSRM_URL}/route/v1/driving/${formattedCoordinates}`, {
-        params: {
-          geometries: "geojson",
-          alternatives: false,
-          overview: "full",
-          steps: true,
+      .get<OSRMRouteResponse>(
+        `${VITE_OSRM_URL}/route/v1/driving/${formattedCoordinates}`,
+        {
+          params: {
+            geometries: "geojson",
+            alternatives: false,
+            overview: "full",
+            steps: true,
+          },
+          timeout: DEFAULT_TIMEOUT,
         },
-        timeout: DEFAULT_TIMEOUT,
-      })
+      )
       .then(({ data }) => data);
 
   return queryClient.fetchQuery({

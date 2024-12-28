@@ -1,6 +1,8 @@
 import { Tag } from "antd";
+
 import { match } from "ts-pattern";
-import { OrderStatus } from "../slice/orders.slice.ts";
+
+import { OrderStatus } from "@/features/order";
 
 interface StatusTagProps {
   status: OrderStatus;

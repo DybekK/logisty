@@ -1,14 +1,15 @@
 import React from "react";
+import { Outlet } from "react-router-dom";
 
 import { Layout, theme } from "antd";
-import { LeftSider, MainContent, Top } from "components";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Outlet } from "react-router-dom";
+
+import { LeftSider, MainContent, Top } from "@/components";
 
 const App: React.FC = () => {
   const {
-    token: { colorBgLayout }
+    token: { colorBgLayout },
   } = theme.useToken();
 
   return (
