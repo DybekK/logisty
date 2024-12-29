@@ -9,6 +9,10 @@ interface MapGlEnv {
   readonly VITE_MAP_GL_STYLE: string
 }
 
+interface BackendApiEnv {
+  readonly VITE_BACKEND_URL: string
+}
+
 interface ImportMeta {
-  readonly env: LocalizationApiEnv & MapGlEnv
+  readonly env: LocalizationApiEnv & MapGlEnv & BackendApiEnv
 }

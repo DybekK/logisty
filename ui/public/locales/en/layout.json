@@ -1,6 +1,8 @@
 {
   "navbar": {
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "logout": "Logout",
+    "translation": "Change language"
   },
   "leftbar": {
     "orders": {

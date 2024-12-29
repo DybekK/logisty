@@ -1,13 +1,23 @@
 import React from "react"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 
-import { BellOutlined, TranslationOutlined } from "@ant-design/icons"
+import {
+  BellOutlined,
+  LogoutOutlined,
+  TranslationOutlined,
+} from "@ant-design/icons"
 import { Layout, Menu, MenuProps } from "antd"
+
+import { useAuth } from "@/components"
+import { Routes } from "@/router"
 
 const { Header } = Layout
 
 export const Top: React.FC = () => {
-  const { t, i18n } = useTranslation("layout", { keyPrefix: "navbar" })
+  const { t, i18n } = useTranslation("layout")
+  const { removeTokens } = useAuth()
+  const navigate = useNavigate()
 
   const changeLanguage = async () => {
     const language = i18n.language
@@ -16,14 +26,26 @@ export const Top: React.FC = () => {
     return i18n.changeLanguage(nextLanguage)
   }
 
+  const signOut = () => {
+    removeTokens()
+    navigate(Routes.LOGIN)
+  }
+
   const items: MenuProps["items"] = [
     {
-      label: t("notifications"),
+      key: "logout",
+      label: t("navbar.logout"),
+      icon: <LogoutOutlined />,
+      onClick: signOut,
+    },
+    {
       key: "notifications",
+      label: t("navbar.notifications"),
       icon: <BellOutlined />,
     },
     {
       key: "translation",
+      label: t("navbar.translation"),
       icon: <TranslationOutlined />,
       onClick: changeLanguage,
     },

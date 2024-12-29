@@ -2,8 +2,8 @@
   "new": {
     "startPoint": "Wybierz punkt początkowy",
     "destinationPoint": "Wybierz punkt docelowy",
-    "addStage": "Dodaj nowy etap",
-    "deleteStage": "Usuń ten etap",
+    "addStep": "Dodaj nowy etap",
+    "deleteStep": "Usuń ten etap",
     "acceptOrder": "Potwierdź dodanie zlecenia"
   }
 }

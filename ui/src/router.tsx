@@ -1,6 +1,6 @@
-import { createBrowserRouter } from "react-router-dom"
+import { RouterProvider, createBrowserRouter } from "react-router-dom"
 
-import App from "@/App"
+import { ProtectedRoute } from "@/components"
 import { Authenticate } from "@/features/auth/Authenticate"
 import { OrderStatus } from "@/features/order"
 import { OrderTable } from "@/features/order/filter"
@@ -13,27 +13,36 @@ export enum Routes {
   COMPLETED_ORDERS = "/orders/completed",
 }
 
-export const router = createBrowserRouter([
-  {
-    path: Routes.LOGIN,
-    element: <Authenticate />,
-  },
-  {
-    path: "/",
-    element: <App />,
-    children: [
-      {
-        path: Routes.PENDING_ORDERS,
-        element: <OrderTable orderStatus={OrderStatus.PENDING} />,
-      },
-      {
-        path: Routes.COMPLETED_ORDERS,
-        element: <OrderTable orderStatus={OrderStatus.COMPLETED} />,
-      },
-      {
-        path: Routes.NEW_ORDER,
-        element: <NewOrderForm />,
-      },
-    ],
-  },
-])
+export const Router = () => {
+  const publicRoutes = [
+    {
+      path: Routes.LOGIN,
+      element: <Authenticate />,
+    },
+  ]
+
+  const protectedRoutes = [
+    {
+      path: "/",
+      element: <ProtectedRoute />,
+      children: [
+        {
+          path: Routes.PENDING_ORDERS,
+          element: <OrderTable orderStatus={OrderStatus.PENDING} />,
+        },
+        {
+          path: Routes.COMPLETED_ORDERS,
+          element: <OrderTable orderStatus={OrderStatus.COMPLETED} />,
+        },
+        {
+          path: Routes.NEW_ORDER,
+          element: <NewOrderForm />,
+        },
+      ],
+    },
+  ]
+
+  const router = createBrowserRouter([...protectedRoutes, ...publicRoutes])
+
+  return <RouterProvider router={router} />
+}

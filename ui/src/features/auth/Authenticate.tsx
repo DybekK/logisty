@@ -1,4 +1,7 @@
+import { useQueryClient } from "@tanstack/react-query"
 import { Controller, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 
 import {
   Button,
@@ -12,7 +15,12 @@ import {
 } from "antd"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { P, match } from "ts-pattern"
 import { z } from "zod"
+
+import { useAuth } from "@/components"
+import { authenticate } from "@/features/auth/authentication.api"
+import { Routes } from "@/router"
 
 const layoutStyle: React.CSSProperties = {
   height: "100vh",
@@ -51,22 +59,27 @@ const buttonStyle: React.CSSProperties = {
   borderRadius: "5px",
 }
 
-const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-})
-
-type LoginFormData = z.infer<typeof loginSchema>
-
 export const Authenticate = () => {
+  const { t: tApi } = useTranslation("api")
+  const { t: tAuth } = useTranslation("auth")
   const {
     token: { colorBgLayout },
   } = theme.useToken()
+
+  const queryClient = useQueryClient()
+  const { setTokens } = useAuth()
+  const navigate = useNavigate()
+
+  const loginSchema = z.object({
+    email: z.string().email(tAuth("authenticate.inputs.errors.email")),
+    password: z
+      .string()
+      .min(8, tAuth("authenticate.inputs.errors.passwordMinLength"))
+      .regex(/[A-Z]/, tAuth("authenticate.inputs.errors.passwordUppercase"))
+      .regex(/[a-z]/, tAuth("authenticate.inputs.errors.passwordLowercase"))
+      .regex(/[0-9]/, tAuth("authenticate.inputs.errors.passwordNumber")),
+  })
+  type LoginFormData = z.infer<typeof loginSchema>
 
   const {
     control,
@@ -80,14 +93,23 @@ export const Authenticate = () => {
     },
   })
 
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      // TODO: Implement actual login logic here
-      console.log("Form data:", data)
-      message.success("Login successful!")
-    } catch (error) {
-      message.error("Login failed. Please try again.")
-    }
+  const onSubmit = async ({ email, password }: LoginFormData) => {
+    const response = await authenticate(queryClient, {
+      email,
+      password,
+    })
+
+    match(response)
+      .with({ refreshToken: P.string, accessToken: P.string }, tokens => {
+        setTokens(tokens)
+        navigate(Routes.PENDING_ORDERS)
+      })
+      .with({ errors: P.array(P.string) }, () =>
+        message.error(tAuth("authenticate.fallbacks.invalidCredentials")),
+      )
+      .otherwise(() => {
+        message.error(tApi("fallback"))
+      })
   }
 
   return (
@@ -96,7 +118,7 @@ export const Authenticate = () => {
         <Card style={formCardStyle}>
           <div>
             <Typography.Title level={2} style={formTitleStyle}>
-              Sign in to your account
+              {tAuth("authenticate.title")}
             </Typography.Title>
           </div>
           <Form
@@ -109,14 +131,14 @@ export const Authenticate = () => {
               control={control}
               render={({ field }) => (
                 <Form.Item
-                  label="Email"
+                  label={tAuth("authenticate.email")}
                   validateStatus={errors.email ? "error" : undefined}
                   help={errors.email?.message}
                 >
                   <Input
                     {...field}
                     type="text"
-                    placeholder="Enter your email"
+                    placeholder={tAuth("authenticate.inputs.email")}
                     style={inputStyle}
                   />
                 </Form.Item>
@@ -127,13 +149,13 @@ export const Authenticate = () => {
               control={control}
               render={({ field }) => (
                 <Form.Item
-                  label="Password"
+                  label={tAuth("authenticate.password")}
                   validateStatus={errors.password ? "error" : undefined}
                   help={errors.password?.message}
                 >
                   <Input.Password
                     {...field}
-                    placeholder="Enter your password"
+                    placeholder={tAuth("authenticate.inputs.password")}
                     style={inputStyle}
                   />
                 </Form.Item>
@@ -146,7 +168,7 @@ export const Authenticate = () => {
                 loading={isSubmitting}
                 style={buttonStyle}
               >
-                Sign in
+                {tAuth("authenticate.signIn")}
               </Button>
             </Form.Item>
           </Form>
