@@ -1,9 +1,9 @@
-import React from "react";
+import React from "react"
 
-import { Table } from "antd";
+import { Table } from "antd"
 
-import { OrderStatus } from "@/features/order";
-import { StatusTag } from "@/features/order/filter";
+import { OrderStatus } from "@/features/order"
+import { StatusTag } from "@/features/order/filter"
 
 const dataSource = [
   {
@@ -26,7 +26,7 @@ const dataSource = [
     createdAt: "2022-01-03",
     dueAt: "2022-01-04",
   },
-];
+]
 
 const columns = [
   {
@@ -65,12 +65,12 @@ const columns = [
     dataIndex: "dueAt",
     key: "dueAt",
   },
-];
+]
 
 interface OrderTableProps {
-  orderStatus: OrderStatus; //TODO: move to domain level
+  orderStatus: OrderStatus //TODO: move to domain level
 }
 
 export const OrderTable: React.FC<OrderTableProps> = () => {
-  return <Table dataSource={dataSource} columns={columns} />;
-};
+  return <Table dataSource={dataSource} columns={columns} />
+}

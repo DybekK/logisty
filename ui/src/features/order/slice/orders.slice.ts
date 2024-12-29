@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 export enum OrderStatus {
   PENDING = "pending",
@@ -6,41 +6,41 @@ export enum OrderStatus {
 }
 
 interface Location {
-  street: string;
-  city: string;
-  postCode: string;
+  street: string
+  city: string
+  postCode: string
 }
 
 interface OrderStep {
-  location: Location;
-  coordinates: [number, number];
+  location: Location
+  coordinates: [number, number]
 }
 
 interface Order {
-  id: string;
-  status: OrderStatus;
-  steps: OrderStep[];
-  createdAt: string;
+  id: string
+  status: OrderStatus
+  steps: OrderStep[]
+  createdAt: string
 }
 
 interface OrderState {
-  orders: Order[];
+  orders: Order[]
 }
 
 const initialState: OrderState = {
   orders: [],
-};
+}
 
 export const ordersSlice = createSlice({
   name: "order",
   initialState,
   reducers: {
     setOrders: (state, { payload }: PayloadAction<Order[]>) => {
-      state.orders = payload;
+      state.orders = payload
     },
   },
-});
+})
 
-export const { setOrders } = ordersSlice.actions;
+export const { setOrders } = ordersSlice.actions
 
-export const ordersReducer = ordersSlice.reducer;
+export const ordersReducer = ordersSlice.reducer

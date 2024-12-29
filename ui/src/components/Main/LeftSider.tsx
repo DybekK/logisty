@@ -1,25 +1,25 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import React from "react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 
 import {
   AppstoreAddOutlined,
   CarryOutOutlined,
   LaptopOutlined,
   Loading3QuartersOutlined,
-} from "@ant-design/icons";
-import { Layout, Menu, MenuProps, theme } from "antd";
+} from "@ant-design/icons"
+import { Layout, Menu, MenuProps, theme } from "antd"
 
-import { Routes } from "@/router";
+import { Routes } from "@/router"
 
-const { Sider } = Layout;
+const { Sider } = Layout
 
 export const LeftSider: React.FC = () => {
   const {
     token: { colorBgLayout },
-  } = theme.useToken();
-  const { t } = useTranslation("layout", { keyPrefix: "leftbar" });
-  const navigate = useNavigate();
+  } = theme.useToken()
+  const { t } = useTranslation("layout", { keyPrefix: "leftbar" })
+  const navigate = useNavigate()
 
   const items: MenuProps["items"] = [
     {
@@ -47,7 +47,7 @@ export const LeftSider: React.FC = () => {
         },
       ],
     },
-  ];
+  ]
 
   return (
     <Sider width={200}>
@@ -59,5 +59,5 @@ export const LeftSider: React.FC = () => {
         items={items}
       />
     </Sider>
-  );
-};
+  )
+}

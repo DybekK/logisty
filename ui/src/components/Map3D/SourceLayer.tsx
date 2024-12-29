@@ -1,30 +1,30 @@
-import React from "react";
-import { Layer, Source } from "react-map-gl";
+import React from "react"
+import { Layer, Source } from "react-map-gl"
 
-import { Feature } from "geojson";
-import { LineLayout } from "mapbox-gl";
+import { Feature } from "geojson"
+import { LineLayout } from "mapbox-gl"
 
 interface SourceLayerProps {
-  index: number;
-  featuresLength: number;
-  feature: Feature;
+  index: number
+  featuresLength: number
+  feature: Feature
 }
 
-const layout: LineLayout = { "line-join": "round", "line-cap": "round" };
+const layout: LineLayout = { "line-join": "round", "line-cap": "round" }
 
-const mainRouteColor = "#0f53ff";
-const mainRouteBorderColor = "#0f26f5";
+const mainRouteColor = "#0f53ff"
+const mainRouteBorderColor = "#0f26f5"
 
-const alternativeRouteColor = "#bccefb";
-const alternativeRouteBorderColor = "#6a83d7";
+const alternativeRouteColor = "#bccefb"
+const alternativeRouteBorderColor = "#6a83d7"
 
 export const SourceLayer: React.FC<SourceLayerProps> = ({
   index,
   featuresLength,
   feature,
 }) => {
-  const id = `route-${index}`;
-  const source = `route-${index}`;
+  const id = `route-${index}`
+  const source = `route-${index}`
 
   const paint = {
     "line-color":
@@ -32,7 +32,7 @@ export const SourceLayer: React.FC<SourceLayerProps> = ({
         ? alternativeRouteColor
         : mainRouteColor,
     "line-width": 5,
-  };
+  }
 
   const borderPaint = {
     "line-color":
@@ -40,7 +40,7 @@ export const SourceLayer: React.FC<SourceLayerProps> = ({
         ? alternativeRouteBorderColor
         : mainRouteBorderColor,
     "line-width": 9,
-  };
+  }
 
   return (
     <Source key={index} id={`route-${index}`} type="geojson" data={feature}>
@@ -60,5 +60,5 @@ export const SourceLayer: React.FC<SourceLayerProps> = ({
         paint={paint}
       />
     </Source>
-  );
-};
+  )
+}

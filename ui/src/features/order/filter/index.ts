@@ -1,2 +1,2 @@
-export * from "./OrderTable.tsx";
-export * from "./StatusTag.tsx";
+export * from "./OrderTable"
+export * from "./StatusTag"

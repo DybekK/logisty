@@ -1,17 +1,17 @@
-import React from "react";
+import React from "react"
 
-import { Layout, theme } from "antd";
+import { Layout, theme } from "antd"
 
-const { Content } = Layout;
+const { Content } = Layout
 
 interface MainContentProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export const MainContent: React.FC<MainContentProps> = ({ children }) => {
   const {
     token: { borderRadiusLG },
-  } = theme.useToken();
+  } = theme.useToken()
 
   return (
     <Content
@@ -24,5 +24,5 @@ export const MainContent: React.FC<MainContentProps> = ({ children }) => {
     >
       {children}
     </Content>
-  );
-};
+  )
+}
