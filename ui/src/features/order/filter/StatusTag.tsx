@@ -1,22 +1,22 @@
-import { Tag } from "antd";
+import { Tag } from "antd"
 
-import { match } from "ts-pattern";
+import { match } from "ts-pattern"
 
-import { OrderStatus } from "@/features/order";
+import { OrderStatus } from "@/features/order"
 
 interface StatusTagProps {
-  status: OrderStatus;
+  status: OrderStatus
 }
 
 export const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
   const color = match(status)
     .with(OrderStatus.COMPLETED, () => "green")
     .with(OrderStatus.PENDING, () => "geekblue")
-    .exhaustive();
+    .exhaustive()
 
   return (
     <Tag color={color} key={status}>
       {status.toUpperCase()}
     </Tag>
-  );
-};
+  )
+}

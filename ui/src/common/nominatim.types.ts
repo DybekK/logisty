@@ -1,6 +1,6 @@
-export type NominatimResponse = NominatimCoordinates[];
+export type NominatimResponse = NominatimCoordinates[]
 
 export interface NominatimCoordinates {
-  lat: string;
-  lon: string;
+  lat: string
+  lon: string
 }

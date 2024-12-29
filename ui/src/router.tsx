@@ -1,10 +1,10 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom"
 
-import App from "@/App";
-import { Authenticate } from "@/features/auth/Authenticate";
-import { OrderStatus } from "@/features/order";
-import { OrderTable } from "@/features/order/filter";
-import { NewOrderForm } from "@/features/order/new";
+import App from "@/App"
+import { Authenticate } from "@/features/auth/Authenticate"
+import { OrderStatus } from "@/features/order"
+import { OrderTable } from "@/features/order/filter"
+import { NewOrderForm } from "@/features/order/new"
 
 export enum Routes {
   LOGIN = "/login",
@@ -36,4 +36,4 @@ export const router = createBrowserRouter([
       },
     ],
   },
-]);
+])

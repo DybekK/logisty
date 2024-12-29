@@ -1,18 +1,18 @@
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query"
 
-import axios from "axios";
+import axios from "axios"
 
 import {
   NominatimResponse,
   OSRMRouteResponse,
   PhotonFeature,
   PhotonResponse,
-} from "@/common";
+} from "@/common"
 
-const { VITE_PHOTON_URL, VITE_NOMINATIM_URL, VITE_OSRM_URL } = import.meta.env;
-const DEFAULT_TIMEOUT = 2000;
+const { VITE_PHOTON_URL, VITE_NOMINATIM_URL, VITE_OSRM_URL } = import.meta.env
+const DEFAULT_TIMEOUT = 2000
 
-const getFeaturesByQueryKey = "getFeaturesByQuery";
+const getFeaturesByQueryKey = "getFeaturesByQuery"
 export const fetchFeaturesByQuery = async (
   queryClient: QueryClient,
   query: string,
@@ -24,15 +24,15 @@ export const fetchFeaturesByQuery = async (
         params: { q: query, limit: limit },
         timeout: DEFAULT_TIMEOUT,
       })
-      .then(({ data }) => data.features);
+      .then(({ data }) => data.features)
 
   return queryClient.fetchQuery({
     queryKey: [getFeaturesByQueryKey, query, limit],
     queryFn,
-  });
-};
+  })
+}
 
-const getLocationByQueryKey = "getLocationByQuery";
+const getLocationByQueryKey = "getLocationByQuery"
 export const fetchLocationByQuery = async (
   queryClient: QueryClient,
   query: string,
@@ -43,15 +43,15 @@ export const fetchLocationByQuery = async (
         params: { format: "json", q: query, limit: 1 },
         timeout: DEFAULT_TIMEOUT,
       })
-      .then(({ data }) => data);
+      .then(({ data }) => data)
 
   return queryClient.fetchQuery({
     queryKey: [getLocationByQueryKey, query],
     queryFn,
-  });
-};
+  })
+}
 
-const getGeneratedPathByCoordinatesKey = "getGeneratedPathByCoordinates";
+const getGeneratedPathByCoordinatesKey = "getGeneratedPathByCoordinates"
 export const fetchGeneratedPathByCoordinates = async (
   queryClient: QueryClient,
   steps: { lat?: number; lon?: number }[],
@@ -59,7 +59,7 @@ export const fetchGeneratedPathByCoordinates = async (
   const formattedCoordinates = steps
     .filter(({ lat, lon }) => !!lat && !!lon)
     .map(({ lat, lon }) => `${lon},${lat}`)
-    .join(";");
+    .join(";")
 
   const queryFn = () =>
     axios
@@ -75,10 +75,10 @@ export const fetchGeneratedPathByCoordinates = async (
           timeout: DEFAULT_TIMEOUT,
         },
       )
-      .then(({ data }) => data);
+      .then(({ data }) => data)
 
   return queryClient.fetchQuery({
     queryKey: [getGeneratedPathByCoordinatesKey, formattedCoordinates],
     queryFn,
-  });
-};
+  })
+}

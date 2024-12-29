@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from "react";
-import Map from "react-map-gl/maplibre";
+import React, { useEffect, useState } from "react"
+import Map from "react-map-gl/maplibre"
 
-import { Flex, Skeleton } from "antd";
+import { Flex, Skeleton } from "antd"
 
-import { FeatureCollection, LineString } from "geojson";
+import { FeatureCollection, LineString } from "geojson"
 
-import { OSRMRoute, OSRMWaypoint } from "@/common";
-import { SourceLayer } from "@/components";
+import { OSRMRoute, OSRMWaypoint } from "@/common"
+import { SourceLayer } from "@/components"
 
-const { VITE_MAP_GL_STYLE } = import.meta.env;
+const { VITE_MAP_GL_STYLE } = import.meta.env
 
-console.log(import.meta.env);
+console.log(import.meta.env)
 
 const flexStyle: React.CSSProperties = {
   height: "100%",
   width: "100%",
   justifyContent: "center",
   alignItems: "center",
-};
+}
 
 interface Map3DProps {
-  id: string;
-  routes: OSRMRoute[];
-  waypoints: OSRMWaypoint[];
+  id: string
+  routes: OSRMRoute[]
+  waypoints: OSRMWaypoint[]
 }
 
 const transformRoutesToGeoJSON = (
@@ -33,44 +33,44 @@ const transformRoutesToGeoJSON = (
       type: "Feature" as const,
       properties: {},
       geometry: route.geometry as LineString,
-    };
-  });
+    }
+  })
 
   return {
     type: "FeatureCollection",
     features,
-  };
-};
+  }
+}
 
 interface Coordinates {
-  lat: number;
-  lon: number;
+  lat: number
+  lon: number
 }
 
 export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
   const [coordinates, setCoordinates] = useState<Coordinates>({
     lat: 0,
     lon: 0,
-  });
-  const [loadingCoordinates, setLoadingCoordinates] = useState(true);
-  const { features } = transformRoutesToGeoJSON(routes);
+  })
+  const [loadingCoordinates, setLoadingCoordinates] = useState(true)
+  const { features } = transformRoutesToGeoJSON(routes)
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(position => {
       setCoordinates({
         lon: position.coords.longitude,
         lat: position.coords.latitude,
-      });
-      setLoadingCoordinates(false);
-    });
-  }, []);
+      })
+      setLoadingCoordinates(false)
+    })
+  }, [])
 
   if (loadingCoordinates) {
     return (
       <Flex style={flexStyle}>
         <Skeleton.Image active={true} />
       </Flex>
-    );
+    )
   }
   return (
     <Map
@@ -91,5 +91,5 @@ export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
         />
       ))}
     </Map>
-  );
-};
+  )
+}

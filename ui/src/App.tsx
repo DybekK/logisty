@@ -1,16 +1,16 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
+import React from "react"
+import { Outlet } from "react-router-dom"
 
-import { Layout, theme } from "antd";
+import { Layout, theme } from "antd"
 
-import "maplibre-gl/dist/maplibre-gl.css";
+import "maplibre-gl/dist/maplibre-gl.css"
 
-import { LeftSider, MainContent, Top } from "@/components";
+import { LeftSider, MainContent, Top } from "@/components"
 
 const App: React.FC = () => {
   const {
     token: { colorBgLayout },
-  } = theme.useToken();
+  } = theme.useToken()
 
   return (
     <Layout style={{ background: colorBgLayout, height: "100vh" }}>
@@ -22,7 +22,7 @@ const App: React.FC = () => {
         </MainContent>
       </Layout>
     </Layout>
-  );
-};
+  )
+}
 
-export default App;
+export default App

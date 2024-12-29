@@ -1,4 +1,4 @@
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form"
 
 import {
   Button,
@@ -9,47 +9,47 @@ import {
   Typography,
   message,
   theme,
-} from "antd";
+} from "antd"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 
 const layoutStyle: React.CSSProperties = {
   height: "100vh",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-};
+}
 
 const formContainerStyle: React.CSSProperties = {
   width: "100%",
   maxWidth: "400px",
   margin: "0 auto",
   padding: "20px",
-};
+}
 
 const formCardStyle: React.CSSProperties = {
   borderRadius: "10px",
   boxShadow: "8px 0px 15px -5px rgba(0, 0, 0, 0.025)",
-};
+}
 
 const formTitleStyle: React.CSSProperties = {
   textAlign: "center",
   marginBottom: "20px",
-};
+}
 
 const customFormStyle: React.CSSProperties = {
   marginBottom: "16px",
-};
+}
 
 const inputStyle: React.CSSProperties = {
   borderRadius: "5px",
-};
+}
 
 const buttonStyle: React.CSSProperties = {
   width: "100%",
   borderRadius: "5px",
-};
+}
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -59,14 +59,14 @@ const loginSchema = z.object({
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
     .regex(/[a-z]/, "Password must contain at least one lowercase letter")
     .regex(/[0-9]/, "Password must contain at least one number"),
-});
+})
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = z.infer<typeof loginSchema>
 
 export const Authenticate = () => {
   const {
     token: { colorBgLayout },
-  } = theme.useToken();
+  } = theme.useToken()
 
   const {
     control,
@@ -78,17 +78,17 @@ export const Authenticate = () => {
       email: "",
       password: "",
     },
-  });
+  })
 
   const onSubmit = async (data: LoginFormData) => {
     try {
       // TODO: Implement actual login logic here
-      console.log("Form data:", data);
-      message.success("Login successful!");
+      console.log("Form data:", data)
+      message.success("Login successful!")
     } catch (error) {
-      message.error("Login failed. Please try again.");
+      message.error("Login failed. Please try again.")
     }
-  };
+  }
 
   return (
     <Layout style={{ ...layoutStyle, background: colorBgLayout }}>
@@ -153,5 +153,5 @@ export const Authenticate = () => {
         </Card>
       </div>
     </Layout>
-  );
-};
+  )
+}

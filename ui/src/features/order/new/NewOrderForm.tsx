@@ -1,29 +1,29 @@
-import { useQueryClient } from "@tanstack/react-query";
-import React, { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { MapProvider } from "react-map-gl";
+import { useQueryClient } from "@tanstack/react-query"
+import React, { useEffect } from "react"
+import { useTranslation } from "react-i18next"
+import { MapProvider } from "react-map-gl"
 
-import { CheckOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import { Button, Card, Divider, Flex, Form, Steps } from "antd";
+import { CheckOutlined, PlusCircleOutlined } from "@ant-design/icons"
+import { Button, Card, Divider, Flex, Form, Steps } from "antd"
 
-import { useAppDispatch, useAppSelector } from "@/common";
-import { Map3D } from "@/components";
+import { useAppDispatch, useAppSelector } from "@/common"
+import { Map3D } from "@/components"
 import {
   CreateNewOrderStep,
   addStep,
   fetchGeneratedPathByCoordinates,
   updateRoutesAndWaypoints,
-} from "@/features/order";
-import { LocalizationAutoCompleteElement, Step } from "@/features/order/new";
+} from "@/features/order"
+import { LocalizationAutoCompleteElement, Step } from "@/features/order/new"
 
 const cardBodyStyle: React.CSSProperties = {
   height: "100%",
   padding: 0,
   display: "flex",
   flexDirection: "row",
-};
+}
 
-const cardStyle: React.CSSProperties = { height: "100%" };
+const cardStyle: React.CSSProperties = { height: "100%" }
 
 const flexStyle: React.CSSProperties = {
   flexDirection: "column",
@@ -31,20 +31,20 @@ const flexStyle: React.CSSProperties = {
   width: 450,
   padding: 20,
   boxShadow: "8px 0px 15px -5px rgba(0, 0, 0, 0.025)",
-};
+}
 
-const buttonStyle: React.CSSProperties = { width: "100%", textAlign: "left" };
-const addStepButtonStyle: React.CSSProperties = { ...buttonStyle };
+const buttonStyle: React.CSSProperties = { width: "100%", textAlign: "left" }
+const addStepButtonStyle: React.CSSProperties = { ...buttonStyle }
 const acceptOrderButtonStyle: React.CSSProperties = {
   ...buttonStyle,
   marginTop: 10,
-};
+}
 
-const mapId = "orderMap";
+const mapId = "orderMap"
 
 interface Driver {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 const drivers: Driver[] = [
@@ -60,29 +60,29 @@ const drivers: Driver[] = [
     id: "3",
     name: "Janusz Tracz",
   },
-];
+]
 
 const isStepsValid = (steps: CreateNewOrderStep[]): boolean =>
   steps.some(
     ({ lat, lon, inputValue }) => !lat || !lon || inputValue.trim() === "",
-  );
+  )
 
 export const NewOrderForm: React.FC = () => {
-  const queryClient = useQueryClient();
-  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient()
+  const dispatch = useAppDispatch()
 
-  const { t } = useTranslation("order", { keyPrefix: "new" });
+  const { t } = useTranslation("order", { keyPrefix: "new" })
   const { steps, routes, waypoints, localizationsAutoComplete } =
-    useAppSelector(state => state.createNewOrder);
+    useAppSelector(state => state.createNewOrder)
 
   useEffect(() => {
-    if (steps.filter(step => !!step.lat).length < 2) return;
+    if (steps.filter(step => !!step.lat).length < 2) return
 
     fetchGeneratedPathByCoordinates(queryClient, steps).then(
       ({ routes, waypoints }) =>
         dispatch(updateRoutesAndWaypoints({ routes, waypoints })),
-    );
-  }, [steps]);
+    )
+  }, [steps])
 
   return (
     <MapProvider>
@@ -136,5 +136,5 @@ export const NewOrderForm: React.FC = () => {
         <Map3D id={mapId} routes={routes} waypoints={waypoints} />
       </Card>
     </MapProvider>
-  );
-};
+  )
+}
