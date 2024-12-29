@@ -1,3 +1,3 @@
-export * from "./localization.api.ts";
-export * from "./slice/create-new-order.slice.ts";
-export * from "./slice/orders.slice.ts";
+export * from "./localization.api";
+export * from "./slice/create-new-order.slice";
+export * from "./slice/orders.slice";
