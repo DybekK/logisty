@@ -19,8 +19,14 @@ i18n
     fallbackLng: "pl",
     debug: true,
 
+    partialBundledLanguages: true,
+    load: "all",
+    preload: ["pl", "en"],
     interpolation: {
       escapeValue: false,
+    },
+    react: {
+      useSuspense: false,
     },
   })
 

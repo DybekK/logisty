@@ -25,13 +25,21 @@ export enum AuthenticationErrors {
   TOKEN_EXPIRED_OR_NOT_FOUND = "TOKEN_EXPIRED_OR_NOT_FOUND",
 }
 
+export const AuthenticationErrorTypes = [
+  AuthenticationErrors.BAD_CREDENTIALS,
+] as const
+
 export type AuthenticationBackendResponse = BackendResponse<
   AuthenticateResponse,
-  AuthenticationErrors.BAD_CREDENTIALS
+  (typeof AuthenticationErrorTypes)[number]
 >
+
+export const RefreshTokenErrorTypes = [
+  AuthenticationErrors.INVALID_TOKEN_STRUCTURE,
+  AuthenticationErrors.TOKEN_EXPIRED_OR_NOT_FOUND,
+] as const
 
 export type RefreshTokenBackendResponse = BackendResponse<
   RefreshTokenResponse,
-  | AuthenticationErrors.INVALID_TOKEN_STRUCTURE
-  | AuthenticationErrors.TOKEN_EXPIRED_OR_NOT_FOUND
+  (typeof RefreshTokenErrorTypes)[number]
 >

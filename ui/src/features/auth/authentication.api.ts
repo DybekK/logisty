@@ -1,20 +1,15 @@
 import { QueryClient } from "@tanstack/react-query"
 
-import axios from "axios"
-
 import {
   AuthenticateRequest,
   AuthenticateResponse,
   AuthenticationBackendResponse,
   RefreshTokenBackendResponse,
   RefreshTokenRequest,
+  authAxiosInstance,
   handleAxiosError,
   handleAxiosResponse,
 } from "@/common"
-
-const { VITE_BACKEND_URL } = import.meta.env
-
-const DEFAULT_TIMEOUT = 2000
 
 const authenticateKey = "authenticate"
 export const authenticate = async (
@@ -22,10 +17,8 @@ export const authenticate = async (
   request: AuthenticateRequest,
 ): Promise<AuthenticationBackendResponse> => {
   const queryFn = () =>
-    axios
-      .post<AuthenticateResponse>(`${VITE_BACKEND_URL}/api/auth`, request, {
-        timeout: DEFAULT_TIMEOUT,
-      })
+    authAxiosInstance
+      .post<AuthenticateResponse>(`/api/auth`, request)
       .then(handleAxiosResponse)
       .catch(handleAxiosError)
 
@@ -36,17 +29,13 @@ export const authenticate = async (
 }
 
 const refreshTokenKey = "refreshToken"
-export const refreshToken = async (
+export const refresh = async (
   queryClient: QueryClient,
   request: RefreshTokenRequest,
 ): Promise<RefreshTokenBackendResponse> => {
   const queryFn = () =>
-    axios
-      .post<RefreshTokenBackendResponse>(
-        `${VITE_BACKEND_URL}/api/auth/refresh`,
-        request,
-        { timeout: DEFAULT_TIMEOUT },
-      )
+    authAxiosInstance
+      .post<RefreshTokenBackendResponse>(`/api/auth/refresh`, request)
       .then(handleAxiosResponse)
       .catch(handleAxiosError)
 

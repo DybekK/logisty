@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { P, match } from "ts-pattern"
 import { z } from "zod"
 
+import { AuthenticationErrorTypes } from "@/common"
 import { useAuth } from "@/components"
 import { authenticate } from "@/features/auth/authentication.api"
 import { Routes } from "@/router"
@@ -104,7 +105,7 @@ export const Authenticate = () => {
         setTokens(tokens)
         navigate(Routes.PENDING_ORDERS)
       })
-      .with({ errors: P.array(P.string) }, () =>
+      .with({ errors: AuthenticationErrorTypes }, () =>
         message.error(tAuth("authenticate.fallbacks.invalidCredentials")),
       )
       .otherwise(() => {
