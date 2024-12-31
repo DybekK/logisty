@@ -60,6 +60,15 @@ class FunctionalHttpTemplate(
     // fleet
     fun createFleet(
         request: CreateFleetRequest,
+    ): ResultActions =
+        mockMvc.perform(
+            post("/api/fleets/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)),
+        )
+
+    fun createFleet(
+        request: CreateFleetRequest,
         jwt: JwtAccess,
     ): ResultActions =
         mockMvc.perform(

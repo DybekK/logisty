@@ -17,7 +17,7 @@ fun Throwable.toBadRequestResponseEntity(): ResponseEntity<ErrorResponse> =
 
 fun Throwable.toUnauthorizedResponseEntity(): ResponseEntity<ErrorResponse> =
     ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-        ErrorResponse(listOf(message ?: "Invalid credentials")),
+        ErrorResponse(listOf(message)),
     )
 
 fun Throwable.toNotFoundResponseEntity(): ResponseEntity<ErrorResponse> =

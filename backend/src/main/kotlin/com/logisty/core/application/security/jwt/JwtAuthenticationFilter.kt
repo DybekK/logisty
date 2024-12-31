@@ -1,6 +1,11 @@
 package com.logisty.core.application.security.jwt
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.logisty.core.adapter.toUnauthorizedResponseEntity
 import com.logisty.core.application.security.CustomUserDetailsService
+import com.logisty.core.application.security.SecurityException
+import com.logisty.core.application.security.SecurityExceptions.InvalidTokenStructureException
+import com.logisty.core.application.security.SecurityExceptions.TokenExpiredOrNotFoundException
 import com.logisty.core.application.security.jwt.values.JwtAccess
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -8,12 +13,14 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthenticationFilter(
+    private val mapper: ObjectMapper,
     private val userDetailsService: CustomUserDetailsService,
     private val jwtService: JwtService,
 ) : OncePerRequestFilter() {
@@ -32,16 +39,38 @@ class JwtAuthenticationFilter(
         val jwtToken = authHeader!!.extractTokenValue()
         val email = jwtService.extractEmail(jwtToken)
 
-        if (email != null && SecurityContextHolder.getContext().authentication == null) {
-            val foundUser = userDetailsService.loadUserByUsername(email.value)
+        if (email == null) {
+            response.handleInvalidTokenStructureException()
+            return
+        }
 
-            if (jwtService.isValid(jwtToken, foundUser)) {
-                updateContext(foundUser, request)
+        val foundUser =
+            try {
+                userDetailsService.loadUserByUsername(email.value)
+            } catch (e: UsernameNotFoundException) {
+                response.handleTokenExpiredOrNotFoundException()
+                return
             }
 
-            filterChain.doFilter(request, response)
+        if (!jwtService.isValid(jwtToken, foundUser)) {
+            response.handleTokenExpiredOrNotFoundException()
+            return
         }
+
+        updateContext(foundUser, request)
+        filterChain.doFilter(request, response)
     }
+
+    private fun HttpServletResponse.returnException(exception: SecurityException) =
+        exception.toUnauthorizedResponseEntity().let {
+            status = it.statusCode.value()
+            contentType = "application/json"
+            writer.write(mapper.writeValueAsString(it.body))
+        }
+
+    private fun HttpServletResponse.handleTokenExpiredOrNotFoundException() = returnException(TokenExpiredOrNotFoundException())
+
+    private fun HttpServletResponse.handleInvalidTokenStructureException() = returnException(InvalidTokenStructureException())
 
     private fun String?.doesNotContainBearerToken() = this == null || !this.startsWith("Bearer ")
 

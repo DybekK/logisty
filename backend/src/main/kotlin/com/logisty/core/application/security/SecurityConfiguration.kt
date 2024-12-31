@@ -19,12 +19,13 @@ class SecurityConfiguration(
 ) {
     @Bean
     fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
-        val configuration = CorsConfiguration().apply {
-            allowedOriginPatterns = listOf("http://localhost:*")
-            allowedMethods = listOf("*")
-            allowedHeaders = listOf("*")
-            allowCredentials = true
-        }
+        val configuration =
+            CorsConfiguration().apply {
+                allowedOriginPatterns = listOf("http://localhost:*")
+                allowedMethods = listOf("*")
+                allowedHeaders = listOf("*")
+                allowCredentials = true
+            }
 
         return UrlBasedCorsConfigurationSource().apply {
             registerCorsConfiguration("/**", configuration)
@@ -47,6 +48,7 @@ class SecurityConfiguration(
             }.sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .exceptionHandling { it.authenticationEntryPoint { _, response, _ -> response.sendError(401) } }
 
         return http.build()
     }

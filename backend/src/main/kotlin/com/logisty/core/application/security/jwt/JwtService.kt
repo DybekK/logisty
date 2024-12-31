@@ -36,9 +36,9 @@ class JwtService(
             .compact()
 
     fun extractEmail(token: Jwt): UserEmail? =
-        getAllClaims(token)
-            .subject
-            ?.let { UserEmail(it) }
+        runCatching { getAllClaims(token) }
+            .getOrNull()
+            ?.let { UserEmail(it.subject) }
 
     fun isValid(
         token: Jwt,
@@ -46,9 +46,11 @@ class JwtService(
     ): Boolean = userDetails.username == extractEmail(token)?.value && !isExpired(token)
 
     fun isExpired(token: Jwt): Boolean =
-        getAllClaims(token)
-            .expiration
-            .before(Date(clock.millis()))
+        runCatching { getAllClaims(token) }
+            .getOrNull()
+            ?.expiration
+            ?.before(Date(clock.millis()))
+            ?: false
 
     private fun getAllClaims(token: Jwt): Claims {
         val parser =
