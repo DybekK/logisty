@@ -1,9 +1,11 @@
 package com.logisty.core.adapter.outbound
 
+import com.logisty.core.application.persistence.tables.Fleets
 import com.logisty.core.application.persistence.tables.Invitations
 import com.logisty.core.domain.model.Invitation
 import com.logisty.core.domain.model.values.FirstName
 import com.logisty.core.domain.model.values.FleetId
+import com.logisty.core.domain.model.values.FleetName
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.InvitationStatus
 import com.logisty.core.domain.model.values.InvitationStatus.ACCEPTED
@@ -22,14 +24,14 @@ import java.time.temporal.ChronoUnit
 @Repository
 class PostgresInvitationRepository : InvitationRepository {
     override fun findInvitationById(id: InvitationId): Invitation? =
-        Invitations
+        (Invitations innerJoin Fleets)
             .selectAll()
             .where { Invitations.invitationId eq id.value }
             .singleOrNull()
             ?.toInvitation()
 
     override fun findInvitationByEmail(email: UserEmail): Invitation? =
-        Invitations
+        (Invitations innerJoin Fleets)
             .selectAll()
             .where { Invitations.email eq email.value }
             .singleOrNull()
@@ -74,6 +76,7 @@ private fun ResultRow.toInvitation(): Invitation =
     Invitation(
         invitationId = InvitationId(this[Invitations.invitationId]),
         fleetId = FleetId(this[Invitations.fleetId]),
+        fleetName = FleetName(this[Fleets.fleetName]),
         email = UserEmail(this[Invitations.email]),
         firstName = FirstName(this[Invitations.firstName]),
         lastName = LastName(this[Invitations.lastName]),
