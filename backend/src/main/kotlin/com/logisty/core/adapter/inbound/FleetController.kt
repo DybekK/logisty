@@ -2,6 +2,7 @@ package com.logisty.core.adapter.inbound
 
 import com.logisty.core.adapter.toBadRequestResponseEntity
 import com.logisty.core.adapter.toInternalServerErrorResponseEntity
+import com.logisty.core.adapter.toNotFoundResponseEntity
 import com.logisty.core.domain.BusinessExceptions.FleetAlreadyExistsException
 import com.logisty.core.domain.BusinessExceptions.FleetNotFoundException
 import com.logisty.core.domain.BusinessExceptions.InvitationAlreadyAcceptedException
@@ -20,6 +21,7 @@ import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserPassword
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -74,7 +76,7 @@ class FleetController(
             }
         }
 
-    @PostMapping("/invite/{fleetId}")
+    @PostMapping("/{fleetId}/invite")
     fun createInvitation(
         @PathVariable fleetId: FleetId,
         @RequestBody request: CreateInvitationRequest,
@@ -91,7 +93,7 @@ class FleetController(
             }
         }
 
-    @PostMapping("/accept/{invitationId}")
+    @PostMapping("/invitations/{invitationId}/accept")
     fun acceptInvitation(
         @PathVariable invitationId: InvitationId,
         @RequestBody request: AcceptInvitationRequest,
@@ -103,6 +105,18 @@ class FleetController(
                 is InvitationAlreadyAcceptedException,
                 is InvitationExpiredException,
                 -> it.toBadRequestResponseEntity()
+                else -> it.toInternalServerErrorResponseEntity(logger)
+            }
+        }
+
+    @GetMapping("/invitations/{invitationId}")
+    fun getInvitation(
+        @PathVariable invitationId: InvitationId,
+    ) = runCatching { fleetHub.getInvitation(invitationId) }
+        .map { ResponseEntity.ok(it) }
+        .getOrElse {
+            when (it) {
+                is InvitationNotFoundException -> it.toNotFoundResponseEntity()
                 else -> it.toInternalServerErrorResponseEntity(logger)
             }
         }
