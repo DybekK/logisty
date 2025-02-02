@@ -1,12 +1,12 @@
-import { useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 
 import { P, match } from "ts-pattern"
 
 import {
   AuthenticationErrors,
+  AxiosBackendError,
   authAxiosInstance,
-  handleAxiosError,
 } from "@/common"
 import { refresh } from "@/features/auth/authentication.api"
 
@@ -35,8 +35,6 @@ export const AuthContext = createContext<AuthContextType>({
 })
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const queryClient = useQueryClient()
-
   const [tokens, setTokens_] = useState<Tokens>({
     accessToken: localStorage.getItem("accessToken"),
     refreshToken: localStorage.getItem("refreshToken"),
@@ -53,24 +51,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     })
   }
 
-  const refreshTokenInterceptor = async () => {
+  const { mutateAsync: refreshMutate } = useMutation({
+    mutationFn: refresh,
+    onSuccess: (refreshedTokens: Tokens) => {
+      match(refreshedTokens)
+        .with({ accessToken: P.string, refreshToken: P.string }, setTokens)
+        .otherwise(removeTokens)
+    },
+    onError: () => {
+      removeTokens()
+    },
+  })
+
+  const refreshTokenInterceptor = () => {
     authAxiosInstance.interceptors.response.use(
       response => response,
-      async error => {
-        let { errors } = handleAxiosError(error)
-
+      async (error: AxiosBackendError) => {
+        const { errors } = error.response?.data ?? { errors: [] }
         if (errors.includes(AuthenticationErrors.TOKEN_EXPIRED_OR_NOT_FOUND)) {
           if (!tokens.refreshToken) {
-            console.log("No refresh token")
-            return error
+            return Promise.reject(error)
           }
-
-          match(
-            await refresh(queryClient, { refreshToken: tokens.refreshToken }),
-          )
-            .with({ accessToken: P.string, refreshToken: P.string }, setTokens)
-            .otherwise(removeTokens)
+          await refreshMutate({ refreshToken: tokens.refreshToken })
         }
+        return Promise.reject(error)
       },
     )
   }
@@ -98,7 +102,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setTokens,
       removeTokens,
     }),
-    [tokens, isAuthenticated],
+    [tokens],
   )
 
   return (

@@ -26,13 +26,13 @@ class Fixtures {
 
     val fleet =
         FixtureFleet(
-            fleetId = FleetId(UUID.randomUUID()),
+            fleetId = FleetId.generate(),
             fleetName = FleetName("fleet-name"),
         )
 
     val user =
         FixtureUser(
-            userId = UserId(UUID.randomUUID()),
+            userId = UserId.generate(),
             firstName = FirstName("first-name"),
             lastName = LastName("last-name"),
             email = UserEmail("user@example.com"),
@@ -41,8 +41,9 @@ class Fixtures {
 
     val invitation =
         FixtureInvitation(
-            invitationId = InvitationId(UUID.randomUUID()),
+            invitationId = InvitationId.generate(),
             fleetId = fleet.fleetId,
+            fleetName = fleet.fleetName,
             email = user.email,
             firstName = user.firstName,
             lastName = user.lastName,

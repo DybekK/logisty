@@ -41,8 +41,12 @@ class SecurityConfiguration(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/auth", "api/auth/refresh")
-                    .permitAll()
+                    .requestMatchers(
+                        "/api/auth",
+                        "/api/auth/refresh",
+                        "/api/fleets/invitations/*",
+                        "/api/fleets/invitations/*/accept",
+                    ).permitAll()
                     .anyRequest()
                     .authenticated()
             }.sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }

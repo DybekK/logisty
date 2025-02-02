@@ -1,0 +1,18 @@
+{
+    "acceptInvitation": {
+        "title": "Accept invitation from <0>{{inviter}}</0>",
+        "email": "Email",
+        "password": "Password",
+        "accept": "Accept invitation and create account",
+        "success": "Invitation accepted successfully, you can now login",
+        "inputs": {
+            "password": "Enter your new password",
+            "errors": {
+                "passwordMinLength": "Password must be at least 8 characters"
+            }
+        },
+        "fallbacks": {
+            "invalidInvitation": "Invitation expired or is already accepted"
+        }
+    }
+}
