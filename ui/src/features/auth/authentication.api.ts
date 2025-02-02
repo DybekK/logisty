@@ -3,6 +3,7 @@ import {
   AuthenticateResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
+  User,
   authAxiosInstance,
   handleAxiosResponse,
 } from "@/common"
@@ -16,3 +17,6 @@ export const refresh = async (
   request: RefreshTokenRequest,
 ): Promise<RefreshTokenResponse> =>
   authAxiosInstance.post(`/auth/refresh`, request).then(handleAxiosResponse)
+
+export const fetchCurrentUser = async (): Promise<User> =>
+  authAxiosInstance.get(`/auth/me`).then(handleAxiosResponse)

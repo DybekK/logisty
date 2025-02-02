@@ -6,7 +6,8 @@ import com.logisty.core.application.security.CustomUserDetailsService
 import com.logisty.core.application.security.SecurityException
 import com.logisty.core.application.security.SecurityExceptions.InvalidTokenStructureException
 import com.logisty.core.application.security.SecurityExceptions.TokenExpiredOrNotFoundException
-import com.logisty.core.application.security.jwt.values.JwtAccess
+import com.logisty.core.application.security.jwt.values.doesNotContainBearerToken
+import com.logisty.core.application.security.jwt.values.extractTokenValue
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -71,10 +72,6 @@ class JwtAuthenticationFilter(
     private fun HttpServletResponse.handleTokenExpiredOrNotFoundException() = returnException(TokenExpiredOrNotFoundException())
 
     private fun HttpServletResponse.handleInvalidTokenStructureException() = returnException(InvalidTokenStructureException())
-
-    private fun String?.doesNotContainBearerToken() = this == null || !this.startsWith("Bearer ")
-
-    private fun String.extractTokenValue() = JwtAccess(this.substringAfter("Bearer "))
 
     private fun updateContext(
         foundUser: UserDetails,

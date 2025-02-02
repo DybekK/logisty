@@ -9,6 +9,7 @@ import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserEncodedPassword
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserPassword
+import com.logisty.core.domain.model.values.UserRole
 import com.logisty.core.domain.port.UserRepository
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
@@ -26,6 +27,7 @@ class PostgresUserRepository(
         lastName: LastName,
         email: UserEmail,
         password: UserPassword,
+        roles: List<UserRole>,
     ): UserId {
         val userId = UserId.generate()
 
@@ -36,6 +38,7 @@ class PostgresUserRepository(
             it[Users.firstName] = firstName.value
             it[Users.lastName] = lastName.value
             it[Users.password] = encoder.encode(password.value)
+            it[Users.roles] = roles.map { it.name }
         }
 
         return userId
@@ -59,8 +62,10 @@ class PostgresUserRepository(
 private fun ResultRow.toUser(): User =
     User(
         userId = UserId(this[Users.userId]),
+        fleetId = FleetId(this[Users.fleetId]),
         email = UserEmail(this[Users.email]),
         firstName = FirstName(this[Users.firstName]),
         lastName = LastName(this[Users.lastName]),
         password = UserEncodedPassword(this[Users.password]),
+        roles = this[Users.roles].map { UserRole.valueOf(it) },
     )

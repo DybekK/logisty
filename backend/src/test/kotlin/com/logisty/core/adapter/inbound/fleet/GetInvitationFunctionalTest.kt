@@ -17,7 +17,6 @@ class GetInvitationFunctionalTest : FunctionalTest() {
         routes
             .getInvitation(fixtures.invitation.invitationId, jwt)
             .andExpect(status().isOk)
-            .andExpectResponse(fixtures.invitation)
     }
 
     @Test

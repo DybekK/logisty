@@ -1,3 +1,3 @@
 export * from "./localization.api"
-export * from "./slice/create-new-order.slice"
-export * from "./slice/orders.slice"
+export * from "./store/create-new-order.slice"
+export * from "./store/orders.slice"

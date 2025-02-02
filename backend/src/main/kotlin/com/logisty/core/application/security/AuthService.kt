@@ -8,24 +8,37 @@ import com.logisty.core.application.security.jwt.JwtStorage
 import com.logisty.core.application.security.jwt.values.JwtAccess
 import com.logisty.core.application.security.jwt.values.JwtProperties
 import com.logisty.core.application.security.jwt.values.JwtRefresh
+import com.logisty.core.application.security.jwt.values.extractTokenValue
+import com.logisty.core.domain.model.User
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserPassword
+import com.logisty.core.domain.port.UserRepository
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.util.Date
 
 @Service
+@Transactional
 class AuthService(
     private val clock: Clock,
     private val authManager: AuthenticationManager,
     private val userDetailsService: CustomUserDetailsService,
+    private val userRepository: UserRepository,
     private val jwtStorage: JwtStorage,
     private val jwtService: JwtService,
     private val jwtProperties: JwtProperties,
 ) {
+    fun getCurrentUser(authorizationHeader: String): User =
+        authorizationHeader
+            .extractTokenValue()
+            .let { jwtService.extractEmail(it) }
+            ?.let { userRepository.findByEmail(it) }
+            ?: throw UserBadCredentialsException()
+
     fun authenticate(
         email: UserEmail,
         password: UserPassword,

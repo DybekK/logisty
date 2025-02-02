@@ -6,6 +6,7 @@ import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.UserEmail
+import com.logisty.core.domain.model.values.UserRole
 import java.time.Instant
 
 interface InvitationRepository {
@@ -18,6 +19,7 @@ interface InvitationRepository {
         email: UserEmail,
         firstName: FirstName,
         lastName: LastName,
+        roles: List<UserRole>,
         createdAt: Instant,
     ): InvitationId
 

@@ -17,7 +17,7 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: "pl",
-    debug: true,
+    debug: false,
 
     partialBundledLanguages: true,
     load: "all",

@@ -5,6 +5,15 @@ export const authAxiosInstance = axios.create({
   timeout: 2000,
 })
 
+authAxiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken")
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+
+  return config
+})
+
 export function handleAxiosResponse<T>(response: AxiosResponse<T, unknown>): T {
   return response.data as T
 }

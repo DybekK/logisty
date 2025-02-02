@@ -13,3 +13,7 @@ value class JwtAccess(
 value class JwtRefresh(
     override val value: String,
 ) : Jwt
+
+fun String?.doesNotContainBearerToken() = this == null || !this.startsWith("Bearer ")
+
+fun String.extractTokenValue() = JwtAccess(this.substringAfter("Bearer "))

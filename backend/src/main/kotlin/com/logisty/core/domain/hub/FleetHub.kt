@@ -9,6 +9,7 @@ import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserPassword
+import com.logisty.core.domain.model.values.UserRole
 import com.logisty.core.domain.service.FleetCreator
 import com.logisty.core.domain.service.FleetInvitator
 import com.logisty.core.domain.service.InvitationAccepter
@@ -33,7 +34,8 @@ class FleetHub(
         email: UserEmail,
         firstName: FirstName,
         lastName: LastName,
-    ): InvitationId = fleetInvitator.invite(fleetId, email, firstName, lastName)
+        roles: List<UserRole>,
+    ): InvitationId = fleetInvitator.invite(fleetId, email, firstName, lastName, roles)
 
     fun acceptInvitation(
         invitationId: InvitationId,

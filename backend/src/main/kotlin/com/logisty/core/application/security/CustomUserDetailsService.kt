@@ -2,6 +2,7 @@ package com.logisty.core.application.security
 
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.port.UserRepository
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -26,5 +27,6 @@ class CustomUserDetailsService(
             .builder()
             .username(email.value)
             .password(password.value)
+            .authorities(roles.map { SimpleGrantedAuthority(it.name) })
             .build()
 }

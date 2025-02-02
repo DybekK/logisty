@@ -12,6 +12,7 @@ import com.logisty.core.domain.model.values.InvitationStatus.ACCEPTED
 import com.logisty.core.domain.model.values.InvitationStatus.PENDING
 import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.UserEmail
+import com.logisty.core.domain.model.values.UserRole
 import com.logisty.core.domain.port.InvitationRepository
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
@@ -42,6 +43,7 @@ class PostgresInvitationRepository : InvitationRepository {
         email: UserEmail,
         firstName: FirstName,
         lastName: LastName,
+        roles: List<UserRole>,
         createdAt: Instant,
     ): InvitationId {
         val invitationId = InvitationId.generate()
@@ -54,6 +56,7 @@ class PostgresInvitationRepository : InvitationRepository {
             it[Invitations.firstName] = firstName.value
             it[Invitations.lastName] = lastName.value
             it[Invitations.status] = PENDING.name
+            it[Invitations.roles] = roles.map { it.name }
             it[Invitations.createdAt] = createdAt
             it[Invitations.expiresAt] = expiresAt
             it[Invitations.acceptedAt] = null
@@ -81,6 +84,7 @@ private fun ResultRow.toInvitation(): Invitation =
         firstName = FirstName(this[Invitations.firstName]),
         lastName = LastName(this[Invitations.lastName]),
         status = InvitationStatus.valueOf(this[Invitations.status]),
+        roles = this[Invitations.roles].map { UserRole.valueOf(it) },
         createdAt = this[Invitations.createdAt],
         expiresAt = this[Invitations.expiresAt],
         acceptedAt = this[Invitations.acceptedAt],

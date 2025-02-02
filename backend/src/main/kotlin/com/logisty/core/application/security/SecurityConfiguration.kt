@@ -43,7 +43,8 @@ class SecurityConfiguration(
                 it
                     .requestMatchers(
                         "/api/auth",
-                        "/api/auth/refresh",
+                        "/api/auth/refresh", 
+                        "/api/fleets/create", // only for staging
                         "/api/fleets/invitations/*",
                         "/api/fleets/invitations/*/accept",
                     ).permitAll()

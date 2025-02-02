@@ -13,13 +13,12 @@ export const fetchInvitation = async (
     .get(`/fleets/invitations/${invitationId}`)
     .then(handleAxiosResponse)
 
-export const useFetchInvitation = (invitationId: string) => {
-  return useQuery({
+export const useFetchInvitation = (invitationId: string) => 
+  useQuery({
     queryKey: [fetchInvitationKey, invitationId],
     queryFn: () => fetchInvitation(invitationId),
     retry: false,
   })
-}
 
 export const acceptInvitation = async (
   invitationId: string,

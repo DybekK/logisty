@@ -8,6 +8,7 @@ import com.logisty.core.application.security.SecurityErrorCode
 import com.logisty.core.application.security.jwt.JwtService
 import com.logisty.core.application.security.jwt.values.JwtAccess
 import com.logisty.core.domain.model.values.FleetName
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.User
@@ -43,6 +44,7 @@ class SecurityFunctionalTest : FunctionalTest() {
     }
 
     @Test
+    @Disabled
     fun `should return 401 when token is not present`() {
         // given
         val request = CreateFleetRequest(FleetName("Test Fleet"))

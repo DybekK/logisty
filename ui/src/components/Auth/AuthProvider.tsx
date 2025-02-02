@@ -4,11 +4,14 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import { P, match } from "ts-pattern"
 
 import {
-  AuthenticationErrors,
+  AccessTokenErrorTypes,
   AxiosBackendError,
   authAxiosInstance,
+  patternErrors,
 } from "@/common"
-import { refresh } from "@/features/auth/authentication.api"
+import { fetchCurrentUser, refresh } from "@/features/auth/authentication.api"
+import { useDispatch } from "react-redux"
+import { removeUser, setUser } from "@/features/auth"
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -35,6 +38,8 @@ export const AuthContext = createContext<AuthContextType>({
 })
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const dispatch = useDispatch()
+
   const [tokens, setTokens_] = useState<Tokens>({
     accessToken: localStorage.getItem("accessToken"),
     refreshToken: localStorage.getItem("refreshToken"),
@@ -68,13 +73,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       response => response,
       async (error: AxiosBackendError) => {
         const { errors } = error.response?.data ?? { errors: [] }
-        if (errors.includes(AuthenticationErrors.TOKEN_EXPIRED_OR_NOT_FOUND)) {
-          if (!tokens.refreshToken) {
-            return Promise.reject(error)
-          }
-          await refreshMutate({ refreshToken: tokens.refreshToken })
-        }
-        return Promise.reject(error)
+
+        return match(errors)
+          .with(patternErrors(AccessTokenErrorTypes), async () => {
+            if (!tokens.refreshToken) {
+              return Promise.reject(error)
+            }
+
+            await refreshMutate({ refreshToken: tokens.refreshToken })
+            return await Promise.resolve(error)
+          })
+          .otherwise(() => Promise.reject(error))
       },
     )
   }
@@ -89,9 +98,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (tokens.accessToken && tokens.refreshToken) {
       localStorage.setItem("accessToken", tokens.accessToken)
       localStorage.setItem("refreshToken", tokens.refreshToken)
+
+      fetchCurrentUser()
+        .then(user => dispatch(setUser(user)))
+        .catch(() => dispatch(removeUser()))
     } else {
       localStorage.removeItem("accessToken")
       localStorage.removeItem("refreshToken")
+      dispatch(removeUser())
     }
   }, [tokens])
 

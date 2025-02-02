@@ -11,14 +11,17 @@ import com.logisty.core.domain.BusinessExceptions.InvitationExpiredException
 import com.logisty.core.domain.BusinessExceptions.InvitationNotFoundException
 import com.logisty.core.domain.BusinessExceptions.UserAlreadyExistsException
 import com.logisty.core.domain.hub.FleetHub
+import com.logisty.core.domain.model.Invitation
 import com.logisty.core.domain.model.values.FirstName
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.FleetName
 import com.logisty.core.domain.model.values.InvitationId
+import com.logisty.core.domain.model.values.InvitationStatus
 import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserPassword
+import com.logisty.core.domain.model.values.UserRole
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.Instant
 
 // create fleet
 data class CreateFleetRequest(
@@ -42,11 +46,42 @@ data class CreateInvitationRequest(
     val email: UserEmail,
     val firstName: FirstName,
     val lastName: LastName,
+    val roles: List<UserRole>,
 )
 
 data class CreateInvitationResponse(
     val invitationId: InvitationId,
 )
+
+// get invitation
+data class GetInvitationResponse(
+    val invitationId: InvitationId,
+    val fleetId: FleetId,
+    val fleetName: FleetName,
+    val firstName: FirstName,
+    val lastName: LastName,
+    val email: UserEmail,
+    val status: InvitationStatus,
+    val roles: List<UserRole>,
+    val createdAt: Instant,
+    val expiresAt: Instant,
+    val acceptedAt: Instant?,
+)
+
+fun Invitation.toGetInvitationResponse() =
+    GetInvitationResponse(
+        invitationId = invitationId,
+        fleetId = fleetId,
+        fleetName = fleetName,
+        firstName = firstName,
+        lastName = lastName,
+        email = email,
+        status = status,
+        roles = roles,
+        createdAt = createdAt,
+        expiresAt = expiresAt,
+        acceptedAt = acceptedAt,
+    )
 
 // accept invitation
 data class AcceptInvitationRequest(
@@ -80,7 +115,7 @@ class FleetController(
     fun createInvitation(
         @PathVariable fleetId: FleetId,
         @RequestBody request: CreateInvitationRequest,
-    ) = runCatching { fleetHub.createInvitation(fleetId, request.email, request.firstName, request.lastName) }
+    ) = runCatching { fleetHub.createInvitation(fleetId, request.email, request.firstName, request.lastName, request.roles) }
         .map { ResponseEntity.ok(CreateInvitationResponse(it)) }
         .getOrElse {
             when (it) {
@@ -113,7 +148,7 @@ class FleetController(
     fun getInvitation(
         @PathVariable invitationId: InvitationId,
     ) = runCatching { fleetHub.getInvitation(invitationId) }
-        .map { ResponseEntity.ok(it) }
+        .map { ResponseEntity.ok(it.toGetInvitationResponse()) }
         .getOrElse {
             when (it) {
                 is InvitationNotFoundException -> it.toNotFoundResponseEntity()

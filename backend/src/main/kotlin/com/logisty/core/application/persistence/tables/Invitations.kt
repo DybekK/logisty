@@ -10,6 +10,7 @@ object Invitations : Table() {
     val firstName = varchar("first_name", 255)
     val lastName = varchar("last_name", 255)
     val status = varchar("status", 255)
+    val roles = array<String>("roles")
     val createdAt = timestamp("created_at")
     val expiresAt = timestamp("expires_at")
     val acceptedAt = timestamp("accepted_at").nullable()

@@ -21,13 +21,16 @@ class InvitationAccepter(
     private val userRepository: UserRepository,
     private val invitationRepository: InvitationRepository,
 ) {
-    fun accept(invitationId: InvitationId, password: UserPassword): UserId =
+    fun accept(
+        invitationId: InvitationId,
+        password: UserPassword,
+    ): UserId =
         getInvitation(invitationId).let {
             it.validateInvitationStatus()
             it.validateInvitationExpiration()
 
             invitationRepository.acceptInvitation(invitationId)
-            userRepository.createUser(it.fleetId, it.firstName, it.lastName, it.email, password)
+            userRepository.createUser(it.fleetId, it.firstName, it.lastName, it.email, password, it.roles)
         }
 
     private fun getInvitation(invitationId: InvitationId) =

@@ -7,6 +7,7 @@ import com.logisty.core.domain.ErrorCode
 import com.logisty.core.domain.model.values.FirstName
 import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.UserEmail
+import com.logisty.core.domain.model.values.UserRole
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -17,7 +18,7 @@ class CreateInvitationFunctionalTest : FunctionalTest() {
 
         // given
         val inviteRequest =
-            CreateInvitationRequest(UserEmail("test-user@example.com"), FirstName("John"), LastName("Doe"))
+            CreateInvitationRequest(UserEmail("test-user@example.com"), FirstName("John"), LastName("Doe"), listOf(UserRole.DRIVER))
 
         // when & then
         routes
@@ -34,7 +35,7 @@ class CreateInvitationFunctionalTest : FunctionalTest() {
 
         // given
         val inviteRequest =
-            CreateInvitationRequest(UserEmail("test-user@example.com"), FirstName("John"), LastName("Doe"))
+            CreateInvitationRequest(UserEmail("test-user@example.com"), FirstName("John"), LastName("Doe"), listOf(UserRole.DRIVER))
 
         routes
             .createInvitation(
@@ -59,7 +60,7 @@ class CreateInvitationFunctionalTest : FunctionalTest() {
 
         // given
         val inviteRequest =
-            CreateInvitationRequest(fixtures.user.email, fixtures.user.firstName, fixtures.user.lastName)
+            CreateInvitationRequest(fixtures.user.email, fixtures.user.firstName, fixtures.user.lastName, listOf(UserRole.DRIVER))
 
         // when & then
         routes

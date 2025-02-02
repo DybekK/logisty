@@ -2,10 +2,12 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
 
 import { configureStore } from "@reduxjs/toolkit"
 
+import { authReducer } from "@/features/auth"
 import { createNewOrderReducer, ordersReducer } from "@/features/order"
 
 export const store = configureStore({
   reducer: {
+    auth: authReducer,
     createNewOrder: createNewOrderReducer,
     orders: ordersReducer,
   },

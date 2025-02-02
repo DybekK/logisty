@@ -13,6 +13,7 @@ import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserPassword
+import com.logisty.core.domain.model.values.UserRole
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Duration
@@ -24,7 +25,7 @@ class AcceptInvitationFunctionalTest : FunctionalTest() {
 
         // given
         val inviteRequest =
-            CreateInvitationRequest(UserEmail("test-user@example.com"), FirstName("John"), LastName("Doe"))
+            CreateInvitationRequest(UserEmail("test-user@example.com"), FirstName("John"), LastName("Doe"), listOf(UserRole.DRIVER))
         val acceptRequest =
             AcceptInvitationRequest(UserPassword("password"))
 
@@ -40,8 +41,6 @@ class AcceptInvitationFunctionalTest : FunctionalTest() {
 
     @Test
     fun `should return 400 when invitation does not exist`() {
-        val (jwt, _) = routes.authenticateAndReturn()
-
         // given
         val nonExistentInvitationId = InvitationId.generate()
 
@@ -51,15 +50,12 @@ class AcceptInvitationFunctionalTest : FunctionalTest() {
             .acceptInvitation(
                 nonExistentInvitationId,
                 acceptRequest,
-                jwt,
             ).andExpect(status().isBadRequest)
             .andExpectError(ErrorCode.INVITATION_NOT_FOUND)
     }
 
     @Test
     fun `should return 400 when invitation is already accepted`() {
-        val (jwt, _) = routes.authenticateAndReturn()
-
         // given
         val acceptRequest = AcceptInvitationRequest(UserPassword("password"))
 
@@ -68,7 +64,6 @@ class AcceptInvitationFunctionalTest : FunctionalTest() {
             .acceptInvitation(
                 fixtures.invitation.invitationId,
                 acceptRequest,
-                jwt,
             ).andExpect(status().isBadRequest)
             .andExpectError(ErrorCode.INVITATION_ALREADY_ACCEPTED)
     }
@@ -79,7 +74,7 @@ class AcceptInvitationFunctionalTest : FunctionalTest() {
 
         // given
         val invitationRequest =
-            CreateInvitationRequest(UserEmail("test-user@example.com"), FirstName("John"), LastName("Doe"))
+            CreateInvitationRequest(UserEmail("test-user@example.com"), FirstName("John"), LastName("Doe"), listOf(UserRole.DRIVER))
 
         // when
         val invitationResponse =
@@ -100,7 +95,6 @@ class AcceptInvitationFunctionalTest : FunctionalTest() {
             .acceptInvitation(
                 invitationResponse.invitationId,
                 acceptRequest,
-                jwt,
             ).andExpect(status().isBadRequest)
             .andExpectError(ErrorCode.INVITATION_EXPIRED)
     }

@@ -8,6 +8,7 @@ import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.UserEmail
+import com.logisty.core.domain.model.values.UserRole
 import com.logisty.core.domain.port.FleetRepository
 import com.logisty.core.domain.port.InvitationRepository
 import com.logisty.core.domain.port.UserRepository
@@ -28,12 +29,13 @@ class FleetInvitator(
         email: UserEmail,
         firstName: FirstName,
         lastName: LastName,
+        roles: List<UserRole>,
     ): InvitationId {
         validateFleet(fleetId)
         validateUser(email)
         validateInvitation(email)
 
-        return invitationRepository.createInvitation(fleetId, email, firstName, lastName, clock.instant())
+        return invitationRepository.createInvitation(fleetId, email, firstName, lastName, roles, clock.instant())
     }
 
     private fun validateFleet(fleetId: FleetId) =

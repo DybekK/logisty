@@ -6,6 +6,7 @@ import com.logisty.core.adapter.inbound.AuthenticationResponse
 import com.logisty.core.adapter.inbound.CreateFleetRequest
 import com.logisty.core.adapter.inbound.CreateInvitationRequest
 import com.logisty.core.adapter.inbound.CreateInvitationResponse
+import com.logisty.core.adapter.inbound.GetCurrentUserResponse
 import com.logisty.core.adapter.inbound.RefreshTokenRequest
 import com.logisty.core.application.mapper
 import com.logisty.core.application.security.SecurityErrorCode
@@ -32,6 +33,14 @@ class FunctionalHttpTemplate(
     private val fixtures: Fixtures,
 ) {
     // auth
+    fun getCurrentUser(jwt: JwtAccess): ResultActions =
+        mockMvc
+            .perform(
+                get("/api/auth/me")
+                    .header("Authorization", "Bearer ${jwt.value}")
+                    .contentType(MediaType.APPLICATION_JSON),
+            )
+
     fun authenticateAndReturn(
         email: UserEmail = fixtures.user.email,
         password: UserPassword = fixtures.user.password,
@@ -102,12 +111,10 @@ class FunctionalHttpTemplate(
     fun acceptInvitation(
         invitationId: InvitationId,
         request: AcceptInvitationRequest,
-        jwt: JwtAccess,
     ): ResultActions =
         mockMvc.perform(
             post("/api/fleets/invitations/${invitationId.value}/accept")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer ${jwt.value}")
                 .content(mapper.writeValueAsString(request)),
         )
 
@@ -119,7 +126,7 @@ class FunctionalHttpTemplate(
     ): ResultActions =
         createInvitation(fleetId, inviteRequest, jwt)
             .andReturnResponse<CreateInvitationResponse>()
-            .let { invitationResponse -> acceptInvitation(invitationResponse.invitationId, acceptRequest, jwt) }
+            .let { invitationResponse -> acceptInvitation(invitationResponse.invitationId, acceptRequest) }
 }
 
 inline fun <reified T> ResultActions.andReturnResponse(): T = readResponse<T>(andReturn().response)
