@@ -1,14 +1,18 @@
 {
     "acceptInvitation": {
-        "title": "Zaakceptuj zaproszenie od <span>{{inviter}}</span>",
+        "title": "Zaakceptuj zaproszenie od <0>{{inviter}}</0>",
         "email": "Email",
         "password": "Hasło",
         "accept": "Zaakceptuj zaproszenie i utwórz konto",
+        "success": "Zaproszenie zaakceptowane pomyślnie, możesz teraz się zalogować",
         "inputs": {
             "password": "Wprowadź swoje nowe hasło",
             "errors": {
                 "passwordMinLength": "Hasło musi mieć minimum 8 znaków"
             }
+        },
+        "fallbacks": {
+            "invalidInvitation": "Zaproszenie wygasło lub zostało już zaakceptowane"
         }
     }
 }

@@ -1,12 +1,33 @@
+import { useMutation } from "@tanstack/react-query"
+import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
-import { Button, Card, Form, Input, Layout, Typography, theme } from "antd"
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Layout,
+  Typography,
+  message,
+  theme,
+} from "antd"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { match } from "ts-pattern"
 import { z } from "zod"
 
+import { AxiosBackendError, patternErrors } from "@/common"
+import {
+  acceptInvitation,
+  useFetchInvitation,
+} from "@/features/invitation/invitation.api"
+import {
+  AcceptInvitationErrorTypes,
+  InvitationStatus,
+} from "@/features/invitation/invitation.types"
 import { Routes } from "@/router"
 
 const layoutStyle: React.CSSProperties = {
@@ -53,7 +74,8 @@ export const AcceptInvitation = () => {
   } = theme.useToken()
   const navigate = useNavigate()
 
-  const { t } = useTranslation("invitation")
+  const { t: tApi } = useTranslation("api")
+  const { t, ready: tReady } = useTranslation("invitation")
   const { invitationId } = useParams<{ invitationId: string }>()
 
   const invitationSchema = z.object({
@@ -63,20 +85,54 @@ export const AcceptInvitation = () => {
   })
   type InvitationFormData = z.infer<typeof invitationSchema>
 
+  const { data: invitation, error } = useFetchInvitation(invitationId!)
+
+  useEffect(() => {
+    if (error) {
+      navigate(Routes.PENDING_ORDERS)
+    }
+  }, [error, navigate])
+
+  useEffect(() => {
+    if (!tReady) return
+
+    if (invitation && invitation.status !== InvitationStatus.PENDING) {
+      message.error(t("acceptInvitation.fallbacks.invalidInvitation"))
+      navigate(Routes.LOGIN)
+    }
+  }, [tReady, t, invitation, navigate])
+
+  const {
+    mutateAsync: acceptInvitationMutate,
+    isPending: isAcceptingInvitation,
+  } = useMutation({
+    mutationFn: (data: InvitationFormData) =>
+      acceptInvitation(invitationId!, data.password),
+    onSuccess: () => {
+      message.success(t("acceptInvitation.success"))
+      navigate(Routes.LOGIN)
+    },
+    onError: (error: AxiosBackendError) => {
+      match(error.response?.data)
+        .with(patternErrors(AcceptInvitationErrorTypes), () => {
+          message.error(t("acceptInvitation.fallbacks.invalidInvitation"))
+        })
+        .otherwise(() => {
+          message.error(tApi("fallback"))
+        })
+    },
+  })
+
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<InvitationFormData>({
     resolver: zodResolver(invitationSchema),
     defaultValues: {
       password: "",
     },
   })
-
-  const onSubmit = async ({ password }: InvitationFormData) => {
-    navigate(Routes.LOGIN)
-  }
 
   return (
     <Layout style={{ ...layoutStyle, background: colorBgLayout }}>
@@ -87,7 +143,7 @@ export const AcceptInvitation = () => {
               <Trans
                 t={t}
                 i18nKey="acceptInvitation.title"
-                values={{ inviter: "Cargo Express" }}
+                values={{ inviter: invitation?.fleetName }}
                 components={[
                   <Typography.Text
                     key="span"
@@ -97,11 +153,16 @@ export const AcceptInvitation = () => {
               />
             </Typography.Title>
           </div>
-          <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
+          <Form
+            layout="vertical"
+            onFinish={handleSubmit(validated =>
+              acceptInvitationMutate(validated),
+            )}
+          >
             <Form.Item label={t("acceptInvitation.email")}>
               <Input
                 type="email"
-                placeholder={t("acceptInvitation.email")}
+                placeholder={invitation?.email}
                 disabled
                 style={inputStyle}
               />
@@ -127,7 +188,7 @@ export const AcceptInvitation = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                loading={isSubmitting}
+                loading={isAcceptingInvitation}
                 style={buttonStyle}
               >
                 {t("acceptInvitation.accept")}

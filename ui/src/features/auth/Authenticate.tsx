@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
@@ -15,10 +15,14 @@ import {
 } from "antd"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { P, match } from "ts-pattern"
+import { match } from "ts-pattern"
 import { z } from "zod"
 
-import { AuthenticationErrorTypes } from "@/common"
+import {
+  AuthenticationErrorTypes,
+  AxiosBackendError,
+  patternErrors,
+} from "@/common"
 import { useAuth } from "@/components"
 import { authenticate } from "@/features/auth/authentication.api"
 import { Routes } from "@/router"
@@ -67,7 +71,6 @@ export const Authenticate = () => {
     token: { colorBgLayout },
   } = theme.useToken()
 
-  const queryClient = useQueryClient()
   const { setTokens } = useAuth()
   const navigate = useNavigate()
 
@@ -94,24 +97,23 @@ export const Authenticate = () => {
     },
   })
 
-  const onSubmit = async ({ email, password }: LoginFormData) => {
-    const response = await authenticate(queryClient, {
-      email,
-      password,
-    })
-
-    match(response)
-      .with({ refreshToken: P.string, accessToken: P.string }, tokens => {
+  const { mutateAsync: authenticateMutate, isPending: isAuthenticating } =
+    useMutation({
+      mutationFn: authenticate,
+      onSuccess: tokens => {
         setTokens(tokens)
         navigate(Routes.PENDING_ORDERS)
-      })
-      .with({ errors: AuthenticationErrorTypes }, () =>
-        message.error(tAuth("authenticate.fallbacks.invalidCredentials")),
-      )
-      .otherwise(() => {
-        message.error(tApi("fallback"))
-      })
-  }
+      },
+      onError: (error: AxiosBackendError) => {
+        match(error.response?.data)
+          .with(patternErrors(AuthenticationErrorTypes), () => {
+            message.error(tAuth("authenticate.fallbacks.invalidCredentials"))
+          })
+          .otherwise(() => {
+            message.error(tApi("fallback"))
+          })
+      },
+    })
 
   return (
     <Layout style={{ ...layoutStyle, background: colorBgLayout }}>
@@ -124,7 +126,7 @@ export const Authenticate = () => {
           </div>
           <Form
             layout="vertical"
-            onFinish={handleSubmit(onSubmit)}
+            onFinish={handleSubmit(validated => authenticateMutate(validated))}
             style={customFormStyle}
           >
             <Controller
@@ -166,7 +168,7 @@ export const Authenticate = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                loading={isSubmitting}
+                loading={isSubmitting || isAuthenticating}
                 style={buttonStyle}
               >
                 {tAuth("authenticate.signIn")}

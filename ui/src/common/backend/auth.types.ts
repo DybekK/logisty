@@ -1,5 +1,3 @@
-import { BackendResponse } from "@/common"
-
 export interface AuthenticateRequest {
   email: string
   password: string
@@ -29,17 +27,7 @@ export const AuthenticationErrorTypes = [
   AuthenticationErrors.BAD_CREDENTIALS,
 ] as const
 
-export type AuthenticationBackendResponse = BackendResponse<
-  AuthenticateResponse,
-  (typeof AuthenticationErrorTypes)[number]
->
-
 export const RefreshTokenErrorTypes = [
   AuthenticationErrors.INVALID_TOKEN_STRUCTURE,
   AuthenticationErrors.TOKEN_EXPIRED_OR_NOT_FOUND,
 ] as const
-
-export type RefreshTokenBackendResponse = BackendResponse<
-  RefreshTokenResponse,
-  (typeof RefreshTokenErrorTypes)[number]
->

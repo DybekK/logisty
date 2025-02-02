@@ -1,7 +1,12 @@
-export type BackendError = string
+import { AxiosError } from "axios"
+import { P } from "ts-pattern"
 
-export interface BackendErrors<E extends BackendError> {
-  errors: E[]
+export interface BackendErrors {
+  errors: string[]
 }
 
-export type BackendResponse<T, E extends BackendError> = T | BackendErrors<E>
+export type AxiosBackendError = AxiosError<BackendErrors>
+
+export const patternErrors = <T extends string>(
+  errorTypes: readonly [T, ...T[]],
+) => P.shape({ errors: P.array(P.union(...errorTypes)) })
