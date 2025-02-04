@@ -2,14 +2,25 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom"
 
 import { ProtectedRoute } from "@/components"
 import { Authenticate } from "@/features/auth/Authenticate"
-import { AcceptInvitation } from "@/features/invitation"
+import {
+  AcceptInvitation,
+  CreateInvitation,
+  InvitationStatus,
+  InvitationTable,
+} from "@/features/invitation"
 import { OrderStatus } from "@/features/order"
 import { OrderTable } from "@/features/order/filter"
 import { NewOrderForm } from "@/features/order/new"
 
 export enum Routes {
   LOGIN = "/login",
-  ACCEPT_INVITATION = "/accept-invitation",
+
+  // invitation
+  INVITATIONS = "/invitations",
+  CREATE_INVITATION = "/invitations/create",
+  ACCEPT_INVITATION = "/invitations/accept",
+
+  // order
   NEW_ORDER = "/orders/new",
   PENDING_ORDERS = "/orders/pending",
   COMPLETED_ORDERS = "/orders/completed",
@@ -32,6 +43,18 @@ export const Router = () => {
       path: "/",
       element: <ProtectedRoute />,
       children: [
+        // invitation
+        {
+          path: Routes.INVITATIONS,
+          element: (
+            <InvitationTable invitationStatus={InvitationStatus.PENDING} />
+          ),
+        },
+        {
+          path: Routes.CREATE_INVITATION,
+          element: <CreateInvitation />,
+        },
+        // order
         {
           path: Routes.PENDING_ORDERS,
           element: <OrderTable orderStatus={OrderStatus.PENDING} />,

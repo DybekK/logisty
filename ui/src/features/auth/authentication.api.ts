@@ -4,8 +4,8 @@ import {
   RefreshTokenRequest,
   RefreshTokenResponse,
   User,
-  axiosInstance,
   authAxiosInstance,
+  axiosInstance,
   handleAxiosResponse,
 } from "@/common"
 

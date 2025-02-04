@@ -1,4 +1,32 @@
 {
+    "createInvitation": {
+        "title": "Create invitation",
+        "email": "Email",
+        "role": "Role",
+        "roles": {
+            "driver": "Driver",
+            "dispatcher": "Dispatcher"
+        },
+        "firstName": "First name",
+        "lastName": "Last name",
+        "phoneNumber": "Phone number",
+        "dateOfBirth": "Date of birth",
+        "street": "Street",
+        "streetNumber": "Street number",
+        "apartmentNumber": "Apartment number",
+        "city": "City",
+        "stateProvince": "State/Province",
+        "postalCode": "Postal code",
+        "submit": "Send invitation",
+        "success": "Invitation sent successfully",
+        "inputs": {
+            "dateOfBirth": "Select date of birth",
+            "errors": {
+                "required": "This field is required",
+                "invalidEmail": "Invalid email address"
+            }
+        }
+    },
     "acceptInvitation": {
         "title": "Accept invitation from <0>{{inviter}}</0>",
         "email": "Email",
@@ -14,5 +42,8 @@
         "fallbacks": {
             "invalidInvitation": "Invitation expired or is already accepted"
         }
+    },
+    "filterInvitations": {
+        "createInvitation": "Invite new user"
     }
 }

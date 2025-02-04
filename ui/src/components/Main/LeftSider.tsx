@@ -7,8 +7,8 @@ import {
   CarryOutOutlined,
   LaptopOutlined,
   Loading3QuartersOutlined,
-  UserOutlined,
   UserAddOutlined,
+  UserOutlined,
   UsergroupAddOutlined,
 } from "@ant-design/icons"
 import { Layout, Menu, MenuProps, theme } from "antd"
@@ -59,11 +59,13 @@ export const LeftSider: React.FC = () => {
           label: "Aktywne",
           key: "active",
           icon: <UsergroupAddOutlined />,
+          onClick: () => navigate(Routes.INVITATIONS),
         },
         {
           label: "Zaproś",
           key: "invite",
           icon: <UserAddOutlined />,
+          onClick: () => navigate(Routes.CREATE_INVITATION),
         },
       ],
     },

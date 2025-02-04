@@ -10,7 +10,7 @@ export const authAxiosInstance = axios.create({
   timeout: 2000,
 })
 
-authAxiosInstance.interceptors.request.use((config) => {
+authAxiosInstance.interceptors.request.use(config => {
   const token = localStorage.getItem("accessToken")
   if (token) {
     config.headers.Authorization = `Bearer ${token}`

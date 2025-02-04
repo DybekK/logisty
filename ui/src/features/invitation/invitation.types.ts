@@ -1,7 +1,23 @@
+import { UserRole } from "@/common"
+
 export enum InvitationStatus {
   PENDING = "PENDING",
   ACCEPTED = "ACCEPTED",
   REJECTED = "REJECTED",
+}
+
+export interface CreateInvitationRequest {
+  email: string
+  role: UserRole
+  firstName: string
+  lastName: string
+  phoneNumber: string
+  street: string
+  streetNumber: string
+  apartmentNumber?: string
+  city: string
+  stateProvince: string
+  postalCode: string
 }
 
 export interface GetInvitationResponse {
