@@ -4,6 +4,7 @@ import {
   RefreshTokenRequest,
   RefreshTokenResponse,
   User,
+  axiosInstance,
   authAxiosInstance,
   axiosInstance,
   handleAxiosResponse,
