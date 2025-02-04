@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     authAxiosInstance.interceptors.response.use(
       response => response,
       async (error: AxiosBackendError) => {
-        const { errors } = error.response?.data ?? { errors: [] }
+        const errors = error.response?.data ?? { errors: [] }
 
         return match(errors)
           .with(patternErrors(AccessTokenErrorTypes), async () => {

@@ -1,5 +1,10 @@
 import axios, { AxiosResponse } from "axios"
 
+export const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+  timeout: 2000,
+})
+
 export const authAxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
   timeout: 2000,
