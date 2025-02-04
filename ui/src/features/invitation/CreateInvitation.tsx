@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
@@ -7,17 +8,20 @@ import {
   Col,
   DatePicker,
   Form,
-  Input, message,
+  Input,
   Row,
   Select,
+  message,
 } from "antd"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import dayjs from "dayjs"
+import { match } from "ts-pattern"
 import { z } from "zod"
 
-import { AxiosBackendError, useAppSelector, UserRole } from "@/common"
-import { useMutation } from "@tanstack/react-query"
-import { createInvitation } from "./invitation.api"
+import { AxiosBackendError, UserRole, useAppSelector } from "@/common"
+import { createInvitation } from "@/features/invitation/invitation.api"
+import { InvitationErrors } from "@/features/invitation/invitation.types"
 
 const inputStyle: React.CSSProperties = {
   borderRadius: "5px",
@@ -28,10 +32,10 @@ const buttonStyle: React.CSSProperties = {
 }
 
 interface CreateInvitationProps {
-  onCloseModal?: () => void
+  onSuccess?: () => void
 }
 
-export const CreateInvitation = ({ onCloseModal }: CreateInvitationProps) => {
+export const CreateInvitation = ({ onSuccess }: CreateInvitationProps) => {
   const { t: tApi } = useTranslation("api")
   const { t } = useTranslation("invitation")
 
@@ -39,7 +43,7 @@ export const CreateInvitation = ({ onCloseModal }: CreateInvitationProps) => {
 
   const invitationSchema = z.object({
     email: z.string().email(t("createInvitation.inputs.errors.invalidEmail")),
-    role: z.nativeEnum(UserRole),
+    roles: z.nativeEnum(UserRole),
     firstName: z.string().min(1, t("createInvitation.inputs.errors.required")),
     lastName: z.string().min(1, t("createInvitation.inputs.errors.required")),
     phoneNumber: z
@@ -61,16 +65,18 @@ export const CreateInvitation = ({ onCloseModal }: CreateInvitationProps) => {
 
   const {
     control,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<InvitationFormData>({
     resolver: zodResolver(invitationSchema),
     defaultValues: {
       email: "",
-      role: UserRole.DRIVER,
+      roles: UserRole.DRIVER,
       firstName: "",
       lastName: "",
       phoneNumber: "",
+      dateOfBirth: undefined,
       street: "",
       streetNumber: "",
       apartmentNumber: "",
@@ -80,17 +86,34 @@ export const CreateInvitation = ({ onCloseModal }: CreateInvitationProps) => {
     },
   })
 
-  const { mutateAsync: createInvitationMutate, isPending: isCreatingInvitation } =
-    useMutation({
-      mutationFn: (data: InvitationFormData) => createInvitation(fleetId, data),
-      onSuccess: () => {
-        message.success(t("createInvitation.success"))
-        onCloseModal?.()
-      },
-      onError: (error: AxiosBackendError) => {
-        message.error(tApi("fallback"))
-      },
-    })
+  const {
+    mutateAsync: createInvitationMutate,
+    isPending: isCreatingInvitation,
+  } = useMutation({
+    mutationFn: (data: InvitationFormData) =>
+      createInvitation(fleetId, {
+        ...data,
+        roles: [data.roles],
+      }),
+    onSuccess: () => {
+      message.success(t("createInvitation.success"))
+
+      reset()
+      onSuccess?.()
+    },
+    onError: (error: AxiosBackendError) => {
+      match(error.response?.data)
+        .with({ errors: [InvitationErrors.USER_ALREADY_EXISTS] }, () => {
+          message.error(t("createInvitation.fallbacks.userAlreadyExists"))
+        })
+        .with({ errors: [InvitationErrors.INVITATION_ALREADY_EXISTS] }, () => {
+          message.error(t("createInvitation.fallbacks.invitationAlreadyExists"))
+        })
+        .otherwise(() => {
+          message.error(tApi("fallback"))
+        })
+    },
+  })
 
   return (
     <Card>
@@ -113,13 +136,13 @@ export const CreateInvitation = ({ onCloseModal }: CreateInvitationProps) => {
           </Col>
           <Col span={12}>
             <Controller
-              name="role"
+              name="roles"
               control={control}
               render={({ field }) => (
                 <Form.Item
                   label={t("createInvitation.role")}
-                  validateStatus={errors.role ? "error" : undefined}
-                  help={errors.role?.message}
+                  validateStatus={errors.roles ? "error" : undefined}
+                  help={errors.roles?.message}
                 >
                   <Select
                     {...field}
@@ -192,7 +215,7 @@ export const CreateInvitation = ({ onCloseModal }: CreateInvitationProps) => {
             <Controller
               name="dateOfBirth"
               control={control}
-              render={({ field }) => (
+              render={({ field: { value, onChange, ...field } }) => (
                 <Form.Item
                   label={t("createInvitation.dateOfBirth")}
                   validateStatus={errors.dateOfBirth ? "error" : undefined}
@@ -203,6 +226,8 @@ export const CreateInvitation = ({ onCloseModal }: CreateInvitationProps) => {
                 >
                   <DatePicker
                     {...field}
+                    value={value ? dayjs(value) : null}
+                    onChange={date => onChange(date?.toDate())}
                     placeholder={t("createInvitation.inputs.dateOfBirth")}
                     style={{ ...inputStyle, width: "100%" }}
                   />
@@ -249,9 +274,7 @@ export const CreateInvitation = ({ onCloseModal }: CreateInvitationProps) => {
               render={({ field }) => (
                 <Form.Item
                   label={t("createInvitation.apartmentNumber")}
-                  validateStatus={
-                    errors.apartmentNumber ? "error" : undefined
-                  }
+                  validateStatus={errors.apartmentNumber ? "error" : undefined}
                   help={errors.apartmentNumber?.message}
                 >
                   <Input {...field} style={inputStyle} />
@@ -283,9 +306,7 @@ export const CreateInvitation = ({ onCloseModal }: CreateInvitationProps) => {
               render={({ field }) => (
                 <Form.Item
                   label={t("createInvitation.stateProvince")}
-                  validateStatus={
-                    errors.stateProvince ? "error" : undefined
-                  }
+                  validateStatus={errors.stateProvince ? "error" : undefined}
                   help={errors.stateProvince?.message}
                 >
                   <Input {...field} style={inputStyle} />

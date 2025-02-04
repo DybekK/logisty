@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
 
-import {
-  GetInvitationResponse,
-  CreateInvitationRequest,
-} from "@/features/invitation/invitation.types"
-
 import { authAxiosInstance, handleAxiosResponse } from "@/common"
+import {
+  CreateInvitationRequest,
+  GetInvitationResponse,
+  GetInvitationsQuery,
+  GetInvitationsResponse,
+} from "@/features/invitation/invitation.types"
 
 const fetchInvitationKey = "fetchInvitation"
 
@@ -21,6 +22,26 @@ export const useFetchInvitation = (invitationId: string) =>
     queryKey: [fetchInvitationKey, invitationId],
     queryFn: () => fetchInvitation(invitationId),
     retry: false,
+  })
+
+export const fetchInvitations = async (
+  query: GetInvitationsQuery,
+): Promise<GetInvitationsResponse> =>
+  authAxiosInstance
+    .get(`/fleets/${query.fleetId}/invitations`, {
+      params: {
+        limit: query.limit,
+        page: query.page,
+        status: query.status,
+        email: query.email,
+      },
+    })
+    .then(handleAxiosResponse)
+
+export const useFetchInvitations = (query: GetInvitationsQuery) =>
+  useQuery({
+    queryKey: [fetchInvitationKey, query],
+    queryFn: () => fetchInvitations(query),
   })
 
 export const createInvitation = async (

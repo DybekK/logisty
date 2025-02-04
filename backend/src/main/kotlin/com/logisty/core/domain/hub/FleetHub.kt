@@ -1,15 +1,13 @@
 package com.logisty.core.domain.hub
 
 import com.logisty.core.domain.model.Invitation
-import com.logisty.core.domain.model.values.FirstName
+import com.logisty.core.domain.model.command.CreateInvitationCommand
+import com.logisty.core.domain.model.query.GetInvitationsQuery
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.FleetName
 import com.logisty.core.domain.model.values.InvitationId
-import com.logisty.core.domain.model.values.LastName
-import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserPassword
-import com.logisty.core.domain.model.values.UserRole
 import com.logisty.core.domain.service.FleetCreator
 import com.logisty.core.domain.service.FleetInvitator
 import com.logisty.core.domain.service.InvitationAccepter
@@ -27,15 +25,11 @@ class FleetHub(
     fun createFleet(fleetName: FleetName): FleetId = fleetCreator.createFleet(fleetName)
 
     // invitation
+    fun getInvitations(query: GetInvitationsQuery): Pair<List<Invitation>, Long> = invitationService.getInvitations(query)
+
     fun getInvitation(invitationId: InvitationId): Invitation = invitationService.getInvitation(invitationId)
 
-    fun createInvitation(
-        fleetId: FleetId,
-        email: UserEmail,
-        firstName: FirstName,
-        lastName: LastName,
-        roles: List<UserRole>,
-    ): InvitationId = fleetInvitator.invite(fleetId, email, firstName, lastName, roles)
+    fun createInvitation(command: CreateInvitationCommand): InvitationId = fleetInvitator.invite(command)
 
     fun acceptInvitation(
         invitationId: InvitationId,

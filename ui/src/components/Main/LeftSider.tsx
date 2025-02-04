@@ -51,21 +51,15 @@ export const LeftSider: React.FC = () => {
       ],
     },
     {
-      label: "Zaproszenia",
-      key: "invitations",
+      label: t("fleet.title"),
+      key: "fleet",
       icon: <UserOutlined />,
       children: [
         {
-          label: "Aktywne",
-          key: "active",
+          label: t("fleet.invitations"),
+          key: "invitations",
           icon: <UsergroupAddOutlined />,
           onClick: () => navigate(Routes.INVITATIONS),
-        },
-        {
-          label: "Zaproś",
-          key: "invite",
-          icon: <UserAddOutlined />,
-          onClick: () => navigate(Routes.CREATE_INVITATION),
         },
       ],
     },

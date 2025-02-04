@@ -25,6 +25,10 @@
                 "required": "This field is required",
                 "invalidEmail": "Invalid email address"
             }
+        },
+        "fallbacks": {
+            "userAlreadyExists": "User with given email already exists",
+            "invitationAlreadyExists": "Invitation with given email already exists"
         }
     },
     "acceptInvitation": {
@@ -44,6 +48,21 @@
         }
     },
     "filterInvitations": {
-        "createInvitation": "Invite new user"
+        "createInvitation": "Invite new user",
+        "searchPlaceholder": "Search by email",
+        "empty": "No invitations",
+        "statusPlaceholder": "Select status",
+        "status": "Status",
+        "statuses": {
+            "PENDING": "Pending",
+            "ACCEPTED": "Accepted",
+            "EXPIRED": "Expired"
+        },
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "createdAt": "Created at",
+        "expiresAt": "Expires at",
+        "acceptedAt": "Accepted at"
     }
 }

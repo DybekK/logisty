@@ -1,8 +1,6 @@
 package com.logisty.core.domain.model.values
 
-import java.util.UUID
-
 @JvmInline
-value class UserEmail(
+value class PostalCode(
     val value: String,
 )

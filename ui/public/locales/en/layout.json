@@ -10,6 +10,10 @@
       "new": "Add order",
       "pending": "Pending",
       "completed": "Completed"
+    },
+    "fleet": {
+      "title": "Fleet",
+      "invitations": "Invitations"
     }
   }
 }

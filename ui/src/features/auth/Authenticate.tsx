@@ -126,6 +126,7 @@ export const Authenticate = () => {
           </div>
           <Form
             layout="vertical"
+            size="large"
             onFinish={handleSubmit(validated => authenticateMutate(validated))}
             style={customFormStyle}
           >

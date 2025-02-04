@@ -5,7 +5,6 @@ import { Authenticate } from "@/features/auth/Authenticate"
 import {
   AcceptInvitation,
   CreateInvitation,
-  InvitationStatus,
   InvitationTable,
 } from "@/features/invitation"
 import { OrderStatus } from "@/features/order"
@@ -18,7 +17,7 @@ export enum Routes {
   // invitation
   INVITATIONS = "/invitations",
   CREATE_INVITATION = "/invitations/create",
-  ACCEPT_INVITATION = "/invitations/accept",
+  ACCEPT_INVITATION = "/invitations/:invitationId/accept",
 
   // order
   NEW_ORDER = "/orders/new",
@@ -33,7 +32,7 @@ export const Router = () => {
       element: <Authenticate />,
     },
     {
-      path: `${Routes.ACCEPT_INVITATION}/:invitationId`,
+      path: Routes.ACCEPT_INVITATION,
       element: <AcceptInvitation />,
     },
   ]
@@ -46,9 +45,7 @@ export const Router = () => {
         // invitation
         {
           path: Routes.INVITATIONS,
-          element: (
-            <InvitationTable invitationStatus={InvitationStatus.PENDING} />
-          ),
+          element: <InvitationTable />,
         },
         {
           path: Routes.CREATE_INVITATION,

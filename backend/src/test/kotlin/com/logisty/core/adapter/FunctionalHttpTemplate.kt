@@ -6,7 +6,6 @@ import com.logisty.core.adapter.inbound.AuthenticationResponse
 import com.logisty.core.adapter.inbound.CreateFleetRequest
 import com.logisty.core.adapter.inbound.CreateInvitationRequest
 import com.logisty.core.adapter.inbound.CreateInvitationResponse
-import com.logisty.core.adapter.inbound.GetCurrentUserResponse
 import com.logisty.core.adapter.inbound.RefreshTokenRequest
 import com.logisty.core.application.mapper
 import com.logisty.core.application.security.SecurityErrorCode
@@ -14,6 +13,7 @@ import com.logisty.core.application.security.jwt.values.JwtAccess
 import com.logisty.core.application.security.jwt.values.JwtRefresh
 import com.logisty.core.domain.ErrorCode
 import com.logisty.core.domain.Fixtures
+import com.logisty.core.domain.model.query.GetInvitationsQuery
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.UserEmail
@@ -86,6 +86,20 @@ class FunctionalHttpTemplate(
         )
 
     // invitation
+    fun getInvitations(
+        query: GetInvitationsQuery,
+        jwt: JwtAccess,
+    ): ResultActions =
+        mockMvc.perform(
+            get("/api/fleets/${query.fleetId.value}/invitations")
+                .param("page", query.page.toString())
+                .param("limit", query.limit.toString())
+                .param("status", query.status?.name)
+                .param("email", query.email?.value)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ${jwt.value}"),
+        )
+
     fun getInvitation(
         invitationId: InvitationId,
         jwt: JwtAccess,

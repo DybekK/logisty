@@ -4,12 +4,20 @@ import com.logisty.core.adapter.FunctionalTest
 import com.logisty.core.adapter.andExpectError
 import com.logisty.core.adapter.inbound.CreateInvitationRequest
 import com.logisty.core.domain.ErrorCode
+import com.logisty.core.domain.model.values.ApartmentNumber
+import com.logisty.core.domain.model.values.City
 import com.logisty.core.domain.model.values.FirstName
 import com.logisty.core.domain.model.values.LastName
+import com.logisty.core.domain.model.values.PhoneNumber
+import com.logisty.core.domain.model.values.PostalCode
+import com.logisty.core.domain.model.values.StateProvince
+import com.logisty.core.domain.model.values.Street
+import com.logisty.core.domain.model.values.StreetNumber
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserRole
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
 
 class CreateInvitationFunctionalTest : FunctionalTest() {
     @Test
@@ -18,7 +26,20 @@ class CreateInvitationFunctionalTest : FunctionalTest() {
 
         // given
         val inviteRequest =
-            CreateInvitationRequest(UserEmail("test-user@example.com"), FirstName("John"), LastName("Doe"), listOf(UserRole.DRIVER))
+            CreateInvitationRequest(
+                email = UserEmail("test-user@example.com"),
+                firstName = FirstName("John"),
+                lastName = LastName("Doe"),
+                phoneNumber = PhoneNumber("1234567890"),
+                dateOfBirth = LocalDate.now().minusYears(18),
+                street = Street("Main Street"),
+                streetNumber = StreetNumber("123"),
+                apartmentNumber = ApartmentNumber("A1"),
+                city = City("New York"),
+                stateProvince = StateProvince("NY"),
+                postalCode = PostalCode("10001"),
+                roles = listOf(UserRole.DRIVER),
+            )
 
         // when & then
         routes
@@ -35,7 +56,20 @@ class CreateInvitationFunctionalTest : FunctionalTest() {
 
         // given
         val inviteRequest =
-            CreateInvitationRequest(UserEmail("test-user@example.com"), FirstName("John"), LastName("Doe"), listOf(UserRole.DRIVER))
+            CreateInvitationRequest(
+                email = UserEmail("test-user@example.com"),
+                firstName = FirstName("John"),
+                lastName = LastName("Doe"),
+                phoneNumber = PhoneNumber("1234567890"),
+                dateOfBirth = LocalDate.now().minusYears(18),
+                street = Street("Main Street"),
+                streetNumber = StreetNumber("123"),
+                apartmentNumber = ApartmentNumber("A1"),
+                city = City("New York"),
+                stateProvince = StateProvince("NY"),
+                postalCode = PostalCode("10001"),
+                roles = listOf(UserRole.DRIVER),
+            )
 
         routes
             .createInvitation(
@@ -60,7 +94,20 @@ class CreateInvitationFunctionalTest : FunctionalTest() {
 
         // given
         val inviteRequest =
-            CreateInvitationRequest(fixtures.user.email, fixtures.user.firstName, fixtures.user.lastName, listOf(UserRole.DRIVER))
+            CreateInvitationRequest(
+                email = fixtures.user.email,
+                firstName = fixtures.user.firstName,
+                lastName = fixtures.user.lastName,
+                phoneNumber = PhoneNumber("1234567890"),
+                dateOfBirth = LocalDate.now().minusYears(18),
+                street = Street("Main Street"),
+                streetNumber = StreetNumber("123"),
+                apartmentNumber = ApartmentNumber("A1"),
+                city = City("New York"),
+                stateProvince = StateProvince("NY"),
+                postalCode = PostalCode("10001"),
+                roles = listOf(UserRole.DRIVER),
+            )
 
         // when & then
         routes

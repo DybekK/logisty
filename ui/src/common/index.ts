@@ -1,4 +1,5 @@
 export * from "./axios"
+export * from "./date"
 
 export * from "./backend/auth.types"
 export * from "./backend/backend.types"
