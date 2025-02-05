@@ -1,6 +1,7 @@
 package com.logisty.core.adapter
 
 import com.logisty.core.application.MutableClock
+import com.logisty.core.application.persistence.event.Events
 import com.logisty.core.application.persistence.tables.Fleets
 import com.logisty.core.application.persistence.tables.Invitations
 import com.logisty.core.application.persistence.tables.Users
@@ -54,8 +55,8 @@ open class FunctionalTest {
     @BeforeEach
     fun prepareDatabase() {
         transaction {
-            SchemaUtils.drop(Fleets, Invitations, Users)
-            SchemaUtils.create(Fleets, Invitations, Users)
+            SchemaUtils.drop(Events, Fleets, Invitations, Users)
+            SchemaUtils.create(Events, Fleets, Invitations, Users)
 
             fixtures.createFleet()
             fixtures.createInvitation()

@@ -28,6 +28,7 @@ dependencies {
 	// Database
 	implementation("org.postgresql:postgresql")
 	implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.57.0")
+	implementation("org.jetbrains.exposed:exposed-json:0.57.0")
 	implementation("org.jetbrains.exposed:exposed-java-time:0.57.0")
 
 	// Jackson

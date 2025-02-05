@@ -4,10 +4,13 @@ import com.logisty.core.domain.BusinessExceptions.FleetNotFoundException
 import com.logisty.core.domain.BusinessExceptions.InvitationAlreadyExistsException
 import com.logisty.core.domain.BusinessExceptions.UserAlreadyExistsException
 import com.logisty.core.domain.model.command.CreateInvitationCommand
+import com.logisty.core.domain.model.event.InvitationCreatedEvent
+import com.logisty.core.domain.model.event.InvitationCreatedEvent.InvitationCreatedPayload
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.InvitationStatus
 import com.logisty.core.domain.model.values.UserEmail
+import com.logisty.core.domain.port.EventStore
 import com.logisty.core.domain.port.FleetRepository
 import com.logisty.core.domain.port.InvitationRepository
 import com.logisty.core.domain.port.UserRepository
@@ -19,6 +22,7 @@ import java.time.Clock
 @Transactional
 class FleetInvitator(
     private val clock: Clock,
+    private val eventStore: EventStore,
     private val fleetRepository: FleetRepository,
     private val userRepository: UserRepository,
     private val invitationRepository: InvitationRepository,
@@ -28,7 +32,9 @@ class FleetInvitator(
         validateUser(command.email)
         validateInvitation(command.email)
 
-        return invitationRepository.createInvitation(command, clock.instant())
+        return invitationRepository
+            .createInvitation(command, clock.instant())
+            .also { eventStore.append(command.toInvitationCreatedEvent(it, clock)) }
     }
 
     private fun validateFleet(fleetId: FleetId) =
@@ -48,3 +54,19 @@ class FleetInvitator(
         }
     }
 }
+
+private fun CreateInvitationCommand.toInvitationCreatedEvent(
+    invitationId: InvitationId,
+    clock: Clock,
+): InvitationCreatedEvent =
+    InvitationCreatedEvent(
+        fleetId = fleetId,
+        appendedAt = clock.instant(),
+        payload =
+            InvitationCreatedPayload(
+                invitationId = invitationId,
+                email = email,
+                firstName = firstName,
+                lastName = lastName,
+            ),
+    )
