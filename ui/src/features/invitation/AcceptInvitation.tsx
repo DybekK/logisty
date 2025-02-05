@@ -154,6 +154,7 @@ export const AcceptInvitation = () => {
             </Typography.Title>
           </div>
           <Form
+            size="large"
             layout="vertical"
             onFinish={handleSubmit(validated =>
               acceptInvitationMutate(validated),

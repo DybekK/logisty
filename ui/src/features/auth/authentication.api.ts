@@ -5,18 +5,19 @@ import {
   RefreshTokenResponse,
   User,
   authAxiosInstance,
+  axiosInstance,
   handleAxiosResponse,
 } from "@/common"
 
 export const authenticate = async (
   request: AuthenticateRequest,
 ): Promise<AuthenticateResponse> =>
-  authAxiosInstance.post(`/auth`, request).then(handleAxiosResponse)
+  axiosInstance.post(`/auth`, request).then(handleAxiosResponse)
 
 export const refresh = async (
   request: RefreshTokenRequest,
 ): Promise<RefreshTokenResponse> =>
-  authAxiosInstance.post(`/auth/refresh`, request).then(handleAxiosResponse)
+  axiosInstance.post(`/auth/refresh`, request).then(handleAxiosResponse)
 
 export const fetchCurrentUser = async (): Promise<User> =>
   authAxiosInstance.get(`/auth/me`).then(handleAxiosResponse)

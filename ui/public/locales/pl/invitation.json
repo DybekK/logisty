@@ -1,4 +1,36 @@
 {
+    "createInvitation": {
+        "title": "Stwórz zaproszenie",
+        "email": "Email",
+        "role": "Rola",
+        "roles": {
+            "driver": "Kierowca",
+            "dispatcher": "Dyspozytor"
+        },
+        "firstName": "Imię",
+        "lastName": "Nazwisko",
+        "phoneNumber": "Numer telefonu",
+        "dateOfBirth": "Data urodzenia",
+        "street": "Ulica",
+        "streetNumber": "Numer ulicy",
+        "apartmentNumber": "Numer mieszkania",
+        "city": "Miasto",
+        "stateProvince": "Województwo",
+        "postalCode": "Kod pocztowy",
+        "submit": "Wyślij zaproszenie",
+        "success": "Zaproszenie zostało wysłane pomyślnie",
+        "inputs": {
+            "dateOfBirth": "Wybierz datę urodzenia",
+            "errors": {
+                "required": "To pole jest wymagane",
+                "invalidEmail": "Nieprawidłowy adres email"
+            }
+        },
+        "fallbacks": {
+            "userAlreadyExists": "Użytkownik o podanym emailu już istnieje",
+            "invitationAlreadyExists": "Zaproszenie o podanym emailu już istnieje"
+        }
+    },
     "acceptInvitation": {
         "title": "Zaakceptuj zaproszenie od <0>{{inviter}}</0>",
         "email": "Email",
@@ -14,5 +46,23 @@
         "fallbacks": {
             "invalidInvitation": "Zaproszenie wygasło lub zostało już zaakceptowane"
         }
+    },
+    "filterInvitations": {
+        "createInvitation": "Zaproś nowego użytkownika",
+        "searchPlaceholder": "Szukaj używając email",
+        "empty": "Brak zaproszeń",
+        "statusPlaceholder": "Wybierz status",
+        "status": "Status",
+        "statuses": {
+            "PENDING": "Oczekujące",
+            "ACCEPTED": "Zaakceptowane",
+            "EXPIRED": "Wygasłe"
+        },
+        "firstName": "Imię",
+        "lastName": "Nazwisko",
+        "email": "Email",
+        "createdAt": "Utworzono",
+        "expiresAt": "Wygasa",
+        "acceptedAt": "Zaakceptowano"
     }
 }

@@ -10,8 +10,6 @@ import { SourceLayer } from "@/components"
 
 const { VITE_MAP_GL_STYLE } = import.meta.env
 
-console.log(import.meta.env)
-
 const flexStyle: React.CSSProperties = {
   height: "100%",
   width: "100%",
@@ -72,6 +70,7 @@ export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
       </Flex>
     )
   }
+
   return (
     <Map
       id={id}

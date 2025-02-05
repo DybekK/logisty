@@ -15,11 +15,11 @@ interface User {
 }
 
 interface AuthState {
-  user: User | null
+  user?: User
 }
 
 const initialState: AuthState = {
-  user: null,
+  user: undefined,
 }
 
 export const authSlice = createSlice({
@@ -30,7 +30,7 @@ export const authSlice = createSlice({
       state.user = payload
     },
     removeUser: state => {
-      state.user = null
+      state.user = undefined
     },
   },
 })

@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { useDispatch } from "react-redux"
 
 import { P, match } from "ts-pattern"
 
@@ -9,9 +10,8 @@ import {
   authAxiosInstance,
   patternErrors,
 } from "@/common"
-import { fetchCurrentUser, refresh } from "@/features/auth/authentication.api"
-import { useDispatch } from "react-redux"
 import { removeUser, setUser } from "@/features/auth"
+import { fetchCurrentUser, refresh } from "@/features/auth/authentication.api"
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     authAxiosInstance.interceptors.response.use(
       response => response,
       async (error: AxiosBackendError) => {
-        const { errors } = error.response?.data ?? { errors: [] }
+        const errors = error.response?.data ?? { errors: [] }
 
         return match(errors)
           .with(patternErrors(AccessTokenErrorTypes), async () => {

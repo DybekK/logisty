@@ -3,12 +3,11 @@ package com.logisty.core.domain.service
 import com.logisty.core.domain.BusinessExceptions.FleetNotFoundException
 import com.logisty.core.domain.BusinessExceptions.InvitationAlreadyExistsException
 import com.logisty.core.domain.BusinessExceptions.UserAlreadyExistsException
-import com.logisty.core.domain.model.values.FirstName
+import com.logisty.core.domain.model.command.CreateInvitationCommand
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.InvitationId
-import com.logisty.core.domain.model.values.LastName
+import com.logisty.core.domain.model.values.InvitationStatus
 import com.logisty.core.domain.model.values.UserEmail
-import com.logisty.core.domain.model.values.UserRole
 import com.logisty.core.domain.port.FleetRepository
 import com.logisty.core.domain.port.InvitationRepository
 import com.logisty.core.domain.port.UserRepository
@@ -24,18 +23,12 @@ class FleetInvitator(
     private val userRepository: UserRepository,
     private val invitationRepository: InvitationRepository,
 ) {
-    fun invite(
-        fleetId: FleetId,
-        email: UserEmail,
-        firstName: FirstName,
-        lastName: LastName,
-        roles: List<UserRole>,
-    ): InvitationId {
-        validateFleet(fleetId)
-        validateUser(email)
-        validateInvitation(email)
+    fun invite(command: CreateInvitationCommand): InvitationId {
+        validateFleet(command.fleetId)
+        validateUser(command.email)
+        validateInvitation(command.email)
 
-        return invitationRepository.createInvitation(fleetId, email, firstName, lastName, roles, clock.instant())
+        return invitationRepository.createInvitation(command, clock.instant())
     }
 
     private fun validateFleet(fleetId: FleetId) =
@@ -49,9 +42,8 @@ class FleetInvitator(
 
     private fun validateInvitation(email: UserEmail) {
         val invitation = invitationRepository.findInvitationByEmail(email)
-        val now = clock.instant()
 
-        if (invitation?.expiresAt?.isAfter(now) == true) {
+        if (invitation?.status == InvitationStatus.PENDING) {
             throw InvitationAlreadyExistsException()
         }
     }
