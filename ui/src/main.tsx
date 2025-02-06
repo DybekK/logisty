@@ -4,8 +4,9 @@ import ReactDOM from "react-dom/client"
 import { Provider } from "react-redux"
 
 import "./index.css"
+import { PersistGate } from "redux-persist/integration/react"
 
-import { store } from "@/common"
+import { persistor, store } from "@/common"
 import { AuthProvider } from "@/components"
 import "@/i18n"
 import { Router } from "@/router"
@@ -16,9 +17,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
-        <AuthProvider>
-          <Router />
-        </AuthProvider>
+        <PersistGate loading={null} persistor={persistor}>
+          <AuthProvider>
+            <Router />
+          </AuthProvider>
+        </PersistGate>
       </Provider>
     </QueryClientProvider>
   </React.StrictMode>,

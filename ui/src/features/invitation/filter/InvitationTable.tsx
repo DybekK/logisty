@@ -70,7 +70,7 @@ const invitationData = (invitations?: GetInvitationResponse[]) =>
 export const InvitationTable = () => {
   const { t } = useTranslation("invitation")
 
-  const user = useAppSelector(state => state.auth.user)
+  const { fleetId } = useAppSelector(state => state.auth.user!)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
@@ -82,7 +82,7 @@ export const InvitationTable = () => {
 
   const pageSize = 10
   const { data, isLoading, refetch } = useFetchInvitations({
-    fleetId: user?.fleetId!,
+    fleetId,
     limit: pageSize,
     page: currentPage - 1,
     status: filters.status,
