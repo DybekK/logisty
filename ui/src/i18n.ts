@@ -1,4 +1,6 @@
+import { useEffect, useRef } from "react"
 import { initReactI18next } from "react-i18next"
+import { useTranslation } from "react-i18next"
 
 import i18n from "i18next"
 import LanguageDetector from "i18next-browser-languagedetector"
@@ -29,5 +31,23 @@ i18n
       useSuspense: false,
     },
   })
+
+export const useTranslationWithPrev = () => {
+  const translation = useTranslation()
+  const prevLanguageRef = useRef(translation.i18n.language)
+
+  const hasLanguageChanged =
+    prevLanguageRef.current !== translation.i18n.language
+
+  useEffect(() => {
+    prevLanguageRef.current = translation.i18n.language
+  }, [translation.i18n.language])
+
+  return {
+    ...translation,
+    prevLanguage: prevLanguageRef.current,
+    hasLanguageChanged,
+  }
+}
 
 export default i18n

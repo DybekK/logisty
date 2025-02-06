@@ -20,7 +20,7 @@ import java.time.Instant
 import java.util.Locale
 
 data class GetNotificationResponse(
-    val id: InternalEventId,
+    val eventId: InternalEventId,
     val title: NotificationTitle,
     val message: NotificationMessage,
     val eventType: InternalEventType,
@@ -30,7 +30,7 @@ data class GetNotificationResponse(
 
 fun Notification.toGetNotificationResponse() =
     GetNotificationResponse(
-        id = id,
+        eventId = eventId,
         title = title,
         message = message,
         eventType = eventType,

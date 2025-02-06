@@ -7,7 +7,6 @@ import {
   CarryOutOutlined,
   LaptopOutlined,
   Loading3QuartersOutlined,
-  UserAddOutlined,
   UserOutlined,
   UsergroupAddOutlined,
 } from "@ant-design/icons"

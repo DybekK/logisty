@@ -4,18 +4,24 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import { PERSIST, REHYDRATE, persistReducer, persistStore } from "redux-persist"
 import storage from "redux-persist/lib/storage"
 
-import { authReducer } from "@/features/auth/store/auth.slice"
+import { authReducer } from "@/features/auth"
+import { notificationReducer } from "@/features/notification"
 import { createNewOrderReducer } from "@/features/order"
-import { ordersReducer } from "@/features/order/store/orders.slice"
+import { ordersReducer } from "@/features/order"
 
 const authPersistConfig = {
   key: "auth",
   storage,
-  whitelist: ["user"],
+}
+
+const notificationPersistConfig = {
+  key: "notification",
+  storage,
 }
 
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
+  notification: persistReducer(notificationPersistConfig, notificationReducer),
   createNewOrder: createNewOrderReducer,
   orders: ordersReducer,
 })

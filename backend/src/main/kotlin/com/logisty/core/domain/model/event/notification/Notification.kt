@@ -15,7 +15,7 @@ value class NotificationMessage(
 )
 
 data class Notification(
-    val id: InternalEventId,
+    val eventId: InternalEventId,
     val title: NotificationTitle,
     val message: NotificationMessage,
     val eventType: InternalEventType,

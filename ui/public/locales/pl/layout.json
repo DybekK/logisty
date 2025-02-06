@@ -1,6 +1,8 @@
 {
   "navbar": {
-    "notifications": "Notyfikacje",
+    "notifications": "Powiadomienia",
+    "noNotifications": "Brak nowych powiadomień",
+    "markAllAsRead": "Oznacz wszystkie jako przeczytane",
     "logout": "Wyloguj się",
     "translation": "Zmień język"
   },

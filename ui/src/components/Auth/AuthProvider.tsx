@@ -1,6 +1,5 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
-import { useDispatch } from "react-redux"
 
 import { P, match } from "ts-pattern"
 
@@ -9,9 +8,19 @@ import {
   AxiosBackendError,
   authAxiosInstance,
   patternErrors,
+  useAppDispatch,
+  useAppSelector,
 } from "@/common"
 import { removeUser, setUser } from "@/features/auth"
 import { fetchCurrentUser, refresh } from "@/features/auth/authentication.api"
+import {
+  fetchNotifications,
+  fetchNotificationsKey,
+  prependNotifications,
+  refetchNotifications,
+  refetchNotificationsKey,
+} from "@/features/notification"
+import { useTranslationWithPrev } from "@/i18n"
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -38,7 +47,13 @@ export const AuthContext = createContext<AuthContextType>({
 })
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
+  const { i18n, hasLanguageChanged } = useTranslationWithPrev()
+
+  const user = useAppSelector(state => state.auth.user)
+  const { lastUpdatedAt, firstUpdatedAt } = useAppSelector(
+    state => state.notification,
+  )
 
   const [tokens, setTokens_] = useState<Tokens>({
     accessToken: localStorage.getItem("accessToken"),
@@ -55,6 +70,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       refreshToken: null,
     })
   }
+
+  const isAuthenticated = () => !!tokens?.accessToken && !!tokens?.refreshToken
+
+  const fetchNotificationsEnabled = isAuthenticated() && !!user?.fleetId
+
+  useQuery({
+    queryKey: [fetchNotificationsKey, i18n.language],
+    queryFn: () =>
+      fetchNotifications(user?.fleetId!, lastUpdatedAt, i18n.language).then(
+        ({ notifications }) => dispatch(prependNotifications(notifications)),
+      ),
+    refetchInterval: 5000,
+    enabled: fetchNotificationsEnabled,
+  })
+
+  useQuery({
+    queryKey: [refetchNotificationsKey, i18n.language],
+    queryFn: () =>
+      fetchNotifications(user?.fleetId!, firstUpdatedAt, i18n.language).then(
+        ({ notifications }) => dispatch(refetchNotifications(notifications)),
+      ),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled: fetchNotificationsEnabled && hasLanguageChanged,
+  })
 
   const { mutateAsync: refreshMutate } = useMutation({
     mutationFn: refresh,
@@ -86,10 +126,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           .otherwise(() => Promise.reject(error))
       },
     )
-  }
-
-  const isAuthenticated = () => {
-    return !!tokens?.accessToken && !!tokens?.refreshToken
   }
 
   useEffect(() => {

@@ -30,7 +30,7 @@ class NotificationMapper(
 
     private fun FleetCreatedEvent.toNotification(locale: Locale): Notification =
         Notification(
-            id = eventId,
+            eventId = eventId,
             title =
                 NotificationTitle(
                     messageSource.getMessage(
@@ -54,7 +54,7 @@ class NotificationMapper(
 
     private fun InvitationCreatedEvent.toNotification(locale: Locale): Notification =
         Notification(
-            id = eventId,
+            eventId = eventId,
             title =
                 NotificationTitle(
                     messageSource.getMessage(
@@ -78,7 +78,7 @@ class NotificationMapper(
 
     private fun InvitationAcceptedEvent.toNotification(locale: Locale): Notification =
         Notification(
-            id = eventId,
+            eventId = eventId,
             title =
                 NotificationTitle(
                     messageSource.getMessage(
@@ -102,7 +102,7 @@ class NotificationMapper(
 
     private fun InvitationExpiredEvent.toNotification(locale: Locale): Notification =
         Notification(
-            id = eventId,
+            eventId = eventId,
             title =
                 NotificationTitle(
                     messageSource.getMessage(
