@@ -9,13 +9,10 @@ import com.logisty.core.domain.port.EventStore
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
-import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @Repository
-@Primary
 class PostgresEventStore(
     private val mapper: ObjectMapper,
 ) : EventStore {
@@ -23,7 +20,7 @@ class PostgresEventStore(
         Events.insert {
             it[Events.fleetId] = event.fleetId.value
             it[Events.eventId] = event.eventId.value
-            it[Events.type] = event.type.value
+            it[Events.type] = event.type.name
             it[Events.appendedAt] = event.appendedAt
             it[Events.payload] = mapper.valueToTree<JsonNode>(event)
         }
@@ -38,17 +35,4 @@ class PostgresEventStore(
             .where { Events.fleetId eq fleetId.value }
             .andWhere { Events.appendedAt greater timestamp }
             .map { mapper.treeToValue(it[Events.payload], InternalEvent::class.java) }
-}
-
-@Repository
-@Transactional
-class TransactionalEventStore(
-    private val eventStore: EventStore,
-) : EventStore {
-    override fun append(event: InternalEvent) = eventStore.append(event)
-
-    override fun findSince(
-        fleetId: FleetId,
-        timestamp: Instant,
-    ): List<InternalEvent> = eventStore.findSince(fleetId, timestamp)
 }

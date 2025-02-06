@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import java.time.Instant
+import java.util.Locale
 
 class FunctionalHttpTemplate(
     private val mockMvc: MockMvc,
@@ -72,10 +73,12 @@ class FunctionalHttpTemplate(
         fleetId: FleetId,
         since: Instant,
         jwt: JwtAccess,
+        locale: Locale? = null,
     ): ResultActions =
         mockMvc.perform(
-            get("/api/fleets/${fleetId.value}/notifications")
+            get("/api/fleets/${fleetId.value}/notifications/translated")
                 .param("since", since.toString())
+                .param("locale", locale?.language)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer ${jwt.value}"),
         )

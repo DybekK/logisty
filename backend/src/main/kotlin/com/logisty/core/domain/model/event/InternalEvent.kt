@@ -37,7 +37,7 @@ data class FleetCreatedEvent(
     override val appendedAt: Instant,
     override val eventId: InternalEventId = InternalEventId.generate(),
 ) : InternalEvent {
-    override val type = FleetEventType.FLEET_CREATED.value
+    override val type = InternalEventType.FLEET_CREATED
 
     data class FleetCreatedPayload(
         val fleetId: FleetId,
@@ -52,7 +52,7 @@ data class InvitationCreatedEvent(
     override val appendedAt: Instant,
     override val eventId: InternalEventId = InternalEventId.generate(),
 ) : InternalEvent {
-    override val type = InvitationEventType.INVITATION_CREATED.value
+    override val type = InternalEventType.INVITATION_CREATED
 
     data class InvitationCreatedPayload(
         val invitationId: InvitationId,
@@ -68,7 +68,7 @@ data class InvitationAcceptedEvent(
     override val appendedAt: Instant,
     override val eventId: InternalEventId = InternalEventId.generate(),
 ) : InternalEvent {
-    override val type = InvitationEventType.INVITATION_ACCEPTED.value
+    override val type = InternalEventType.INVITATION_ACCEPTED
 
     data class InvitationAcceptedPayload(
         val invitationId: InvitationId,
@@ -82,7 +82,7 @@ data class InvitationExpiredEvent(
     override val appendedAt: Instant,
     override val eventId: InternalEventId = InternalEventId.generate(),
 ) : InternalEvent {
-    override val type = InvitationEventType.INVITATION_EXPIRED.value
+    override val type = InternalEventType.INVITATION_EXPIRED
 
     data class InvitationExpiredPayload(
         val invitationId: InvitationId,
