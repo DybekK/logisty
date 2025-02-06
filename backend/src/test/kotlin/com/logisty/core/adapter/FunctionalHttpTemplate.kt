@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import java.time.Instant
 
 class FunctionalHttpTemplate(
     private val mockMvc: MockMvc,
@@ -64,6 +65,19 @@ class FunctionalHttpTemplate(
             post("/api/auth/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(RefreshTokenRequest(refreshToken))),
+        )
+
+    // notification
+    fun getNotifications(
+        fleetId: FleetId,
+        since: Instant,
+        jwt: JwtAccess,
+    ): ResultActions =
+        mockMvc.perform(
+            get("/api/fleets/${fleetId.value}/notifications")
+                .param("since", since.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ${jwt.value}"),
         )
 
     // fleet
