@@ -21,7 +21,7 @@ import com.logisty.core.domain.model.values.StreetNumber
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserPassword
 import com.logisty.core.domain.model.values.UserRole
-import com.logisty.core.domain.service.InvitationService
+import com.logisty.core.domain.service.fleet.InvitationService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status

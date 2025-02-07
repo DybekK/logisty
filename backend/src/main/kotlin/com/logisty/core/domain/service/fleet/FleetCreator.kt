@@ -1,6 +1,6 @@
-package com.logisty.core.domain.service
+package com.logisty.core.domain.service.fleet
 
-import com.logisty.core.domain.BusinessExceptions.FleetAlreadyExistsException
+import com.logisty.core.domain.BusinessExceptions
 import com.logisty.core.domain.model.event.FleetCreatedEvent
 import com.logisty.core.domain.model.event.FleetCreatedEvent.FleetCreatedPayload
 import com.logisty.core.domain.model.values.FleetId
@@ -21,18 +21,22 @@ class FleetCreator(
     fun createFleet(fleetName: FleetName): FleetId =
         fleetRepository
             .findByName(fleetName)
-            ?.let { throw FleetAlreadyExistsException() }
+            ?.let { throw BusinessExceptions.FleetAlreadyExistsException() }
             ?: fleetRepository
                 .createFleet(fleetName)
-                .also { eventStore.append(fleetName.toFleetCreatedEvent(it, clock)) }
+                .also { eventStore.append(toFleetCreatedEvent(it, fleetName, clock)) }
 }
 
-private fun FleetName.toFleetCreatedEvent(
+private fun toFleetCreatedEvent(
     fleetId: FleetId,
+    fleetName: FleetName,
     clock: Clock,
 ): FleetCreatedEvent =
     FleetCreatedEvent(
         fleetId = fleetId,
-        payload = FleetCreatedPayload(fleetId = fleetId),
+        payload = FleetCreatedPayload(
+            fleetId = fleetId,
+            fleetName = fleetName,
+        ),
         appendedAt = clock.instant(),
     )

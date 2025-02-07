@@ -1,6 +1,6 @@
 package com.logisty.core.domain.service.scheduler
 
-import com.logisty.core.domain.service.InvitationService
+import com.logisty.core.domain.service.fleet.InvitationService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component

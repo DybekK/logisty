@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id
 import com.logisty.core.domain.model.values.FirstName
+import com.logisty.core.domain.model.values.FleetName
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.LastName
@@ -41,6 +42,7 @@ data class FleetCreatedEvent(
 
     data class FleetCreatedPayload(
         val fleetId: FleetId,
+        val fleetName: FleetName
     ) : Payload
 }
 

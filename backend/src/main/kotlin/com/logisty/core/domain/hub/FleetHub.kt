@@ -8,10 +8,10 @@ import com.logisty.core.domain.model.values.FleetName
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserPassword
-import com.logisty.core.domain.service.FleetCreator
-import com.logisty.core.domain.service.FleetInvitator
-import com.logisty.core.domain.service.InvitationAccepter
-import com.logisty.core.domain.service.InvitationService
+import com.logisty.core.domain.service.fleet.FleetCreator
+import com.logisty.core.domain.service.fleet.FleetInvitator
+import com.logisty.core.domain.service.fleet.InvitationAccepter
+import com.logisty.core.domain.service.fleet.InvitationService
 import org.springframework.stereotype.Service
 
 @Service

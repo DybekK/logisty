@@ -1,4 +1,4 @@
-package com.logisty.core.domain.service
+package com.logisty.core.domain.service.fleet
 
 import com.logisty.core.domain.BusinessExceptions.InvitationAlreadyAcceptedException
 import com.logisty.core.domain.BusinessExceptions.InvitationExpiredException

@@ -1,8 +1,6 @@
-package com.logisty.core.domain.service
+package com.logisty.core.domain.service.fleet
 
-import com.logisty.core.domain.BusinessExceptions.FleetNotFoundException
-import com.logisty.core.domain.BusinessExceptions.InvitationAlreadyExistsException
-import com.logisty.core.domain.BusinessExceptions.UserAlreadyExistsException
+import com.logisty.core.domain.BusinessExceptions
 import com.logisty.core.domain.model.command.CreateInvitationCommand
 import com.logisty.core.domain.model.event.InvitationCreatedEvent
 import com.logisty.core.domain.model.event.InvitationCreatedEvent.InvitationCreatedPayload
@@ -39,18 +37,18 @@ class FleetInvitator(
 
     private fun validateFleet(fleetId: FleetId) =
         fleetRepository.findById(fleetId)
-            ?: throw FleetNotFoundException()
+            ?: throw BusinessExceptions.FleetNotFoundException()
 
     private fun validateUser(email: UserEmail) =
         userRepository.findByEmail(email)?.also {
-            throw UserAlreadyExistsException()
+            throw BusinessExceptions.UserAlreadyExistsException()
         }
 
     private fun validateInvitation(email: UserEmail) {
         val invitation = invitationRepository.findInvitationByEmail(email)
 
         if (invitation?.status == InvitationStatus.PENDING) {
-            throw InvitationAlreadyExistsException()
+            throw BusinessExceptions.InvitationAlreadyExistsException()
         }
     }
 }
