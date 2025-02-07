@@ -9,10 +9,12 @@ import java.util.concurrent.ConcurrentHashMap
 class JwtStorage {
     private val tokens = ConcurrentHashMap<JwtRefresh, UserDetails>()
 
-    fun findUserDetailsByToken(refreshJwt: JwtRefresh): UserDetails? =
-        tokens[refreshJwt]
+    fun findUserDetailsByToken(refreshJwt: JwtRefresh): UserDetails? = tokens[refreshJwt]
 
-    fun save(jwt: JwtRefresh, user: UserDetails) {
+    fun save(
+        jwt: JwtRefresh,
+        user: UserDetails,
+    ) {
         tokens.putIfAbsent(jwt, user)
     }
 

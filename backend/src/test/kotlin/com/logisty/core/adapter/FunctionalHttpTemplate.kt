@@ -44,8 +44,8 @@ class FunctionalHttpTemplate(
             )
 
     fun authenticateAndReturn(
-        email: UserEmail = fixtures.user.email,
-        password: UserPassword = fixtures.user.password,
+        email: UserEmail = fixtures.dispatcher.email,
+        password: UserPassword = fixtures.dispatcher.password,
     ): Pair<JwtAccess, JwtRefresh> =
         authenticate(email, password)
             .andReturnResponse<AuthenticationResponse>()

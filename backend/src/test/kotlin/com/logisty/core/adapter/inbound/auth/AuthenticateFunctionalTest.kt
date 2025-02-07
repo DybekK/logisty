@@ -14,15 +14,15 @@ class AuthenticateFunctionalTest : FunctionalTest() {
         // when & then
         routes
             .authenticate(
-                fixtures.user.email,
-                fixtures.user.password,
+                fixtures.dispatcher.email,
+                fixtures.dispatcher.password,
             ).andExpect(status().isOk)
     }
 
     @Test
     fun `should return 400 when user not found`() {
         // given
-        val invalidUser = fixtures.user.copy(email = UserEmail("test2@example.com"))
+        val invalidUser = fixtures.dispatcher.copy(email = UserEmail("test2@example.com"))
 
         // when & then
         routes
@@ -36,7 +36,7 @@ class AuthenticateFunctionalTest : FunctionalTest() {
     @Test
     fun `should return 400 when password is incorrect`() {
         // given
-        val invalidUser = fixtures.user.copy(password = UserPassword("password2"))
+        val invalidUser = fixtures.dispatcher.copy(password = UserPassword("password2"))
 
         // when & then
         routes

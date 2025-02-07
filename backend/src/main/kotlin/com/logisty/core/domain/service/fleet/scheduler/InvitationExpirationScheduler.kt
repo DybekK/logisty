@@ -1,4 +1,4 @@
-package com.logisty.core.domain.service.scheduler
+package com.logisty.core.domain.service.fleet.scheduler
 
 import com.logisty.core.domain.service.fleet.InvitationService
 import org.slf4j.LoggerFactory

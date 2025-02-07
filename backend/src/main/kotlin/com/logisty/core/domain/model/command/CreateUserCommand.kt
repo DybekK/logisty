@@ -1,5 +1,6 @@
 package com.logisty.core.domain.model.command
 
+import com.logisty.core.domain.model.Invitation
 import com.logisty.core.domain.model.values.ApartmentNumber
 import com.logisty.core.domain.model.values.City
 import com.logisty.core.domain.model.values.FirstName
@@ -13,8 +14,7 @@ import com.logisty.core.domain.model.values.StreetNumber
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserPassword
 import com.logisty.core.domain.model.values.UserRole
-import com.logisty.core.domain.model.Invitation
-import java.time.LocalDate 
+import java.time.LocalDate
 
 data class CreateUserCommand(
     val fleetId: FleetId,
@@ -39,7 +39,7 @@ fun Invitation.toCreateUserCommand(userPassword: UserPassword): CreateUserComman
         email = email,
         firstName = firstName,
         lastName = lastName,
-        password = userPassword, 
+        password = userPassword,
         phoneNumber = phoneNumber,
         dateOfBirth = dateOfBirth,
         street = street,

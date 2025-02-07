@@ -2,7 +2,6 @@ package com.logisty.core.adapter.inbound.fleet
 
 import com.logisty.core.adapter.FunctionalTest
 import com.logisty.core.adapter.andExpectError
-import com.logisty.core.adapter.andExpectResponse
 import com.logisty.core.domain.ErrorCode
 import com.logisty.core.domain.model.values.InvitationId
 import org.junit.jupiter.api.Test

@@ -8,4 +8,4 @@ import java.time.Clock
 class ClockConfiguration {
     @Bean
     fun clock(): Clock = Clock.systemUTC()
-} 
+}

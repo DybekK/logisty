@@ -25,8 +25,8 @@ class SecurityFunctionalTest : FunctionalTest() {
         // when & then
         routes
             .authenticate(
-                fixtures.user.email,
-                fixtures.user.password,
+                fixtures.dispatcher.email,
+                fixtures.dispatcher.password,
             ).andExpect(status().isOk)
     }
 

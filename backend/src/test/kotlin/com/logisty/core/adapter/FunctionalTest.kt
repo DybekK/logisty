@@ -59,8 +59,8 @@ open class FunctionalTest {
             SchemaUtils.create(Events, Fleets, Invitations, Users)
 
             fixtures.createFleet()
-            fixtures.createInvitation()
-            fixtures.createUser()
+            fixtures.createInvitations()
+            fixtures.createUsers()
         }
     }
 }

@@ -32,6 +32,28 @@ class GetNotificationsFunctionalTest : FunctionalTest() {
     }
 
     @Test
+    fun `should get notifications for driver`() {
+        val (dispatcherJwt, _) = routes.authenticateAndReturn(fixtures.dispatcher.email, fixtures.dispatcher.password)
+        val (driverJwt, _) = routes.authenticateAndReturn(fixtures.driver.email, fixtures.driver.password)
+
+        // when
+        routes
+            .createInvitation(
+                fleetId = fixtures.fleet.fleetId,
+                request = fixtures.invitation.toCreateInvitationRequest(),
+                jwt = dispatcherJwt,
+            ).andExpect(status().isOk)
+
+        // when & then
+        val since = clock.instant().minus(Duration.ofDays(1))
+        routes
+            .getNotifications(fixtures.fleet.fleetId, since, driverJwt)
+            .andExpect(status().isOk)
+            .andReturnResponse<GetNotificationsResponse>()
+            .let { assertEquals(0, it.notifications.size) }
+    }
+
+    @Test
     fun `should get notifications since given time`() {
         val (jwt, _) = routes.authenticateAndReturn()
 

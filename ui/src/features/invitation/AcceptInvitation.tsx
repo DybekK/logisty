@@ -64,6 +64,7 @@ const buttonStyle: React.CSSProperties = {
 }
 
 const titleStyle: React.CSSProperties = {
+  display: "block",
   fontWeight: "bold",
   fontSize: "2rem",
 }

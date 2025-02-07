@@ -21,7 +21,7 @@ class NotificationMapper(
         locale: Locale,
         event: InternalEvent,
     ): Notification =
-        when (event) { 
+        when (event) {
             is FleetCreatedEvent -> event.toNotification(locale)
             is InvitationCreatedEvent -> event.toNotification(locale)
             is InvitationAcceptedEvent -> event.toNotification(locale)

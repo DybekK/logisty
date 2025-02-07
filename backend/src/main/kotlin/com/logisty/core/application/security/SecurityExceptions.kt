@@ -1,8 +1,8 @@
 package com.logisty.core.application.security
 
 import com.logisty.core.application.security.SecurityErrorCode.BAD_CREDENTIALS
-import com.logisty.core.application.security.SecurityErrorCode.TOKEN_EXPIRED_OR_NOT_FOUND
 import com.logisty.core.application.security.SecurityErrorCode.INVALID_TOKEN_STRUCTURE
+import com.logisty.core.application.security.SecurityErrorCode.TOKEN_EXPIRED_OR_NOT_FOUND
 import org.springframework.security.core.AuthenticationException
 
 open class SecurityException(

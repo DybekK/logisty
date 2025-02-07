@@ -39,47 +39,72 @@ class Fixtures {
             fleetName = FleetName("fleet-name"),
         )
 
-    val user =
-        FixtureUser(
-            userId = UserId.generate(),
-            fleetId = fleet.fleetId,
-            firstName = FirstName("first-name"),
-            lastName = LastName("last-name"),
-            email = UserEmail("user@example.com"),
-            password = UserPassword("password"),
-            phoneNumber = PhoneNumber("123456789"),
-            dateOfBirth = LocalDate.now().minusYears(18),
-            street = Street("Main Street"),
-            streetNumber = StreetNumber("123"),
-            apartmentNumber = ApartmentNumber("A1"),
-            city = City("New York"),
-            stateProvince = StateProvince("NY"),
-            postalCode = PostalCode("10001"),
-            roles = listOf(UserRole.DISPATCHER),
+    private val users =
+        listOf(
+            FixtureUser(
+                userId = UserId.generate(),
+                fleetId = fleet.fleetId,
+                firstName = FirstName("first-name"),
+                lastName = LastName("last-name"),
+                email = UserEmail("dispatcher@example.com"),
+                password = UserPassword("password"),
+                phoneNumber = PhoneNumber("123456789"),
+                dateOfBirth = LocalDate.now().minusYears(18),
+                street = Street("Main Street"),
+                streetNumber = StreetNumber("123"),
+                apartmentNumber = ApartmentNumber("A1"),
+                city = City("New York"),
+                stateProvince = StateProvince("NY"),
+                postalCode = PostalCode("10001"),
+                roles = listOf(UserRole.DISPATCHER),
+            ),
+            FixtureUser(
+                userId = UserId.generate(),
+                fleetId = fleet.fleetId,
+                firstName = FirstName("first-name"),
+                lastName = LastName("last-name"),
+                email = UserEmail("driver@example.com"),
+                password = UserPassword("password"),
+                phoneNumber = PhoneNumber("123456789"),
+                dateOfBirth = LocalDate.now().minusYears(18),
+                street = Street("Main Street"),
+                streetNumber = StreetNumber("123"),
+                apartmentNumber = ApartmentNumber("A1"),
+                city = City("New York"),
+                stateProvince = StateProvince("NY"),
+                postalCode = PostalCode("10001"),
+                roles = listOf(UserRole.DRIVER),
+            ),
         )
 
-    val invitation =
-        FixtureInvitation(
-            invitationId = InvitationId.generate(),
-            fleetId = fleet.fleetId,
-            fleetName = fleet.fleetName,
-            email = user.email,
-            firstName = user.firstName,
-            lastName = user.lastName,
-            status = InvitationStatus.ACCEPTED,
-            roles = listOf(UserRole.DRIVER),
-            createdAt = Instant.now(),
-            expiresAt = Instant.now().plus(Duration.ofDays(7)),
-            phoneNumber = user.phoneNumber,
-            dateOfBirth = user.dateOfBirth,
-            street = user.street,
-            streetNumber = user.streetNumber,
-            apartmentNumber = user.apartmentNumber,
-            city = user.city,
-            stateProvince = user.stateProvince,
-            postalCode = user.postalCode,
-            acceptedAt = Instant.now(),
-        )
+    private val invitations =
+        users.map { user ->
+            FixtureInvitation(
+                invitationId = InvitationId.generate(),
+                fleetId = fleet.fleetId,
+                fleetName = fleet.fleetName,
+                email = user.email,
+                firstName = user.firstName,
+                lastName = user.lastName,
+                status = InvitationStatus.ACCEPTED,
+                roles = listOf(UserRole.DRIVER),
+                createdAt = Instant.now(),
+                expiresAt = Instant.now().plus(Duration.ofDays(7)),
+                phoneNumber = user.phoneNumber,
+                dateOfBirth = user.dateOfBirth,
+                street = user.street,
+                streetNumber = user.streetNumber,
+                apartmentNumber = user.apartmentNumber,
+                city = user.city,
+                stateProvince = user.stateProvince,
+                postalCode = user.postalCode,
+                acceptedAt = Instant.now(),
+            )
+        }
+
+    val dispatcher = users.first()
+    val driver = users.last()
+    val invitation = invitations.first()
 
     fun createFleet() =
         Fleets.insert {
@@ -87,45 +112,49 @@ class Fixtures {
             it[fleetName] = fleet.fleetName.value
         }
 
-    fun createInvitation() =
-        Invitations.insert {
-            it[invitationId] = invitation.invitationId.value
-            it[fleetId] = invitation.fleetId.value
-            it[email] = invitation.email.value
-            it[firstName] = invitation.firstName.value
-            it[lastName] = invitation.lastName.value
-            it[status] = invitation.status.name
-            it[roles] = invitation.roles.map { it.name }
-            it[phoneNumber] = invitation.phoneNumber.value
-            it[dateOfBirth] = invitation.dateOfBirth
-            it[street] = invitation.street.value
-            it[streetNumber] = invitation.streetNumber.value
-            it[apartmentNumber] = invitation.apartmentNumber.value
-            it[city] = invitation.city.value
-            it[stateProvince] = invitation.stateProvince.value
-            it[postalCode] = invitation.postalCode.value
-            it[createdAt] = invitation.createdAt
-            it[expiresAt] = invitation.expiresAt
-            it[acceptedAt] = invitation.acceptedAt
+    fun createInvitations() =
+        invitations.forEach { invitation ->
+            Invitations.insert {
+                it[invitationId] = invitation.invitationId.value
+                it[fleetId] = invitation.fleetId.value
+                it[email] = invitation.email.value
+                it[firstName] = invitation.firstName.value
+                it[lastName] = invitation.lastName.value
+                it[status] = invitation.status.name
+                it[roles] = invitation.roles.map { it.name }
+                it[phoneNumber] = invitation.phoneNumber.value
+                it[dateOfBirth] = invitation.dateOfBirth
+                it[street] = invitation.street.value
+                it[streetNumber] = invitation.streetNumber.value
+                it[apartmentNumber] = invitation.apartmentNumber.value
+                it[city] = invitation.city.value
+                it[stateProvince] = invitation.stateProvince.value
+                it[postalCode] = invitation.postalCode.value
+                it[createdAt] = invitation.createdAt
+                it[expiresAt] = invitation.expiresAt
+                it[acceptedAt] = invitation.acceptedAt
+            }
         }
 
-    fun createUser() =
-        Users.insert {
-            it[userId] = user.userId.value
-            it[fleetId] = user.fleetId.value
-            it[email] = user.email.value
-            it[firstName] = user.firstName.value
-            it[lastName] = user.lastName.value
-            it[password] = encoder.encode(user.password.value)
-            it[roles] = user.roles.map { it.name }
-            it[phoneNumber] = user.phoneNumber.value
-            it[dateOfBirth] = user.dateOfBirth
-            it[street] = user.street.value
-            it[streetNumber] = user.streetNumber.value
-            it[apartmentNumber] = user.apartmentNumber.value
-            it[city] = user.city.value
-            it[stateProvince] = user.stateProvince.value
-            it[postalCode] = user.postalCode.value
+    fun createUsers() =
+        users.forEach { user ->
+            Users.insert {
+                it[userId] = user.userId.value
+                it[fleetId] = user.fleetId.value
+                it[email] = user.email.value
+                it[firstName] = user.firstName.value
+                it[lastName] = user.lastName.value
+                it[password] = encoder.encode(user.password.value)
+                it[roles] = user.roles.map { it.name }
+                it[phoneNumber] = user.phoneNumber.value
+                it[dateOfBirth] = user.dateOfBirth
+                it[street] = user.street.value
+                it[streetNumber] = user.streetNumber.value
+                it[apartmentNumber] = user.apartmentNumber.value
+                it[city] = user.city.value
+                it[stateProvince] = user.stateProvince.value
+                it[postalCode] = user.postalCode.value
+            }
         }
 }
 

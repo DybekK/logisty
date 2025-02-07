@@ -19,7 +19,7 @@ class GetInvitationsFunctionalTest : FunctionalTest() {
         val limit = 10
         val page = 0
         val invitations = generateInvitations(limit + 10, jwt)
-        val invitationsSize = invitations.size + 1
+        val invitationsSize = invitations.size + 2
 
         // when
         val response =
@@ -41,7 +41,7 @@ class GetInvitationsFunctionalTest : FunctionalTest() {
         val limit = 10
         val page = 2
         val invitations = generateInvitations(limit + 10, jwt)
-        val invitationsSize = invitations.size + 1
+        val invitationsSize = invitations.size + 2
 
         // when
         val response =
@@ -80,8 +80,8 @@ class GetInvitationsFunctionalTest : FunctionalTest() {
                 .andReturnResponse<GetInvitationsResponse>()
 
         // then
-        assertThat(response.invitations).hasSize(1)
-        assertThat(response.total).isEqualTo(1)
+        assertThat(response.invitations).hasSize(2)
+        assertThat(response.total).isEqualTo(2)
     }
 
     @Test

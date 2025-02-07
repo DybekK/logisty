@@ -18,7 +18,7 @@ object Events : Table() {
             "event_payload",
             serialize = { mapper.writeValueAsString(it) },
             deserialize = { mapper.readTree(it) },
-        ) 
+        )
 
     override val primaryKey = PrimaryKey(fleetId, eventId)
 }

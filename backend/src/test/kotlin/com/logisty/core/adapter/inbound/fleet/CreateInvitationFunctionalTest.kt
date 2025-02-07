@@ -95,9 +95,9 @@ class CreateInvitationFunctionalTest : FunctionalTest() {
         // given
         val inviteRequest =
             CreateInvitationRequest(
-                email = fixtures.user.email,
-                firstName = fixtures.user.firstName,
-                lastName = fixtures.user.lastName,
+                email = fixtures.dispatcher.email,
+                firstName = fixtures.dispatcher.firstName,
+                lastName = fixtures.dispatcher.lastName,
                 phoneNumber = PhoneNumber("1234567890"),
                 dateOfBirth = LocalDate.now().minusYears(18),
                 street = Street("Main Street"),

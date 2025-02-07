@@ -34,9 +34,10 @@ private fun toFleetCreatedEvent(
 ): FleetCreatedEvent =
     FleetCreatedEvent(
         fleetId = fleetId,
-        payload = FleetCreatedPayload(
-            fleetId = fleetId,
-            fleetName = fleetName,
-        ),
+        payload =
+            FleetCreatedPayload(
+                fleetId = fleetId,
+                fleetName = fleetName,
+            ),
         appendedAt = clock.instant(),
     )
