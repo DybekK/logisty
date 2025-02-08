@@ -14,6 +14,7 @@ import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserEncodedPassword
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserRole
+import java.time.Instant
 import java.time.LocalDate
 
 data class User(
@@ -32,4 +33,5 @@ data class User(
     val city: City,
     val stateProvince: StateProvince,
     val postalCode: PostalCode,
+    val createdAt: Instant,
 )

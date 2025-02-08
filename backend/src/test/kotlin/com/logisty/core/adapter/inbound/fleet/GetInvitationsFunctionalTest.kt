@@ -51,7 +51,7 @@ class GetInvitationsFunctionalTest : FunctionalTest() {
                 .andReturnResponse<GetInvitationsResponse>()
 
         // then
-        val expectedSize = invitationsSize - limit * page
+        val expectedSize = minOf(limit, maxOf(0, invitationsSize - page * limit))
         assertThat(response.invitations).hasSize(expectedSize)
         assertThat(response.total).isEqualTo(invitationsSize.toLong())
     }

@@ -57,6 +57,7 @@ class Fixtures {
                 stateProvince = StateProvince("NY"),
                 postalCode = PostalCode("10001"),
                 roles = listOf(UserRole.DISPATCHER),
+                createdAt = Instant.now(),
             ),
             FixtureUser(
                 userId = UserId.generate(),
@@ -74,6 +75,7 @@ class Fixtures {
                 stateProvince = StateProvince("NY"),
                 postalCode = PostalCode("10001"),
                 roles = listOf(UserRole.DRIVER),
+                createdAt = Instant.now(),
             ),
         )
 
@@ -87,9 +89,9 @@ class Fixtures {
                 firstName = user.firstName,
                 lastName = user.lastName,
                 status = InvitationStatus.ACCEPTED,
-                roles = listOf(UserRole.DRIVER),
-                createdAt = Instant.now(),
-                expiresAt = Instant.now().plus(Duration.ofDays(7)),
+                roles = user.roles,
+                createdAt = user.createdAt,
+                expiresAt = user.createdAt.plus(Duration.ofDays(7)),
                 phoneNumber = user.phoneNumber,
                 dateOfBirth = user.dateOfBirth,
                 street = user.street,
@@ -98,13 +100,14 @@ class Fixtures {
                 city = user.city,
                 stateProvince = user.stateProvince,
                 postalCode = user.postalCode,
-                acceptedAt = Instant.now(),
+                acceptedAt = user.createdAt.plus(Duration.ofDays(7)),
             )
         }
 
     val dispatcher = users.first()
     val driver = users.last()
     val invitation = invitations.first()
+    val driverInvitation = invitations.last()
 
     fun createFleet() =
         Fleets.insert {
@@ -154,6 +157,7 @@ class Fixtures {
                 it[city] = user.city.value
                 it[stateProvince] = user.stateProvince.value
                 it[postalCode] = user.postalCode.value
+                it[createdAt] = user.createdAt
             }
         }
 }

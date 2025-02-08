@@ -41,9 +41,9 @@ data class FixtureInvitation(
     val expiresAt: Instant,
     val acceptedAt: Instant?,
 ) {
-    fun toCreateInvitationRequest() =
+    fun toCreateInvitationRequest(randomEmail: Boolean = true) =
         CreateInvitationRequest(
-            email = generateUserEmail(),
+            email = if (randomEmail) generateUserEmail() else email,
             firstName = firstName,
             lastName = lastName,
             phoneNumber = phoneNumber,

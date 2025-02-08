@@ -14,6 +14,7 @@ import com.logisty.core.domain.model.values.StreetNumber
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserPassword
 import com.logisty.core.domain.model.values.UserRole
+import java.time.Instant
 import java.time.LocalDate
 
 data class CreateUserCommand(
@@ -31,6 +32,7 @@ data class CreateUserCommand(
     val stateProvince: StateProvince,
     val postalCode: PostalCode,
     val roles: List<UserRole>,
+    val createdAt: Instant,
 )
 
 fun Invitation.toCreateUserCommand(userPassword: UserPassword): CreateUserCommand =
@@ -49,4 +51,5 @@ fun Invitation.toCreateUserCommand(userPassword: UserPassword): CreateUserComman
         stateProvince = stateProvince,
         postalCode = postalCode,
         roles = roles,
+        createdAt = createdAt,
     )

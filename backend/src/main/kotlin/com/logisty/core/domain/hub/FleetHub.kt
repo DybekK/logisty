@@ -1,8 +1,10 @@
 package com.logisty.core.domain.hub
 
 import com.logisty.core.domain.model.Invitation
+import com.logisty.core.domain.model.User
 import com.logisty.core.domain.model.command.CreateInvitationCommand
 import com.logisty.core.domain.model.query.GetInvitationsQuery
+import com.logisty.core.domain.model.query.GetUsersQuery
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.FleetName
 import com.logisty.core.domain.model.values.InvitationId
@@ -12,13 +14,15 @@ import com.logisty.core.domain.service.fleet.FleetCreator
 import com.logisty.core.domain.service.fleet.FleetInvitator
 import com.logisty.core.domain.service.fleet.InvitationAccepter
 import com.logisty.core.domain.service.fleet.InvitationService
+import com.logisty.core.domain.service.fleet.UserService
 import org.springframework.stereotype.Service
 
 @Service
 class FleetHub(
+    private val invitationService: InvitationService,
+    private val userService: UserService,
     private val fleetCreator: FleetCreator,
     private val fleetInvitator: FleetInvitator,
-    private val invitationService: InvitationService,
     private val invitationAccepter: InvitationAccepter,
 ) {
     // fleet
@@ -35,4 +39,7 @@ class FleetHub(
         invitationId: InvitationId,
         password: UserPassword,
     ): UserId = invitationAccepter.accept(invitationId, password)
+
+    // user
+    fun getUsers(query: GetUsersQuery): Pair<List<User>, Long> = userService.getUsers(query)
 }

@@ -14,6 +14,7 @@ import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserPassword
 import com.logisty.core.domain.model.values.UserRole
+import java.time.Instant
 import java.time.LocalDate
 
 data class FixtureUser(
@@ -32,4 +33,5 @@ data class FixtureUser(
     val postalCode: PostalCode,
     val password: UserPassword,
     val roles: List<UserRole>,
+    val createdAt: Instant,
 )

@@ -14,6 +14,7 @@ import com.logisty.core.application.security.jwt.values.JwtRefresh
 import com.logisty.core.domain.ErrorCode
 import com.logisty.core.domain.Fixtures
 import com.logisty.core.domain.model.query.GetInvitationsQuery
+import com.logisty.core.domain.model.query.GetUsersQuery
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.UserEmail
@@ -158,6 +159,21 @@ class FunctionalHttpTemplate(
         createInvitation(fleetId, inviteRequest, jwt)
             .andReturnResponse<CreateInvitationResponse>()
             .let { invitationResponse -> acceptInvitation(invitationResponse.invitationId, acceptRequest) }
+
+    // user
+    fun getUsers(
+        query: GetUsersQuery,
+        jwt: JwtAccess,
+    ): ResultActions =
+        mockMvc.perform(
+            get("/api/fleets/${query.fleetId.value}/users")
+                .param("page", query.page.toString())
+                .param("limit", query.limit.toString())
+                .param("email", query.email?.value)
+                .param("role", query.role?.name)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ${jwt.value}"),
+        )
 }
 
 inline fun <reified T> ResultActions.andReturnResponse(): T = readResponse<T>(andReturn().response)
