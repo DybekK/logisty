@@ -1,5 +1,7 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom"
 
+import { UserTable } from "./features/user"
+
 import { ProtectedRoute } from "@/components"
 import { Authenticate } from "@/features/auth/Authenticate"
 import {
@@ -18,6 +20,9 @@ export enum Routes {
   INVITATIONS = "/invitations",
   CREATE_INVITATION = "/invitations/create",
   ACCEPT_INVITATION = "/invitations/:invitationId/accept",
+
+  // user
+  USERS = "/users",
 
   // order
   NEW_ORDER = "/orders/new",
@@ -50,6 +55,11 @@ export const Router = () => {
         {
           path: Routes.CREATE_INVITATION,
           element: <CreateInvitation />,
+        },
+        // user
+        {
+          path: Routes.USERS,
+          element: <UserTable />,
         },
         // order
         {

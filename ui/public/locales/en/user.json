@@ -1,0 +1,16 @@
+{
+    "filterUsers": {
+        "searchPlaceholder": "Search by email",
+        "empty": "No users found",
+        "rolePlaceholder": "Select role",
+        "role": "Role",
+        "roles": {
+            "DISPATCHER": "Dispatcher",
+            "DRIVER": "Driver"
+        },
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "createdAt": "Created at"
+    }
+}

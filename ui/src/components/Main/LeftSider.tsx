@@ -60,6 +60,12 @@ export const LeftSider: React.FC = () => {
           icon: <UsergroupAddOutlined />,
           onClick: () => navigate(Routes.INVITATIONS),
         },
+        {
+          label: t("fleet.users"),
+          key: "users",
+          icon: <UserOutlined />,
+          onClick: () => navigate(Routes.USERS),
+        },
       ],
     },
   ]

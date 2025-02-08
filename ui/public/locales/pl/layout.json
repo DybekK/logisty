@@ -15,7 +15,8 @@
     },
     "fleet": {
       "title": "Flota",
-      "invitations": "Zaproszenia"
+      "invitations": "Zaproszenia",
+      "users": "Użytkownicy"
     }
   }
 }

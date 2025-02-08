@@ -15,7 +15,8 @@
     },
     "fleet": {
       "title": "Fleet",
-      "invitations": "Invitations"
+      "invitations": "Invitations",
+      "users": "Users"
     }
   }
 }

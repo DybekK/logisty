@@ -1,0 +1,16 @@
+{
+    "filterUsers": {
+        "searchPlaceholder": "Szukaj używając email",
+        "empty": "Brak użytkowników",
+        "rolePlaceholder": "Wybierz rolę",
+        "role": "Rola",
+        "roles": {
+            "DISPATCHER": "Dyspozytor",
+            "DRIVER": "Kierowca"
+        },
+        "firstName": "Imię",
+        "lastName": "Nazwisko",
+        "email": "Email",
+        "createdAt": "Utworzono"
+    }
+}

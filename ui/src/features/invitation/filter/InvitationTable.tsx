@@ -1,23 +1,18 @@
 import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { Button, Empty, Input, Modal, Select, Table } from "antd"
+import { Empty, Modal, Table } from "antd"
 
 import debounce from "lodash/debounce"
 
 import { parseToLocaleString, useAppSelector } from "@/common"
-import { StatusTag } from "@/features/invitation"
+import { InvitationTableTitle, StatusTag } from "@/features/invitation"
 import { CreateInvitation } from "@/features/invitation"
 import { useFetchInvitations } from "@/features/invitation/invitation.api"
 import {
   GetInvitationResponse,
   InvitationStatus,
 } from "@/features/invitation/invitation.types"
-
-const titleBlockStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-}
 
 const getColumns = (t: (key: string) => string) => [
   {
@@ -122,38 +117,12 @@ export const InvitationTable = () => {
           total: data?.total,
         }}
         title={() => (
-          <div style={{ ...titleBlockStyle, gap: "8px" }}>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <Input.Search
-                placeholder={t("filterInvitations.searchPlaceholder")}
-                style={{ width: 300 }}
-                defaultValue={filters.email}
-                onChange={e => debouncedSetFilters(e.target.value)}
-              />
-              <Select
-                placeholder={t("filterInvitations.statusPlaceholder")}
-                style={{ width: 170 }}
-                allowClear
-                value={filters.status}
-                onChange={value =>
-                  setFilters(prev => ({ ...prev, status: value }))
-                }
-              >
-                <Select.Option value={InvitationStatus.PENDING}>
-                  {t("filterInvitations.statuses.PENDING")}
-                </Select.Option>
-                <Select.Option value={InvitationStatus.ACCEPTED}>
-                  {t("filterInvitations.statuses.ACCEPTED")}
-                </Select.Option>
-                <Select.Option value={InvitationStatus.EXPIRED}>
-                  {t("filterInvitations.statuses.EXPIRED")}
-                </Select.Option>
-              </Select>
-            </div>
-            <Button type="primary" onClick={() => setIsModalOpen(true)}>
-              {t("filterInvitations.createInvitation")}
-            </Button>
-          </div>
+          <InvitationTableTitle
+            filters={filters}
+            debouncedSetFilters={debouncedSetFilters}
+            setFilters={setFilters}
+            setIsModalOpen={setIsModalOpen}
+          />
         )}
       />
       <Modal
