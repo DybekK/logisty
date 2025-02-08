@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { MapProvider } from "react-map-gl"
 
 import { CheckOutlined, PlusCircleOutlined } from "@ant-design/icons"
-import { Button, Card, Divider, Flex, Form, Steps } from "antd"
+import { Avatar, Button, Card, Divider, Flex, Form, Steps } from "antd"
 
 import { useAppDispatch, useAppSelector } from "@/common"
 import { Map3D } from "@/components"
@@ -33,11 +33,39 @@ const flexStyle: React.CSSProperties = {
   boxShadow: "8px 0px 15px -5px rgba(0, 0, 0, 0.025)",
 }
 
-const buttonStyle: React.CSSProperties = { width: "100%", textAlign: "left" }
+const buttonStyle: React.CSSProperties = {
+  width: "100%",
+  textAlign: "left",
+  justifyContent: "flex-start",
+  padding: "4px 11px",
+}
+
+const buttonTitleStyle: React.CSSProperties = {
+  textAlign: "left",
+  width: "250px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+}
+
 const addStepButtonStyle: React.CSSProperties = { ...buttonStyle }
 const acceptOrderButtonStyle: React.CSSProperties = {
   ...buttonStyle,
   marginTop: 10,
+}
+
+const driverAvatarStyle: React.CSSProperties = {
+  backgroundColor: "#f56a00",
+  marginRight: 8,
+}
+
+const driverStatusStyle: React.CSSProperties = {
+  width: 8,
+  height: 8,
+  borderRadius: "50%",
+  backgroundColor: "#52c41a", // Green for available
+  marginLeft: "auto",
+  marginRight: 8,
 }
 
 const mapId = "orderMap"
@@ -128,7 +156,11 @@ export const NewOrderForm: React.FC = () => {
                 size="large"
                 type="text"
               >
-                {driver.name}
+                <Avatar style={driverAvatarStyle} size="small">
+                  {driver.name.charAt(0)}
+                </Avatar>
+                <span style={buttonTitleStyle}>{driver.name}</span>
+                <span style={driverStatusStyle} title="Available" />
               </Button>
             ))}
           </Flex>

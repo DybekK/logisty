@@ -1,7 +1,5 @@
 package com.logisty.core.adapter.outbound
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.logisty.core.application.persistence.event.Events
 import com.logisty.core.domain.model.event.InternalEvent
 import com.logisty.core.domain.model.values.FleetId
@@ -13,16 +11,14 @@ import org.springframework.stereotype.Repository
 import java.time.Instant
 
 @Repository
-class PostgresEventStore(
-    private val mapper: ObjectMapper,
-) : EventStore {
+class PostgresEventStore : EventStore {
     override fun append(event: InternalEvent) {
         Events.insert {
             it[Events.fleetId] = event.fleetId.value
             it[Events.eventId] = event.eventId.value
             it[Events.type] = event.type.name
             it[Events.appendedAt] = event.appendedAt
-            it[Events.payload] = mapper.valueToTree<JsonNode>(event)
+            it[Events.payload] = event
         }
     }
 
@@ -34,5 +30,5 @@ class PostgresEventStore(
             .selectAll()
             .where { Events.fleetId eq fleetId.value }
             .andWhere { Events.appendedAt greater timestamp }
-            .map { mapper.treeToValue(it[Events.payload], InternalEvent::class.java) }
+            .map { it[Events.payload] }
 }
