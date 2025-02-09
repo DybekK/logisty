@@ -19,8 +19,15 @@ import com.logisty.core.domain.model.values.UserEncodedPassword
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserRole
 import com.logisty.core.domain.port.UserRepository
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.anyFrom
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.json.contains
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.stringParam
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Repository
 
