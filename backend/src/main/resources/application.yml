@@ -12,5 +12,5 @@ spring:
     generate-ddl: true
 jwt:
   key: uM3PZy7bj9ge5CD/yeK7gzTxyYPsIa9srrgdyNe2Z18=
-  access-token-expiration: 3600000
+  access-token-expiration: 432000000
   refresh-token-expiration: 86400000

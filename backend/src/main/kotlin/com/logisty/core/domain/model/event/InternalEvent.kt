@@ -10,17 +10,24 @@ import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.FleetName
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.LastName
+import com.logisty.core.domain.model.values.OrderId
 import com.logisty.core.domain.model.values.UserEmail
+import com.logisty.core.domain.model.values.UserId
+import org.postgis.Point
 import java.time.Instant
 
 interface Payload
 
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "type")
 @JsonSubTypes(
+    // fleet
+    Type(value = FleetCreatedEvent::class, name = "FLEET_CREATED"),
+    // invitation
     Type(value = InvitationCreatedEvent::class, name = "INVITATION_CREATED"),
     Type(value = InvitationAcceptedEvent::class, name = "INVITATION_ACCEPTED"),
     Type(value = InvitationExpiredEvent::class, name = "INVITATION_EXPIRED"),
-    Type(value = FleetCreatedEvent::class, name = "FLEET_CREATED"),
+    // order
+    Type(value = OrderCreatedEvent::class, name = "ORDER_CREATED"),
 )
 sealed interface InternalEvent {
     val fleetId: FleetId
@@ -31,7 +38,6 @@ sealed interface InternalEvent {
 }
 
 // fleet
-
 data class FleetCreatedEvent(
     override val fleetId: FleetId,
     override val payload: FleetCreatedPayload,
@@ -47,7 +53,6 @@ data class FleetCreatedEvent(
 }
 
 // invitation
-
 data class InvitationCreatedEvent(
     override val fleetId: FleetId,
     override val payload: InvitationCreatedPayload,
@@ -90,4 +95,29 @@ data class InvitationExpiredEvent(
         val invitationId: InvitationId,
         val email: UserEmail,
     ) : Payload
+}
+
+// order
+data class OrderCreatedEvent(
+    override val fleetId: FleetId,
+    override val payload: OrderCreatedPayload,
+    override val appendedAt: Instant,
+    override val eventId: InternalEventId = InternalEventId.generate(),
+) : InternalEvent {
+    override val type = InternalEventType.ORDER_CREATED
+
+    data class OrderCreatedPayload(
+        val orderId: OrderId,
+        val driverId: UserId,
+        val steps: List<OrderStep>,
+        val estimatedStartedAt: Instant,
+        val estimatedEndedAt: Instant,
+    ) : Payload {
+        data class OrderStep(
+            val description: String,
+            val location: Point,
+            val estimatedArrivalAt: Instant?,
+            val actualArrivalAt: Instant?,
+        )
+    }
 }

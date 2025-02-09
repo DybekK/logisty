@@ -74,6 +74,12 @@ class PostgresUserRepository(
             .singleOrNull()
             ?.toUser()
 
+    override fun findUsers(userIds: List<UserId>): List<User> =
+        Users
+            .selectAll()
+            .where { Users.userId inList userIds.map { it.value } }
+            .map { it.toUser() }
+
     override fun findUsers(query: GetUsersQuery): Pair<List<User>, Long> {
         val total =
             Users

@@ -16,6 +16,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
@@ -29,6 +30,7 @@ dependencies {
     implementation("org.postgresql:postgresql")
     implementation("net.postgis:postgis-jdbc:2.2.0")
     implementation("com.c0x12c.exposed.postgis:module-core:1.0.0")
+    implementation("com.github.GeosatCO:postgis-geojson:1.6")
     implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.57.0")
     implementation("org.jetbrains.exposed:exposed-json:0.57.0")
     implementation("org.jetbrains.exposed:exposed-java-time:0.57.0")

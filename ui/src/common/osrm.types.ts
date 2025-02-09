@@ -4,8 +4,21 @@ export interface OSRMRouteResponse {
   waypoints: OSRMWaypoint[]
 }
 
+export interface OSRMLegStep {
+  distance: number
+  duration: number
+  summary: string
+}
+
+export interface OSRMLeg {
+  steps: OSRMLegStep[]
+  distance: number
+  duration: number
+}
+
 export interface OSRMRoute {
   geometry: OSRMGeometry
+  legs: OSRMLeg[]
   duration: number
   distance: number
 }

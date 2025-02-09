@@ -5,22 +5,22 @@ import com.c0x12c.exposed.postgis.point
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-object OrderSteps : Table() {
+object OrderSteps : Table("order_steps") {
     val orderStepId = uuid("order_step_id")
     val orderId = uuid("order_id").references(Orders.orderId)
 
-    val input = text("input")
+    val description = text("description")
     val location = point("location")
 
-    val estimatedStartedAt = timestamp("estimated_started_at")
-    val estimatedEndedAt = timestamp("estimated_ended_at")
+    val estimatedArrivalAt = timestamp("estimated_arrival_at").nullable()
+    val actualArrivalAt = timestamp("actual_arrival_at").nullable()
 
     override val primaryKey = PrimaryKey(orderStepId)
 }
 
-object OrderRoutes : Table() {
+object OrderRoutes : Table("order_routes") {
     val orderRouteId = uuid("order_route_id")
-    val orderId = uuid("order_id").references(Orders.orderId)
+    val orderId = uuid("order_id").references(Orders.orderId).uniqueIndex()
 
     val route = lineString("geometry")
     val duration = double("duration")

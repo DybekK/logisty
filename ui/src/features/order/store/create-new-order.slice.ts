@@ -18,6 +18,7 @@ export interface CreateNewOrderLocalization {
 
 export interface CreateNewOrderState {
   latestStepIndex: number
+  startDate?: string
   steps: CreateNewOrderStep[]
   routes: OSRMRoute[]
   waypoints: OSRMWaypoint[]
@@ -40,6 +41,17 @@ export const createNewOrderSlice = createSlice({
   name: "createNewOrder",
   initialState,
   reducers: {
+    reset: state => {
+      state.latestStepIndex = -1
+      state.steps = Array.from({ length: 2 }, () => emptyStep)
+      state.routes = []
+      state.waypoints = []
+      state.localizationsAutoComplete = []
+    },
+    setStartDate: (state, action: PayloadAction<string>) => {
+      state.startDate = action.payload
+    },
+
     //steps
     addStep: state => {
       state.steps.push(emptyStep)
@@ -100,6 +112,8 @@ export const createNewOrderSlice = createSlice({
 })
 
 export const {
+  reset,
+  setStartDate,
   addStep,
   removeStep,
   updateStep,

@@ -1,4 +1,13 @@
 services:
+  postgres:
+    image: postgis/postgis:15-3.5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: logisty
+    ports:
+      - "5432:5432"
+      
   tileserver-gl:
     image: maptiler/tileserver-gl
     volumes:

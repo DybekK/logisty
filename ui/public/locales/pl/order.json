@@ -4,6 +4,8 @@
     "destinationPoint": "Wybierz punkt docelowy",
     "addStep": "Dodaj nowy etap",
     "deleteStep": "Usuń ten etap",
-    "acceptOrder": "Potwierdź dodanie zlecenia"
+    "acceptOrder": "Potwierdź dodanie zlecenia",
+    "success": "Zlecenie zostało dodane",
+    "startDate": "Wybierz datę rozpoczęcia"
   }
 }

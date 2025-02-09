@@ -22,7 +22,7 @@ object Users : Table() {
     val city = varchar("city", 255)
     val stateProvince = varchar("state_province", 255)
     val postalCode = varchar("postal_code", 255)
-    
+
     val createdAt = timestamp("created_at")
 
     override val primaryKey = PrimaryKey(userId)

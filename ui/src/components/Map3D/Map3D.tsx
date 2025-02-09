@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react"
 import Map from "react-map-gl/maplibre"
-
+import { MapRef, useMap } from "react-map-gl"
 import { Flex, Skeleton } from "antd"
-
 import { FeatureCollection, LineString } from "geojson"
-
-import { OSRMRoute, OSRMWaypoint } from "@/common"
 import { SourceLayer } from "@/components"
 
 const { VITE_MAP_GL_STYLE } = import.meta.env
@@ -17,20 +14,28 @@ const flexStyle: React.CSSProperties = {
   alignItems: "center",
 }
 
+interface Coordinates {
+  lat: number
+  lon: number
+}
+
+interface Route {
+  coordinates: number[][]
+}
+
 interface Map3DProps {
   id: string
-  routes: OSRMRoute[]
-  waypoints: OSRMWaypoint[]
+  routes: Route[]
 }
 
 const transformRoutesToGeoJSON = (
-  routes: OSRMRoute[],
+  routes: Route[]
 ): FeatureCollection<LineString> => {
   const features = routes.map(route => {
     return {
       type: "Feature" as const,
       properties: {},
-      geometry: route.geometry as LineString,
+      geometry: route as LineString,
     }
   })
 
@@ -40,9 +45,23 @@ const transformRoutesToGeoJSON = (
   }
 }
 
-interface Coordinates {
-  lat: number
-  lon: number
+const fitRoutesToBounds = (
+  routes: Route[],
+  mapInstance?: MapRef
+): void => {
+  const allCoords = routes.flatMap(route => route.coordinates)
+  if (allCoords.length > 0) {
+    const lons = allCoords.map(coord => coord[0])
+    const lats = allCoords.map(coord => coord[1])
+    const west = Math.min(...lons)
+    const east = Math.max(...lons)
+    const south = Math.min(...lats)
+    const north = Math.max(...lats)
+    mapInstance?.fitBounds([[west, south], [east, north]], {
+      padding: 20,
+      duration: 1000,
+    })
+  }
 }
 
 export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
@@ -52,6 +71,7 @@ export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
   })
   const [loadingCoordinates, setLoadingCoordinates] = useState(true)
   const { features } = transformRoutesToGeoJSON(routes)
+  const mapInstance = useMap()
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(position => {
@@ -62,6 +82,10 @@ export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
       setLoadingCoordinates(false)
     })
   }, [])
+
+  useEffect(() => {
+    fitRoutesToBounds(routes, mapInstance[id])
+  }, [mapInstance[id], routes])
 
   if (loadingCoordinates) {
     return (

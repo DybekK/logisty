@@ -4,6 +4,9 @@ import com.logisty.core.application.MutableClock
 import com.logisty.core.application.persistence.event.Events
 import com.logisty.core.application.persistence.tables.Fleets
 import com.logisty.core.application.persistence.tables.Invitations
+import com.logisty.core.application.persistence.tables.OrderRoutes
+import com.logisty.core.application.persistence.tables.OrderSteps
+import com.logisty.core.application.persistence.tables.Orders
 import com.logisty.core.application.persistence.tables.Users
 import com.logisty.core.domain.Fixtures
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -59,8 +62,8 @@ open class FunctionalTest {
     @BeforeEach
     fun prepareDatabase() {
         transaction {
-            SchemaUtils.drop(Events, Fleets, Invitations, Users)
-            SchemaUtils.create(Events, Fleets, Invitations, Users)
+            SchemaUtils.drop(Events, Fleets, Invitations, Users, Orders, OrderSteps, OrderRoutes)
+            SchemaUtils.create(Events, Fleets, Invitations, Users, Orders, OrderSteps, OrderRoutes)
 
             fixtures.createFleet()
             fixtures.createInvitations()

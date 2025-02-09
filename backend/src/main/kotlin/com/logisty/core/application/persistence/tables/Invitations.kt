@@ -23,7 +23,6 @@ object Invitations : Table() {
     val postalCode = varchar("postal_code", 255)
     val status = varchar("status", 255)
 
-
     val createdAt = timestamp("created_at")
     val expiresAt = timestamp("expires_at")
     val acceptedAt = timestamp("accepted_at").nullable()

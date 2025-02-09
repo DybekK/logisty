@@ -18,8 +18,8 @@ data class CreateOrderCommand(
     data class OrderStep(
         val description: String,
         val location: Point,
-        val estimatedStartedAt: Instant,
-        val estimatedEndedAt: Instant,
+        val estimatedArrivalAt: Instant?,
+        val actualArrivalAt: Instant?,
     )
 
     data class OrderRoute(

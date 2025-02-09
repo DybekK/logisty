@@ -11,6 +11,8 @@ interface UserRepository {
 
     fun findUsers(query: GetUsersQuery): Pair<List<User>, Long>
 
+    fun findUsers(userIds: List<UserId>): List<User>
+
     fun findById(userId: UserId): User?
 
     fun findByEmail(email: UserEmail): User?

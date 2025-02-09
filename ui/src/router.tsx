@@ -9,7 +9,6 @@ import {
   CreateInvitation,
   InvitationTable,
 } from "@/features/invitation"
-import { OrderStatus } from "@/features/order"
 import { OrderTable } from "@/features/order/filter"
 import { NewOrderForm } from "@/features/order/new"
 
@@ -64,12 +63,12 @@ export const Router = () => {
         // order
         {
           path: Routes.PENDING_ORDERS,
-          element: <OrderTable orderStatus={OrderStatus.PENDING} />,
+          element: <OrderTable />,
         },
-        {
-          path: Routes.COMPLETED_ORDERS,
-          element: <OrderTable orderStatus={OrderStatus.COMPLETED} />,
-        },
+        // {
+        //   path: Routes.COMPLETED_ORDERS,
+        //   element: <OrderTable orderStatus={OrderStatus.COMPLETED} />,
+        // },
         {
           path: Routes.NEW_ORDER,
           element: <NewOrderForm />,
