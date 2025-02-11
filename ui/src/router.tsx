@@ -25,8 +25,7 @@ export enum Routes {
 
   // order
   NEW_ORDER = "/orders/new",
-  PENDING_ORDERS = "/orders/pending",
-  COMPLETED_ORDERS = "/orders/completed",
+  ORDERS = "/orders",
 }
 
 export const Router = () => {
@@ -62,13 +61,9 @@ export const Router = () => {
         },
         // order
         {
-          path: Routes.PENDING_ORDERS,
+          path: Routes.ORDERS,
           element: <OrderTable />,
         },
-        // {
-        //   path: Routes.COMPLETED_ORDERS,
-        //   element: <OrderTable orderStatus={OrderStatus.COMPLETED} />,
-        // },
         {
           path: Routes.NEW_ORDER,
           element: <NewOrderForm />,

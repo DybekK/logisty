@@ -6,6 +6,11 @@
     "deleteStep": "Delete this step",
     "acceptOrder": "Accept saving order",
     "success": "Order has been created successfully",
-    "startDate": "Select the start date"
+    "startDate": "Select the start date",
+    "noDrivers": "No drivers available",
+    "startDateNotProvided": "Start date is not provided"
+  },
+  "filter": {
+    "empty": "No orders found"
   }
 }

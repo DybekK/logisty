@@ -97,7 +97,6 @@ class PostgresOrderRepository : OrderRepository {
             it[OrderSteps.description] = step.description
             it[OrderSteps.location] = step.location
             it[OrderSteps.estimatedArrivalAt] = step.estimatedArrivalAt
-            it[OrderSteps.actualArrivalAt] = step.actualArrivalAt
         }
     }
 

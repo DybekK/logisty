@@ -49,14 +49,6 @@ class NotificationController(
 ) {
     private val logger = LoggerFactory.getLogger(NotificationController::class.java)
 
-    // @GetMapping("/{fleetId}/notifications")
-    // fun getNotifications(
-    //     @PathVariable fleetId: FleetId,
-    //     @RequestParam since: Instant,
-    // ) = runCatching { eventStore.findSince(fleetId, since) }
-    //     .map { ResponseEntity.ok(GetNotificationsResponse(it)) }
-    //     .getOrElse { it.toInternalServerErrorResponseEntity(logger) }
-
     @GetMapping("/{fleetId}/notifications/translated")
     fun getNotifications(
         @PathVariable fleetId: FleetId,

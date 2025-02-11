@@ -118,14 +118,12 @@ class Fixtures {
     val driverInvitation = invitations.last()
 
     val order =
-        {
+        run {
             val orderId = OrderId.generate()
             val orderRouteId = OrderRouteId.generate()
             val orderStepId = OrderStepId.generate()
-
             val startedAt = Instant.now()
             val endedAt = startedAt.plus(Duration.ofMinutes(20))
-
             FixtureOrder(
                 orderId = orderId,
                 fleetId = fleet.fleetId,
@@ -157,7 +155,7 @@ class Fixtures {
                 estimatedStartedAt = startedAt,
                 estimatedEndedAt = endedAt,
             )
-        }()
+        }
 
     fun createFleet() =
         Fleets.insert {

@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react"
-import Map from "react-map-gl/maplibre"
 import { MapRef, useMap } from "react-map-gl"
+import Map from "react-map-gl/maplibre"
+
 import { Flex, Skeleton } from "antd"
+
 import { FeatureCollection, LineString } from "geojson"
+
 import { SourceLayer } from "@/components"
 
 const { VITE_MAP_GL_STYLE } = import.meta.env
@@ -29,7 +32,7 @@ interface Map3DProps {
 }
 
 const transformRoutesToGeoJSON = (
-  routes: Route[]
+  routes: Route[],
 ): FeatureCollection<LineString> => {
   const features = routes.map(route => {
     return {
@@ -45,10 +48,7 @@ const transformRoutesToGeoJSON = (
   }
 }
 
-const fitRoutesToBounds = (
-  routes: Route[],
-  mapInstance?: MapRef
-): void => {
+const fitRoutesToBounds = (routes: Route[], mapInstance?: MapRef): void => {
   const allCoords = routes.flatMap(route => route.coordinates)
   if (allCoords.length > 0) {
     const lons = allCoords.map(coord => coord[0])
@@ -57,10 +57,16 @@ const fitRoutesToBounds = (
     const east = Math.max(...lons)
     const south = Math.min(...lats)
     const north = Math.max(...lats)
-    mapInstance?.fitBounds([[west, south], [east, north]], {
-      padding: 20,
-      duration: 1000,
-    })
+    mapInstance?.fitBounds(
+      [
+        [west, south],
+        [east, north],
+      ],
+      {
+        padding: 20,
+        duration: 1000,
+      },
+    )
   }
 }
 

@@ -57,13 +57,12 @@ class OrderCreator(
     }
 
     private fun validateStepsTimings(steps: List<CreateOrderCommand.OrderStep>) {
-        val now = clock.instant()
+        for (i in 0 until steps.size - 1) {
+            val currentStepTime = steps[i].estimatedArrivalAt
+            val nextStepTime = steps[i + 1].estimatedArrivalAt
 
-        if (steps.size > 1) {
-            steps.dropLast(1).forEach { step ->
-                if (step.estimatedArrivalAt?.isAfter(now) == true) {
-                    throw StepEstimatedArrivalTimeInFutureException()
-                }
+            if (currentStepTime != null && nextStepTime != null && currentStepTime.isAfter(nextStepTime)) {
+                throw StepEstimatedArrivalTimeInFutureException()
             }
         }
     }
@@ -99,5 +98,4 @@ private fun CreateOrderCommand.OrderStep.toOrderStep() =
         description = description,
         location = location,
         estimatedArrivalAt = estimatedArrivalAt,
-        actualArrivalAt = actualArrivalAt,
     )

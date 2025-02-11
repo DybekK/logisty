@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
+import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
@@ -19,12 +20,19 @@ import { match } from "ts-pattern"
 import { z } from "zod"
 
 import {
+  AuthenticateResponse,
   AuthenticationErrorTypes,
   AxiosBackendError,
   patternErrors,
+  useAppDispatch,
 } from "@/common"
 import { useAuth } from "@/components"
-import { authenticate } from "@/features/auth/authentication.api"
+import {
+  authenticate,
+  fetchCurrentUser,
+  fetchCurrentUserAfterAuthentication,
+} from "@/features/auth"
+import { removeUser, setUser } from "@/features/auth"
 import { Routes } from "@/router"
 
 const layoutStyle: React.CSSProperties = {
@@ -71,7 +79,8 @@ export const Authenticate = () => {
     token: { colorBgLayout },
   } = theme.useToken()
 
-  const { setTokens } = useAuth()
+  const { tokens, setTokens, isUserAvailable } = useAuth()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const loginSchema = z.object({
@@ -102,7 +111,7 @@ export const Authenticate = () => {
       mutationFn: authenticate,
       onSuccess: tokens => {
         setTokens(tokens)
-        navigate(Routes.PENDING_ORDERS)
+        fetchCurrentUserMutate(tokens)
       },
       onError: (error: AxiosBackendError) => {
         match(error.response?.data)
@@ -114,6 +123,25 @@ export const Authenticate = () => {
           })
       },
     })
+
+  const {
+    mutateAsync: fetchCurrentUserMutate,
+    isPending: isFetchingCurrentUser,
+  } = useMutation({
+    mutationFn: (tokens: AuthenticateResponse) =>
+      fetchCurrentUserAfterAuthentication(tokens),
+    onSuccess: user => {
+      dispatch(setUser(user))
+      navigate(Routes.ORDERS)
+    },
+    onError: () => dispatch(removeUser()),
+  })
+
+  useEffect(() => {
+    if (isUserAvailable()) {
+      navigate(Routes.ORDERS)
+    }
+  }, [isUserAvailable, navigate])
 
   return (
     <Layout style={{ ...layoutStyle, background: colorBgLayout }}>
@@ -169,7 +197,9 @@ export const Authenticate = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                loading={isSubmitting || isAuthenticating}
+                loading={
+                  isSubmitting || isAuthenticating || isFetchingCurrentUser
+                }
                 style={buttonStyle}
               >
                 {tAuth("authenticate.signIn")}

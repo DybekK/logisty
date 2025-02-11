@@ -19,5 +19,14 @@ export const refresh = async (
 ): Promise<RefreshTokenResponse> =>
   axiosInstance.post(`/auth/refresh`, request).then(handleAxiosResponse)
 
+export const fetchCurrentUserAfterAuthentication = async (
+  tokens: AuthenticateResponse,
+): Promise<User> =>
+  axiosInstance
+    .get(`/auth/me`, {
+      headers: { Authorization: `Bearer ${tokens.accessToken}` },
+    })
+    .then(handleAxiosResponse)
+
 export const fetchCurrentUser = async (): Promise<User> =>
   authAxiosInstance.get(`/auth/me`).then(handleAxiosResponse)

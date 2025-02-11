@@ -1,7 +1,11 @@
 import { useQuery } from "@tanstack/react-query"
 
 import { authAxiosInstance, handleAxiosResponse } from "@/common"
-import { GetOrdersQuery, GetOrdersResponse, CreateOrderRequest } from "@/features/order"
+import {
+  CreateOrderRequest,
+  GetOrdersQuery,
+  GetOrdersResponse,
+} from "@/features/order"
 
 const fetchOrdersKey = "fetchOrders"
 
@@ -24,5 +28,6 @@ export const useFetchOrders = (query: GetOrdersQuery) =>
   })
 
 export const createOrder = async (fleetId: string, order: CreateOrderRequest) =>
-  authAxiosInstance.post(`/fleets/${fleetId}/orders`, order)
+  authAxiosInstance
+    .post(`/fleets/${fleetId}/orders`, order)
     .then(handleAxiosResponse)

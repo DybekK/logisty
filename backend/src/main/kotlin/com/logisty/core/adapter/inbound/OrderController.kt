@@ -45,15 +45,13 @@ data class CreateOrderRequest(
         val description: String,
         val lat: Double,
         val lon: Double,
-        val estimatedArrivalAt: Instant?,
-        val actualArrivalAt: Instant?,
+        val estimatedArrivalAt: Instant?
     ) {
         fun toOrderStep() =
             CreateOrderCommand.OrderStep(
                 description = description,
                 location = Point(lon, lat),
                 estimatedArrivalAt = estimatedArrivalAt,
-                actualArrivalAt = actualArrivalAt,
             )
     }
 

@@ -117,7 +117,6 @@ data class OrderCreatedEvent(
             val description: String,
             val location: Point,
             val estimatedArrivalAt: Instant?,
-            val actualArrivalAt: Instant?,
         )
     }
 }

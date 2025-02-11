@@ -11,7 +11,7 @@ import {
   RightCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons"
-import { Card, Collapse, Divider, Space, Table, Tag } from "antd"
+import { Card, Collapse, Divider, Empty, Space, Table, Tag } from "antd"
 import type { ColumnsType } from "antd/es/table"
 
 import { useAppSelector } from "@/common"
@@ -68,7 +68,7 @@ const orderStepCardStyle: React.CSSProperties = {
 }
 
 export const OrderTable: React.FC = () => {
-  const { t } = useTranslation("order", { keyPrefix: "orders" })
+  const { t } = useTranslation("order", { keyPrefix: "filter" })
 
   const { fleetId } = useAppSelector(state => state.auth.user!)
 
@@ -81,8 +81,7 @@ export const OrderTable: React.FC = () => {
     limit: pageSize,
   })
 
-  const routes = data?.orders
-    .map(order => order.route.route) ?? []
+  const routes = data?.orders.map(order => order.route.route) ?? []
 
   const columns: ColumnsType<GetOrderResponse> = [
     {
@@ -171,16 +170,19 @@ export const OrderTable: React.FC = () => {
                     <Space direction="vertical" style={{ width: "100%" }}>
                       <Space>
                         <ClockCircleOutlined />
-                        {`${t("expectedStartTime", "Expected Start Time")}:`}
+                        {`${t(
+                          step.estimatedArrivalAt
+                            ? "expectedStartTime"
+                            : "plannedStartTime",
+                          step.estimatedArrivalAt
+                            ? "Expected Arrival Time"
+                            : "Planned Start Time",
+                        )}:`}
                         <Tag color="purple" style={timeValueStyle}>
-                          {new Date(step.estimatedStartedAt).toLocaleString()}
-                        </Tag>
-                      </Space>
-                      <Space>
-                        <ClockCircleOutlined />
-                        {`${t("expectedEndTime", "Expected End Time")}:`}
-                        <Tag color="purple" style={timeValueStyle}>
-                          {new Date(step.estimatedEndedAt).toLocaleString()}
+                          {new Date(
+                            step.estimatedArrivalAt ||
+                              record.estimatedStartedAt,
+                          ).toLocaleString()}
                         </Tag>
                       </Space>
                     </Space>
@@ -203,6 +205,14 @@ export const OrderTable: React.FC = () => {
             columns={columns}
             dataSource={data?.orders}
             loading={isLoading}
+            locale={{
+              emptyText: (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={t("empty")}
+                />
+              ),
+            }}
             expandable={{
               expandedRowRender,
               expandRowByClick: true,

@@ -34,6 +34,7 @@ interface Tokens {
 interface AuthContextType {
   tokens: Tokens | null
   isAuthenticated: () => boolean
+  isUserAvailable: () => boolean
   setTokens: (tokens: Tokens) => void
   removeTokens: () => void
 }
@@ -42,6 +43,7 @@ const fallback = () => console.warn("AuthContext not initialized")
 export const AuthContext = createContext<AuthContextType>({
   tokens: null,
   isAuthenticated: () => false,
+  isUserAvailable: () => false,
   setTokens: fallback,
   removeTokens: fallback,
 })
@@ -73,7 +75,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const isAuthenticated = () => !!tokens?.accessToken && !!tokens?.refreshToken
 
-  const fetchNotificationsEnabled = isAuthenticated() && !!user?.fleetId
+  const isUserAvailable = () => isAuthenticated() && !!user?.fleetId
+
+  const fetchNotificationsEnabled = isUserAvailable()
 
   useQuery({
     queryKey: [fetchNotificationsKey, i18n.language],
@@ -130,7 +134,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     refreshTokenInterceptor()
-
     if (tokens.accessToken && tokens.refreshToken) {
       localStorage.setItem("accessToken", tokens.accessToken)
       localStorage.setItem("refreshToken", tokens.refreshToken)
@@ -149,6 +152,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     () => ({
       tokens,
       isAuthenticated,
+      isUserAvailable,
       setTokens,
       removeTokens,
     }),

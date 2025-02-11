@@ -17,16 +17,15 @@ export interface OrderRoute {
 export interface OrderStep {
   description: string
   location: GeoPoint
-  estimatedStartedAt: string
-  estimatedEndedAt: string
+  estimatedArrivalAt?: string
+  actualArrivalAt?: string
 }
 
 export interface CreateOrderStep {
   description: string
   lat: number
   lon: number
-  estimatedStartedAt: string
-  estimatedEndedAt: string
+  estimatedArrivalAt: string
 }
 
 export interface CreateOrderRoute {

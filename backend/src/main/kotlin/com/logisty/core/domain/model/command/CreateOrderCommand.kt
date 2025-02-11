@@ -13,13 +13,12 @@ data class CreateOrderCommand(
     val route: OrderRoute,
     val createdBy: UserId,
     val estimatedStartedAt: Instant,
-    val estimatedEndedAt: Instant,
+    val estimatedEndedAt: Instant
 ) {
     data class OrderStep(
         val description: String,
         val location: Point,
         val estimatedArrivalAt: Instant?,
-        val actualArrivalAt: Instant?,
     )
 
     data class OrderRoute(

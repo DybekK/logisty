@@ -47,7 +47,6 @@ data class FixtureOrder(
                         lat = it.location.y,
                         lon = it.location.x,
                         estimatedArrivalAt = it.estimatedArrivalAt,
-                        actualArrivalAt = it.actualArrivalAt,
                     )
                 },
             route =

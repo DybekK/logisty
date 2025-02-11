@@ -2,10 +2,22 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import React, { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { MapProvider } from "react-map-gl"
-import dayjs from 'dayjs'
 
 import { CheckOutlined, PlusCircleOutlined } from "@ant-design/icons"
-import { Avatar, Button, Card, DatePicker, Divider, Flex, Form, message, Steps } from "antd"
+import {
+  Avatar,
+  Button,
+  Card,
+  DatePicker,
+  Divider,
+  Empty,
+  Flex,
+  Form,
+  Steps,
+  message,
+} from "antd"
+
+import dayjs from "dayjs"
 
 import { OSRMRoute, useAppDispatch, useAppSelector } from "@/common"
 import { Map3D } from "@/components"
@@ -16,8 +28,10 @@ import {
   fetchGeneratedPathByCoordinates,
   reset,
   setStartDate,
+  updateEstimatedTimes,
   updateRoutesAndWaypoints,
 } from "@/features/order"
+import { useFetchAvailableDrivers } from "@/features/order"
 import { LocalizationAutoCompleteElement, Step } from "@/features/order/new"
 
 const cardBodyStyle: React.CSSProperties = {
@@ -52,18 +66,18 @@ const buttonTitleStyle: React.CSSProperties = {
   whiteSpace: "nowrap",
 }
 
-const datePickerContainerStyle: React.CSSProperties = { 
-  marginBottom: 11, 
-  marginLeft: 24 
+const datePickerContainerStyle: React.CSSProperties = {
+  marginBottom: 11,
+  marginLeft: 24,
 }
 
-const datePickerStyle: React.CSSProperties = { 
-  height: 40, 
-  width: "85%" 
+const datePickerStyle: React.CSSProperties = {
+  height: 40,
+  width: "85%",
 }
 
-const flexColumnStyle: React.CSSProperties = { 
-  flexDirection: "column" 
+const flexColumnStyle: React.CSSProperties = {
+  flexDirection: "column",
 }
 
 const addStepButtonStyle: React.CSSProperties = { ...buttonStyle }
@@ -81,32 +95,17 @@ const driverStatusStyle: React.CSSProperties = {
   width: 8,
   height: 8,
   borderRadius: "50%",
-  backgroundColor: "#52c41a", // Green for available
+  backgroundColor: "#52c41a",
   marginLeft: "auto",
   marginRight: 8,
 }
 
 const mapId = "orderMap"
 
-interface Driver {
-  id: string
-  name: string
+interface StepTimes {
+  estimatedArrivalAt: string[]
+  estimatedEndedAt: string
 }
-
-const drivers: Driver[] = [
-  {
-    id: "1",
-    name: "Jan Kowalski",
-  },
-  {
-    id: "2",
-    name: "Adam Nowak",
-  },
-  {
-    id: "3",
-    name: "Janusz Tracz",
-  },
-]
 
 const hasInvalidSteps = (steps: CreateNewOrderStep[]): boolean =>
   steps.some(
@@ -116,47 +115,34 @@ const hasInvalidSteps = (steps: CreateNewOrderStep[]): boolean =>
 const isStartDateValid = (startDate: string): boolean =>
   dayjs(startDate).isAfter(dayjs())
 
-const hasValidInput = (startDate: string, steps: CreateNewOrderStep[]): boolean =>
-  !hasInvalidSteps(steps) && isStartDateValid(startDate)
+const hasValidInput = (
+  startDate: string,
+  steps: CreateNewOrderStep[],
+): boolean => !hasInvalidSteps(steps) && isStartDateValid(startDate)
 
-const calculateStepTimes = (startDate: string, routes: OSRMRoute[]): { 
-  stepTimes: { start: Date, end: Date }[], 
-  courseEnd: Date 
-} => {
-  if (!routes || routes.length === 0) {
-    const defaultTime = new Date(startDate)
-    return {
-      stepTimes: [{ start: defaultTime, end: defaultTime }],
-      courseEnd: defaultTime
-    }
-  }
+const calculateStepTimes = (
+  startDate: string,
+  routes: OSRMRoute[],
+): StepTimes => {
+  const { times, currentDate } = routes
+    .flatMap(route => route.legs)
+    .reduce<{ currentDate: Date; times: Date[] }>(
+      (acc, leg) => {
+        const arrivalAt = new Date(
+          acc.currentDate.getTime() + leg.duration * 1000,
+        )
 
-  let currentTime = new Date(startDate)
-  const stepTimes: { start: Date, end: Date }[] = []
-  
-  // Add first step at the starting location
-  stepTimes.push({
-    start: currentTime,
-    end: currentTime
-  })
-  
-  routes.forEach((route) => {
-    if (!route) return
-    
-    // Calculate total duration for the entire route
-    const routeDuration = route.duration || 
-      route.legs.reduce((total, leg) => total + (leg.duration || 0), 0)
-    
-    const stepStart = new Date(currentTime)
-    const stepEnd = new Date(currentTime.getTime() + routeDuration * 1000)
-    
-    stepTimes.push({ start: stepStart, end: stepEnd })
-    currentTime = stepEnd
-  })
-  
+        return {
+          currentDate: arrivalAt,
+          times: [...acc.times, arrivalAt],
+        }
+      },
+      { currentDate: new Date(startDate), times: [] },
+    )
+
   return {
-    stepTimes,
-    courseEnd: currentTime
+    estimatedArrivalAt: times.map(time => time.toISOString()),
+    estimatedEndedAt: currentDate.toISOString(),
   }
 }
 
@@ -166,41 +152,64 @@ export const NewOrderForm: React.FC = () => {
   const dispatch = useAppDispatch()
 
   const { fleetId, userId } = useAppSelector(state => state.auth.user!)
-  const { steps, routes, localizationsAutoComplete, startDate } =
-    useAppSelector(state => state.createNewOrder)
+  const {
+    steps,
+    routes,
+    localizationsAutoComplete,
+    startDate,
+    estimatedEndedAt,
+  } = useAppSelector(state => state.createNewOrder)
+
+  const { data: availableDrivers } = useFetchAvailableDrivers({
+    fleetId,
+    startAt: startDate!,
+    endAt: estimatedEndedAt!,
+  }, !!startDate && !!estimatedEndedAt)
 
   useEffect(() => {
     if (steps.filter(step => !!step.lat).length < 2) return
 
     fetchGeneratedPathByCoordinates(queryClient, steps).then(
-      ({ routes, waypoints }) =>
-        dispatch(updateRoutesAndWaypoints({ routes, waypoints })),
+      ({ routes, waypoints }) => {
+        if (startDate) {
+          const { estimatedArrivalAt, estimatedEndedAt } = calculateStepTimes(
+            startDate!,
+            routes,
+          )
+
+          console.log({
+            estimatedArrivalAt,
+            estimatedEndedAt,
+          })
+
+          dispatch(
+            updateEstimatedTimes({ estimatedArrivalAt, estimatedEndedAt }),
+          )
+        }
+
+        dispatch(updateRoutesAndWaypoints({ routes, waypoints }))
+      },
     )
-  }, [steps])
+  }, [steps, startDate])
 
   const { mutateAsync: createOrderMutate } = useMutation({
     mutationFn: () => {
-      const { stepTimes, courseEnd } = calculateStepTimes(startDate!, routes)
-
-      console.log(stepTimes, courseEnd)
-      
       return createOrder(fleetId, {
         driverId: "d40e3a18-b560-4d69-a469-a8a50685c850",
-        steps: steps.map((step, index) => ({
+        steps: steps.map(step => ({
           description: step.inputValue,
-          lat: step.lat ?? 0,
-          lon: step.lon ?? 0,
-          estimatedStartedAt: stepTimes[index].start.toISOString(),
-          estimatedEndedAt: stepTimes[index].end.toISOString(),
+          lat: step.lat!,
+          lon: step.lon!,
+          estimatedArrivalAt: step.estimatedArrivalAt!,
         })),
         route: {
           distance: routes[0].distance,
           duration: routes[0].duration,
-          route: routes[0].geometry
+          route: routes[0].geometry,
         },
         createdBy: userId,
         estimatedStartedAt: startDate!,
-        estimatedEndedAt: courseEnd.toISOString(),
+        estimatedEndedAt: estimatedEndedAt!,
       })
     },
     onSuccess: () => {
@@ -210,10 +219,9 @@ export const NewOrderForm: React.FC = () => {
   })
 
   const handleStartDateChange = (date: dayjs.Dayjs | null) =>
-    dispatch(setStartDate(date ? date.toISOString() : ''))
+    dispatch(setStartDate(date ? date.toISOString() : ""))
 
-  const handleAcceptOrder = () =>
-    createOrderMutate()
+  const handleAcceptOrder = () => createOrderMutate()
 
   return (
     <MapProvider>
@@ -264,20 +272,34 @@ export const NewOrderForm: React.FC = () => {
               />
             ))}
             {localizationsAutoComplete.length > 0 && <Divider />}
-            {drivers.map(driver => (
-              <Button
-                key={driver.id}
-                style={buttonStyle}
-                size="large"
-                type="text"
-              >
-                <Avatar style={driverAvatarStyle} size="small">
-                  {driver.name.charAt(0)}
-                </Avatar>
-                <span style={buttonTitleStyle}>{driver.name}</span>
-                <span style={driverStatusStyle} title="Available" />
-              </Button>
-            ))}
+            {!startDate ? (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={t("startDateNotProvided")}
+              />
+            ) : availableDrivers?.drivers.length ? (
+              availableDrivers.drivers.map(driver => (
+                <Button
+                  key={driver.driverId}
+                  style={buttonStyle}
+                  size="large"
+                  type="text"
+                >
+                  <Avatar style={driverAvatarStyle} size="small">
+                    {driver.firstName.charAt(0)}
+                  </Avatar>
+                  <span style={buttonTitleStyle}>
+                    {`${driver.firstName} ${driver.lastName}`}
+                  </span>
+                  <span style={driverStatusStyle} title="Available" />
+                </Button>
+              ))
+            ) : (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={t("noDrivers")}
+              />
+            )}
           </Flex>
         </Flex>
         <Map3D id={mapId} routes={routes.map(route => route.geometry)} />
