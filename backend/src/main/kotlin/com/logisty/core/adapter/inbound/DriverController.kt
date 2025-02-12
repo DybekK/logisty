@@ -7,6 +7,7 @@ import com.logisty.core.domain.model.query.GetAvailableDriversQuery
 import com.logisty.core.domain.model.values.FirstName
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.LastName
+import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserId
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
@@ -47,7 +48,8 @@ class DriverController(
         @PathVariable fleetId: FleetId,
         @RequestParam startAt: Instant,
         @RequestParam endAt: Instant,
-    ) = runCatching { orderHub.getAvailableDrivers(GetAvailableDriversQuery(fleetId, startAt, endAt)) }
+        @RequestParam email: UserEmail?,
+    ) = runCatching { orderHub.getAvailableDrivers(GetAvailableDriversQuery(fleetId, startAt, endAt, email)) }
         .map { drivers ->
             ResponseEntity.ok(
                 GetAvailableDriversResponse(

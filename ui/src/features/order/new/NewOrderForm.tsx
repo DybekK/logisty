@@ -3,36 +3,21 @@ import React, { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { MapProvider } from "react-map-gl"
 
-import { CheckOutlined, PlusCircleOutlined } from "@ant-design/icons"
-import {
-  Avatar,
-  Button,
-  Card,
-  DatePicker,
-  Divider,
-  Empty,
-  Flex,
-  Form,
-  Steps,
-  message,
-} from "antd"
+import { Card, Divider, Flex, message } from "antd"
 
 import dayjs from "dayjs"
 
 import { OSRMRoute, useAppDispatch, useAppSelector } from "@/common"
-import { Map3D } from "@/components"
+import { Map3D } from "@/components/Map3D/Map3D"
+import { DriversPanel, RouteForm } from "@/features/order"
 import {
   CreateNewOrderStep,
-  addStep,
   createOrder,
   fetchGeneratedPathByCoordinates,
   reset,
-  setStartDate,
   updateEstimatedTimes,
   updateRoutesAndWaypoints,
 } from "@/features/order"
-import { useFetchAvailableDrivers } from "@/features/order"
-import { LocalizationAutoCompleteElement, Step } from "@/features/order/new"
 
 const cardBodyStyle: React.CSSProperties = {
   height: "100%",
@@ -51,55 +36,6 @@ const flexStyle: React.CSSProperties = {
   boxShadow: "8px 0px 15px -5px rgba(0, 0, 0, 0.025)",
 }
 
-const buttonStyle: React.CSSProperties = {
-  width: "100%",
-  textAlign: "left",
-  justifyContent: "flex-start",
-  padding: "4px 11px",
-}
-
-const buttonTitleStyle: React.CSSProperties = {
-  textAlign: "left",
-  width: "250px",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-}
-
-const datePickerContainerStyle: React.CSSProperties = {
-  marginBottom: 11,
-  marginLeft: 24,
-}
-
-const datePickerStyle: React.CSSProperties = {
-  height: 40,
-  width: "85%",
-}
-
-const flexColumnStyle: React.CSSProperties = {
-  flexDirection: "column",
-}
-
-const addStepButtonStyle: React.CSSProperties = { ...buttonStyle }
-const acceptOrderButtonStyle: React.CSSProperties = {
-  ...buttonStyle,
-  marginTop: 10,
-}
-
-const driverAvatarStyle: React.CSSProperties = {
-  backgroundColor: "#f56a00",
-  marginRight: 8,
-}
-
-const driverStatusStyle: React.CSSProperties = {
-  width: 8,
-  height: 8,
-  borderRadius: "50%",
-  backgroundColor: "#52c41a",
-  marginLeft: "auto",
-  marginRight: 8,
-}
-
 const mapId = "orderMap"
 
 interface StepTimes {
@@ -112,13 +48,15 @@ const hasInvalidSteps = (steps: CreateNewOrderStep[]): boolean =>
     ({ lat, lon, inputValue }) => !lat || !lon || inputValue.trim() === "",
   )
 
-const isStartDateValid = (startDate: string): boolean =>
-  dayjs(startDate).isAfter(dayjs())
+const isStartDateValid = (startDate?: string): boolean =>
+  startDate ? dayjs(startDate).isAfter(dayjs()) : true
 
 const hasValidInput = (
-  startDate: string,
   steps: CreateNewOrderStep[],
-): boolean => !hasInvalidSteps(steps) && isStartDateValid(startDate)
+  startDate?: string,
+  selectedDriverId?: string,
+): boolean =>
+  !hasInvalidSteps(steps) && isStartDateValid(startDate) && !!selectedDriverId
 
 const calculateStepTimes = (
   startDate: string,
@@ -152,19 +90,8 @@ export const NewOrderForm: React.FC = () => {
   const dispatch = useAppDispatch()
 
   const { fleetId, userId } = useAppSelector(state => state.auth.user!)
-  const {
-    steps,
-    routes,
-    localizationsAutoComplete,
-    startDate,
-    estimatedEndedAt,
-  } = useAppSelector(state => state.createNewOrder)
-
-  const { data: availableDrivers } = useFetchAvailableDrivers({
-    fleetId,
-    startAt: startDate!,
-    endAt: estimatedEndedAt!,
-  }, !!startDate && !!estimatedEndedAt)
+  const { steps, routes, startDate, estimatedEndedAt, selectedDriverId } =
+    useAppSelector(state => state.createNewOrder)
 
   useEffect(() => {
     if (steps.filter(step => !!step.lat).length < 2) return
@@ -176,11 +103,6 @@ export const NewOrderForm: React.FC = () => {
             startDate!,
             routes,
           )
-
-          console.log({
-            estimatedArrivalAt,
-            estimatedEndedAt,
-          })
 
           dispatch(
             updateEstimatedTimes({ estimatedArrivalAt, estimatedEndedAt }),
@@ -195,7 +117,7 @@ export const NewOrderForm: React.FC = () => {
   const { mutateAsync: createOrderMutate } = useMutation({
     mutationFn: () => {
       return createOrder(fleetId, {
-        driverId: "d40e3a18-b560-4d69-a469-a8a50685c850",
+        driverId: selectedDriverId!,
         steps: steps.map(step => ({
           description: step.inputValue,
           lat: step.lat!,
@@ -218,89 +140,18 @@ export const NewOrderForm: React.FC = () => {
     },
   })
 
-  const handleStartDateChange = (date: dayjs.Dayjs | null) =>
-    dispatch(setStartDate(date ? date.toISOString() : ""))
-
-  const handleAcceptOrder = () => createOrderMutate()
-
   return (
     <MapProvider>
       <Card bodyStyle={cardBodyStyle} style={cardStyle}>
         <Flex style={flexStyle}>
-          <Form>
-            <Form.Item style={datePickerContainerStyle}>
-              <DatePicker
-                showTime
-                style={datePickerStyle}
-                placeholder={t("startDate")}
-                size="middle"
-                value={startDate ? dayjs(startDate) : null}
-                onChange={handleStartDateChange}
-              />
-            </Form.Item>
-            <Steps progressDot direction="vertical" current={steps.length - 1}>
-              {steps.map((_, index) => (
-                <Steps.Step key={index} description={<Step index={index} />} />
-              ))}
-            </Steps>
-            <Button
-              style={addStepButtonStyle}
-              onClick={() => dispatch(addStep())}
-              size="large"
-              icon={<PlusCircleOutlined />}
-            >
-              {t("addStep")}
-            </Button>
-            <Button
-              onClick={handleAcceptOrder}
-              style={acceptOrderButtonStyle}
-              size="large"
-              ghost
-              type="primary"
-              icon={<CheckOutlined />}
-              disabled={!hasValidInput(startDate!, steps)}
-            >
-              {t("acceptOrder")}
-            </Button>
-          </Form>
+          <RouteForm
+            onAcceptOrder={() => createOrderMutate()}
+            hasValidInput={() =>
+              hasValidInput(steps, startDate, selectedDriverId)
+            }
+          />
           <Divider />
-          <Flex style={flexColumnStyle}>
-            {localizationsAutoComplete.map((item, index) => (
-              <LocalizationAutoCompleteElement
-                key={index}
-                localization={item}
-              />
-            ))}
-            {localizationsAutoComplete.length > 0 && <Divider />}
-            {!startDate ? (
-              <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={t("startDateNotProvided")}
-              />
-            ) : availableDrivers?.drivers.length ? (
-              availableDrivers.drivers.map(driver => (
-                <Button
-                  key={driver.driverId}
-                  style={buttonStyle}
-                  size="large"
-                  type="text"
-                >
-                  <Avatar style={driverAvatarStyle} size="small">
-                    {driver.firstName.charAt(0)}
-                  </Avatar>
-                  <span style={buttonTitleStyle}>
-                    {`${driver.firstName} ${driver.lastName}`}
-                  </span>
-                  <span style={driverStatusStyle} title="Available" />
-                </Button>
-              ))
-            ) : (
-              <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={t("noDrivers")}
-              />
-            )}
-          </Flex>
+          <DriversPanel />
         </Flex>
         <Map3D id={mapId} routes={routes.map(route => route.geometry)} />
       </Card>

@@ -16,11 +16,15 @@ export const fetchAvailableDrivers = async (
       params: {
         startAt: query.startAt,
         endAt: query.endAt,
+        email: query.email,
       },
     })
     .then(handleAxiosResponse)
 
-export const useFetchAvailableDrivers = (query: GetAvailableDriversQuery, enabled: boolean) =>
+export const useFetchAvailableDrivers = (
+  query: GetAvailableDriversQuery,
+  enabled: boolean,
+) =>
   useQuery({
     queryKey: [fetchAvailableDriversKey, query],
     queryFn: () => fetchAvailableDrivers(query),

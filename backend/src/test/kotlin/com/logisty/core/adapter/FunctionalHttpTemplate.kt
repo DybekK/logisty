@@ -14,8 +14,8 @@ import com.logisty.core.application.security.jwt.values.JwtAccess
 import com.logisty.core.application.security.jwt.values.JwtRefresh
 import com.logisty.core.domain.ErrorCode
 import com.logisty.core.domain.Fixtures
-import com.logisty.core.domain.model.query.GetInvitationsQuery
 import com.logisty.core.domain.model.query.GetAvailableDriversQuery
+import com.logisty.core.domain.model.query.GetInvitationsQuery
 import com.logisty.core.domain.model.query.GetOrdersQuery
 import com.logisty.core.domain.model.query.GetUsersQuery
 import com.logisty.core.domain.model.values.FleetId
@@ -190,7 +190,7 @@ class FunctionalHttpTemplate(
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer ${jwt.value}"),
         )
-        
+
     // order
     fun createOrder(
         fleetId: FleetId,

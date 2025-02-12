@@ -1,11 +1,11 @@
 package com.logisty.core.domain.model
 
-import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.FirstName
+import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.OrderId
 import com.logisty.core.domain.model.values.OrderRouteId
-import com.logisty.core.domain.model.values.OrderStepId 
+import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.UserId
 import org.postgis.LineString
 import org.postgis.Point
@@ -38,19 +38,20 @@ data class Order(
     val estimatedStartedAt: Instant,
     val estimatedEndedAt: Instant,
 ) {
-    fun toExtendedOrder(user: User): ExtendedOrder = ExtendedOrder(
-        orderId = orderId,
-        fleetId = fleetId,
-        driverId = driverId,
-        driverFirstName = user.firstName,
-        driverLastName = user.lastName,
-        steps = steps,
-        route = route,
-        createdBy = createdBy,
-        createdAt = createdAt,
-        estimatedStartedAt = estimatedStartedAt,
-        estimatedEndedAt = estimatedEndedAt,
-    )
+    fun toExtendedOrder(user: User): ExtendedOrder =
+        ExtendedOrder(
+            orderId = orderId,
+            fleetId = fleetId,
+            driverId = driverId,
+            driverFirstName = user.firstName,
+            driverLastName = user.lastName,
+            steps = steps,
+            route = route,
+            createdBy = createdBy,
+            createdAt = createdAt,
+            estimatedStartedAt = estimatedStartedAt,
+            estimatedEndedAt = estimatedEndedAt,
+        )
 }
 
 data class ExtendedOrder(

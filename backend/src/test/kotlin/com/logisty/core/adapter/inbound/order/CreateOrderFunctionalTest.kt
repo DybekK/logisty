@@ -143,10 +143,13 @@ class CreateOrderFunctionalTest : FunctionalTest() {
     }
 
     private fun List<FixtureOrderStep>.copyInvalidSteps() =
-        mapIndexed { index, step -> 
-            if (index == 0) step.copy(estimatedArrivalAt = clock.instant().plus(Duration.ofHours(1)))
-            else step
-        } 
+        mapIndexed { index, step ->
+            if (index == 0) {
+                step.copy(estimatedArrivalAt = clock.instant().plus(Duration.ofHours(1)))
+            } else {
+                step
+            }
+        }
 
     private fun FixtureOrder.invalidStepTimingsOrderRequest() =
         copy(steps = steps.copyInvalidSteps())

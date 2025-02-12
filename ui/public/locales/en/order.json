@@ -8,7 +8,8 @@
     "success": "Order has been created successfully",
     "startDate": "Select the start date",
     "noDrivers": "No drivers available",
-    "startDateNotProvided": "Start date is not provided"
+    "startDateNotProvided": "Start date is not provided",
+    "searchByEmail": "Search by email"
   },
   "filter": {
     "empty": "No orders found"

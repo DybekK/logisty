@@ -116,14 +116,14 @@ class PostgresUserRepository(
             .select(Users.columns)
             .where { Users.fleetId eq query.fleetId.value }
             .andWhere { stringParam(UserRole.DRIVER.name) eq anyFrom(Users.roles) }
+            .andWhere { query.email?.let { Users.email like "%${it.value}%" } ?: Op.TRUE }
             .andWhere {
                 Orders.driverId.isNull() or
                     not(
                         (Orders.estimatedStartedAt less query.endAt) and
                             (Orders.estimatedEndedAt greater query.startAt),
                     )
-            }
-            .map { it.toUser() }
+            }.map { it.toUser() }
 
     override fun findUserById(id: UserId): User? =
         Users

@@ -21,6 +21,8 @@ export interface CreateNewOrderState {
   latestStepIndex: number
   startDate?: string
   estimatedEndedAt?: string
+  selectedDriverId?: string
+  searchByEmail?: string
   steps: CreateNewOrderStep[]
   routes: OSRMRoute[]
   waypoints: OSRMWaypoint[]
@@ -126,6 +128,19 @@ export const createNewOrderSlice = createSlice({
 
       state.estimatedEndedAt = action.payload.estimatedEndedAt
     },
+
+    // drivers
+    selectDriver: (state, action: PayloadAction<string>) => {
+      state.selectedDriverId = action.payload
+    },
+
+    unselectDriver: state => {
+      state.selectedDriverId = undefined
+    },
+
+    updateSearchByEmail: (state, action: PayloadAction<string>) => {
+      state.searchByEmail = action.payload
+    },
   },
 })
 
@@ -141,6 +156,9 @@ export const {
   clearLocalizationAutoComplete,
   updateRoutesAndWaypoints,
   updateEstimatedTimes,
+  selectDriver,
+  unselectDriver,
+  updateSearchByEmail,
 } = createNewOrderSlice.actions
 
 export const createNewOrderReducer = createNewOrderSlice.reducer
