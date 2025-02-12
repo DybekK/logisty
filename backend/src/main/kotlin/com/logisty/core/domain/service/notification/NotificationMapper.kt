@@ -5,6 +5,7 @@ import com.logisty.core.domain.model.event.InternalEvent
 import com.logisty.core.domain.model.event.InvitationAcceptedEvent
 import com.logisty.core.domain.model.event.InvitationCreatedEvent
 import com.logisty.core.domain.model.event.InvitationExpiredEvent
+import com.logisty.core.domain.model.event.OrderCreatedEvent
 import com.logisty.core.domain.model.event.notification.Notification
 import com.logisty.core.domain.model.event.notification.NotificationMessage
 import com.logisty.core.domain.model.event.notification.NotificationTitle
@@ -22,10 +23,16 @@ class NotificationMapper(
         event: InternalEvent,
     ): Notification =
         when (event) {
+            // fleet
             is FleetCreatedEvent -> event.toNotification(locale)
+
+            // invitation
             is InvitationCreatedEvent -> event.toNotification(locale)
             is InvitationAcceptedEvent -> event.toNotification(locale)
             is InvitationExpiredEvent -> event.toNotification(locale)
+
+            // order
+            is OrderCreatedEvent -> event.toNotification(locale)
         }
 
     private fun FleetCreatedEvent.toNotification(locale: Locale): Notification =
@@ -116,6 +123,30 @@ class NotificationMapper(
                     messageSource.getMessage(
                         "event.invitation.expired.message",
                         arrayOf(payload.email.value),
+                        locale,
+                    ),
+                ),
+            eventType = type,
+            notificationType = NotificationType.INFO,
+            appendedAt = appendedAt,
+        )
+
+    private fun OrderCreatedEvent.toNotification(locale: Locale): Notification =
+        Notification(
+            eventId = eventId,
+            title =
+                NotificationTitle(
+                    messageSource.getMessage(
+                        "event.order.created.title",
+                        null,
+                        locale,
+                    ),
+                ),
+            message =
+                NotificationMessage(
+                    messageSource.getMessage(
+                        "event.order.created.message",
+                        arrayOf(payload.orderId.value),
                         locale,
                     ),
                 ),

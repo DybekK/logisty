@@ -8,6 +8,7 @@ export interface CreateNewOrderStep {
   value?: string
   lat?: number
   lon?: number
+  estimatedArrivalAt?: string
 }
 
 export interface CreateNewOrderLocalization {
@@ -18,6 +19,10 @@ export interface CreateNewOrderLocalization {
 
 export interface CreateNewOrderState {
   latestStepIndex: number
+  startDate?: string
+  estimatedEndedAt?: string
+  selectedDriverId?: string
+  searchByEmail?: string
   steps: CreateNewOrderStep[]
   routes: OSRMRoute[]
   waypoints: OSRMWaypoint[]
@@ -40,6 +45,19 @@ export const createNewOrderSlice = createSlice({
   name: "createNewOrder",
   initialState,
   reducers: {
+    reset: state => {
+      state.latestStepIndex = -1
+      state.startDate = undefined
+      state.estimatedEndedAt = undefined
+      state.steps = Array.from({ length: 2 }, () => emptyStep)
+      state.routes = []
+      state.waypoints = []
+      state.localizationsAutoComplete = []
+    },
+    setStartDate: (state, action: PayloadAction<string>) => {
+      state.startDate = action.payload
+    },
+
     //steps
     addStep: state => {
       state.steps.push(emptyStep)
@@ -96,10 +114,39 @@ export const createNewOrderSlice = createSlice({
       state.routes = action.payload.routes
       state.waypoints = action.payload.waypoints
     },
+
+    updateEstimatedTimes: (
+      state,
+      action: PayloadAction<{
+        estimatedArrivalAt: string[]
+        estimatedEndedAt: string
+      }>,
+    ) => {
+      state.steps.slice(1).forEach((step, index) => {
+        step.estimatedArrivalAt = action.payload.estimatedArrivalAt[index]
+      })
+
+      state.estimatedEndedAt = action.payload.estimatedEndedAt
+    },
+
+    // drivers
+    selectDriver: (state, action: PayloadAction<string>) => {
+      state.selectedDriverId = action.payload
+    },
+
+    unselectDriver: state => {
+      state.selectedDriverId = undefined
+    },
+
+    updateSearchByEmail: (state, action: PayloadAction<string>) => {
+      state.searchByEmail = action.payload
+    },
   },
 })
 
 export const {
+  reset,
+  setStartDate,
   addStep,
   removeStep,
   updateStep,
@@ -108,6 +155,10 @@ export const {
   updateLocalizationAutoComplete,
   clearLocalizationAutoComplete,
   updateRoutesAndWaypoints,
+  updateEstimatedTimes,
+  selectDriver,
+  unselectDriver,
+  updateSearchByEmail,
 } = createNewOrderSlice.actions
 
 export const createNewOrderReducer = createNewOrderSlice.reducer

@@ -7,7 +7,6 @@ import storage from "redux-persist/lib/storage"
 import { authReducer } from "@/features/auth"
 import { notificationReducer } from "@/features/notification"
 import { createNewOrderReducer } from "@/features/order"
-import { ordersReducer } from "@/features/order"
 
 const authPersistConfig = {
   key: "auth",
@@ -23,7 +22,6 @@ const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   notification: persistReducer(notificationPersistConfig, notificationReducer),
   createNewOrder: createNewOrderReducer,
-  orders: ordersReducer,
 })
 
 export const store = configureStore({

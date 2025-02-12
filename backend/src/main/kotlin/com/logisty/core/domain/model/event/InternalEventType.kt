@@ -12,4 +12,7 @@ enum class InternalEventType(
     INVITATION_CREATED(visibleTo = setOf(UserRole.DISPATCHER)),
     INVITATION_ACCEPTED(visibleTo = setOf(UserRole.DISPATCHER)),
     INVITATION_EXPIRED(visibleTo = setOf(UserRole.DISPATCHER)),
+
+    // order
+    ORDER_CREATED(visibleTo = setOf(UserRole.DISPATCHER, UserRole.DRIVER)),
 }

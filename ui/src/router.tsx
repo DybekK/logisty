@@ -9,7 +9,6 @@ import {
   CreateInvitation,
   InvitationTable,
 } from "@/features/invitation"
-import { OrderStatus } from "@/features/order"
 import { OrderTable } from "@/features/order/filter"
 import { NewOrderForm } from "@/features/order/new"
 
@@ -26,8 +25,7 @@ export enum Routes {
 
   // order
   NEW_ORDER = "/orders/new",
-  PENDING_ORDERS = "/orders/pending",
-  COMPLETED_ORDERS = "/orders/completed",
+  ORDERS = "/orders",
 }
 
 export const Router = () => {
@@ -63,12 +61,8 @@ export const Router = () => {
         },
         // order
         {
-          path: Routes.PENDING_ORDERS,
-          element: <OrderTable orderStatus={OrderStatus.PENDING} />,
-        },
-        {
-          path: Routes.COMPLETED_ORDERS,
-          element: <OrderTable orderStatus={OrderStatus.COMPLETED} />,
+          path: Routes.ORDERS,
+          element: <OrderTable />,
         },
         {
           path: Routes.NEW_ORDER,

@@ -7,11 +7,14 @@ import org.jetbrains.exposed.sql.javatime.timestamp
 object Invitations : Table() {
     val invitationId = uuid("invitation_id")
     val fleetId = uuid("fleet_id").references(Fleets.fleetId)
+
     val email = varchar("email", 255)
     val firstName = varchar("first_name", 255)
     val lastName = varchar("last_name", 255)
     val phoneNumber = varchar("phone_number", 255)
+    val roles = array<String>("roles")
     val dateOfBirth = date("date_of_birth")
+
     val street = varchar("street", 255)
     val streetNumber = varchar("street_number", 255)
     val apartmentNumber = varchar("apartment_number", 255).nullable()
@@ -19,7 +22,7 @@ object Invitations : Table() {
     val stateProvince = varchar("state_province", 255)
     val postalCode = varchar("postal_code", 255)
     val status = varchar("status", 255)
-    val roles = array<String>("roles")
+
     val createdAt = timestamp("created_at")
     val expiresAt = timestamp("expires_at")
     val acceptedAt = timestamp("accepted_at").nullable()

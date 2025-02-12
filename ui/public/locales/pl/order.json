@@ -4,6 +4,14 @@
     "destinationPoint": "Wybierz punkt docelowy",
     "addStep": "Dodaj nowy etap",
     "deleteStep": "Usuń ten etap",
-    "acceptOrder": "Potwierdź dodanie zlecenia"
+    "acceptOrder": "Potwierdź dodanie zlecenia",
+    "success": "Zlecenie zostało dodane",
+    "startDate": "Wybierz datę rozpoczęcia",
+    "noDrivers": "Brak dostępnych kierowców",
+    "startDateNotProvided": "Data rozpoczęcia nie została podana",
+    "searchByEmail": "Szukaj używając email"
+  },
+  "filter": {
+    "empty": "Brak zleceń"
   }
 }

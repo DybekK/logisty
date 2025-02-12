@@ -1,8 +1,10 @@
 package com.logisty.core.adapter.outbound
 
+import com.logisty.core.application.persistence.tables.Orders
 import com.logisty.core.application.persistence.tables.Users
 import com.logisty.core.domain.model.User
 import com.logisty.core.domain.model.command.CreateUserCommand
+import com.logisty.core.domain.model.query.GetAvailableDriversQuery
 import com.logisty.core.domain.model.query.GetUsersQuery
 import com.logisty.core.domain.model.values.ApartmentNumber
 import com.logisty.core.domain.model.values.City
@@ -18,14 +20,18 @@ import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserEncodedPassword
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserRole
+import com.logisty.core.domain.port.DriverRepository
 import com.logisty.core.domain.port.UserRepository
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.anyFrom
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.json.contains
+import org.jetbrains.exposed.sql.leftJoin
+import org.jetbrains.exposed.sql.not
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.stringParam
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -34,7 +40,8 @@ import org.springframework.stereotype.Repository
 @Repository
 class PostgresUserRepository(
     private val encoder: PasswordEncoder,
-) : UserRepository {
+) : UserRepository,
+    DriverRepository {
     override fun createUser(command: CreateUserCommand): UserId {
         val userId = UserId.generate()
 
@@ -74,6 +81,12 @@ class PostgresUserRepository(
             .singleOrNull()
             ?.toUser()
 
+    override fun findUsers(userIds: List<UserId>): List<User> =
+        Users
+            .selectAll()
+            .where { Users.userId inList userIds.map { it.value } }
+            .map { it.toUser() }
+
     override fun findUsers(query: GetUsersQuery): Pair<List<User>, Long> {
         val total =
             Users
@@ -96,6 +109,21 @@ class PostgresUserRepository(
 
         return Pair(users, total)
     }
+
+    override fun findAvailableDrivers(query: GetAvailableDriversQuery): List<User> =
+        Users
+            .leftJoin(Orders, { userId }, { driverId })
+            .select(Users.columns)
+            .where { Users.fleetId eq query.fleetId.value }
+            .andWhere { stringParam(UserRole.DRIVER.name) eq anyFrom(Users.roles) }
+            .andWhere { query.email?.let { Users.email like "%${it.value}%" } ?: Op.TRUE }
+            .andWhere {
+                Orders.driverId.isNull() or
+                    not(
+                        (Orders.estimatedStartedAt less query.endAt) and
+                            (Orders.estimatedEndedAt greater query.startAt),
+                    )
+            }.map { it.toUser() }
 
     override fun findUserById(id: UserId): User? =
         Users

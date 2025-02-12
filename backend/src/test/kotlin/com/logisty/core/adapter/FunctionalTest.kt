@@ -4,6 +4,9 @@ import com.logisty.core.application.MutableClock
 import com.logisty.core.application.persistence.event.Events
 import com.logisty.core.application.persistence.tables.Fleets
 import com.logisty.core.application.persistence.tables.Invitations
+import com.logisty.core.application.persistence.tables.OrderRoutes
+import com.logisty.core.application.persistence.tables.OrderSteps
+import com.logisty.core.application.persistence.tables.Orders
 import com.logisty.core.application.persistence.tables.Users
 import com.logisty.core.domain.Fixtures
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -19,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
 import java.time.Clock
 import java.time.Instant
 
@@ -42,8 +46,11 @@ open class FunctionalTest {
         @ServiceConnection
         @JvmStatic
         val postgres =
-            PostgreSQLContainer("postgres:alpine")
-                .withReuse(true)
+            PostgreSQLContainer(
+                DockerImageName
+                    .parse("postgis/postgis:15-3.5-alpine")
+                    .asCompatibleSubstituteFor("postgres"),
+            ).withReuse(true)
     }
 
     @BeforeEach
@@ -55,8 +62,8 @@ open class FunctionalTest {
     @BeforeEach
     fun prepareDatabase() {
         transaction {
-            SchemaUtils.drop(Events, Fleets, Invitations, Users)
-            SchemaUtils.create(Events, Fleets, Invitations, Users)
+            SchemaUtils.drop(Events, Fleets, Invitations, Users, Orders, OrderSteps, OrderRoutes)
+            SchemaUtils.create(Events, Fleets, Invitations, Users, Orders, OrderSteps, OrderRoutes)
 
             fixtures.createFleet()
             fixtures.createInvitations()

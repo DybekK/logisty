@@ -5,6 +5,9 @@ import com.logisty.core.application.persistence.tables.Invitations
 import com.logisty.core.application.persistence.tables.Users
 import com.logisty.core.domain.model.FixtureFleet
 import com.logisty.core.domain.model.FixtureInvitation
+import com.logisty.core.domain.model.FixtureOrder
+import com.logisty.core.domain.model.FixtureOrderRoute
+import com.logisty.core.domain.model.FixtureOrderStep
 import com.logisty.core.domain.model.FixtureUser
 import com.logisty.core.domain.model.values.ApartmentNumber
 import com.logisty.core.domain.model.values.City
@@ -14,6 +17,9 @@ import com.logisty.core.domain.model.values.FleetName
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.InvitationStatus
 import com.logisty.core.domain.model.values.LastName
+import com.logisty.core.domain.model.values.OrderId
+import com.logisty.core.domain.model.values.OrderRouteId
+import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.PhoneNumber
 import com.logisty.core.domain.model.values.PostalCode
 import com.logisty.core.domain.model.values.StateProvince
@@ -24,6 +30,8 @@ import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserPassword
 import com.logisty.core.domain.model.values.UserRole
 import org.jetbrains.exposed.sql.insert
+import org.postgis.LineString
+import org.postgis.Point
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.time.Duration
 import java.time.Instant
@@ -108,6 +116,46 @@ class Fixtures {
     val driver = users.last()
     val invitation = invitations.first()
     val driverInvitation = invitations.last()
+
+    val order =
+        run {
+            val orderId = OrderId.generate()
+            val orderRouteId = OrderRouteId.generate()
+            val orderStepId = OrderStepId.generate()
+            val startedAt = Instant.now()
+            val endedAt = startedAt.plus(Duration.ofMinutes(20))
+            FixtureOrder(
+                orderId = orderId,
+                fleetId = fleet.fleetId,
+                driverId = driver.userId,
+                steps =
+                    listOf(
+                        FixtureOrderStep(
+                            orderStepId = orderStepId,
+                            description = "step-1",
+                            location = Point(1.0, 2.0),
+                        ),
+                        FixtureOrderStep(
+                            orderStepId = orderStepId,
+                            description = "step-2",
+                            location = Point(3.0, 4.0),
+                            estimatedArrivalAt = endedAt,
+                        ),
+                    ),
+                route =
+                    FixtureOrderRoute(
+                        orderRouteId = orderRouteId,
+                        orderId = orderId,
+                        route = LineString(arrayOf(Point(1.0, 2.0), Point(3.0, 4.0))),
+                        duration = 100.0,
+                        distance = 100.0,
+                    ),
+                createdBy = dispatcher.userId,
+                createdAt = Instant.now(),
+                estimatedStartedAt = startedAt,
+                estimatedEndedAt = endedAt,
+            )
+        }
 
     fun createFleet() =
         Fleets.insert {

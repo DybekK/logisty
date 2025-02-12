@@ -6,6 +6,7 @@ import com.logisty.core.adapter.inbound.AuthenticationResponse
 import com.logisty.core.adapter.inbound.CreateFleetRequest
 import com.logisty.core.adapter.inbound.CreateInvitationRequest
 import com.logisty.core.adapter.inbound.CreateInvitationResponse
+import com.logisty.core.adapter.inbound.CreateOrderRequest
 import com.logisty.core.adapter.inbound.RefreshTokenRequest
 import com.logisty.core.application.mapper
 import com.logisty.core.application.security.SecurityErrorCode
@@ -13,7 +14,9 @@ import com.logisty.core.application.security.jwt.values.JwtAccess
 import com.logisty.core.application.security.jwt.values.JwtRefresh
 import com.logisty.core.domain.ErrorCode
 import com.logisty.core.domain.Fixtures
+import com.logisty.core.domain.model.query.GetAvailableDriversQuery
 import com.logisty.core.domain.model.query.GetInvitationsQuery
+import com.logisty.core.domain.model.query.GetOrdersQuery
 import com.logisty.core.domain.model.query.GetUsersQuery
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.InvitationId
@@ -171,6 +174,44 @@ class FunctionalHttpTemplate(
                 .param("limit", query.limit.toString())
                 .param("email", query.email?.value)
                 .param("role", query.role?.name)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ${jwt.value}"),
+        )
+
+    // driver
+    fun getAvailableDrivers(
+        query: GetAvailableDriversQuery,
+        jwt: JwtAccess,
+    ): ResultActions =
+        mockMvc.perform(
+            get("/api/fleets/${query.fleetId.value}/drivers/available")
+                .param("startAt", query.startAt.toString())
+                .param("endAt", query.endAt.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ${jwt.value}"),
+        )
+
+    // order
+    fun createOrder(
+        fleetId: FleetId,
+        request: CreateOrderRequest,
+        jwt: JwtAccess,
+    ): ResultActions =
+        mockMvc.perform(
+            post("/api/fleets/${fleetId.value}/orders")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ${jwt.value}")
+                .content(mapper.writeValueAsString(request)),
+        )
+
+    fun getOrders(
+        query: GetOrdersQuery,
+        jwt: JwtAccess,
+    ): ResultActions =
+        mockMvc.perform(
+            get("/api/fleets/${query.fleetId.value}/orders")
+                .param("page", query.page.toString())
+                .param("limit", query.limit.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer ${jwt.value}"),
         )
