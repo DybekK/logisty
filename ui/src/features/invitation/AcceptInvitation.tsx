@@ -90,7 +90,7 @@ export const AcceptInvitation = () => {
 
   useEffect(() => {
     if (error) {
-      navigate(Routes.PENDING_ORDERS)
+      navigate(Routes.ORDERS)
     }
   }, [error, navigate])
 

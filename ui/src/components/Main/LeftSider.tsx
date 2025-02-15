@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom"
 
 import {
   AppstoreAddOutlined,
-  CarryOutOutlined,
   LaptopOutlined,
   Loading3QuartersOutlined,
   UserOutlined,

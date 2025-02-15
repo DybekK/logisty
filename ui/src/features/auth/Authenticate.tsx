@@ -29,7 +29,6 @@ import {
 import { useAuth } from "@/components"
 import {
   authenticate,
-  fetchCurrentUser,
   fetchCurrentUserAfterAuthentication,
 } from "@/features/auth"
 import { removeUser, setUser } from "@/features/auth"
@@ -79,7 +78,7 @@ export const Authenticate = () => {
     token: { colorBgLayout },
   } = theme.useToken()
 
-  const { tokens, setTokens, isUserAvailable } = useAuth()
+  const { setTokens, isUserAvailable } = useAuth()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 

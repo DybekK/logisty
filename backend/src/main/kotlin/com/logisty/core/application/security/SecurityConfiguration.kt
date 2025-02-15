@@ -21,10 +21,24 @@ class SecurityConfiguration(
     fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
         val configuration =
             CorsConfiguration().apply {
-                allowedOriginPatterns = listOf("http://localhost:*")
-                allowedMethods = listOf("*")
-                allowedHeaders = listOf("*")
+                allowedOriginPatterns = listOf("*")  // More permissive for testing
+                allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                allowedHeaders = listOf(
+                    "Authorization",
+                    "Content-Type",
+                    "X-Requested-With",
+                    "Accept",
+                    "Origin",
+                    "Access-Control-Request-Method",
+                    "Access-Control-Request-Headers"
+                )
+                exposedHeaders = listOf(
+                    "Access-Control-Allow-Origin",
+                    "Access-Control-Allow-Credentials",
+                    "Authorization"
+                )
                 allowCredentials = true
+                maxAge = 3600L
             }
 
         return UrlBasedCorsConfigurationSource().apply {
@@ -38,6 +52,7 @@ class SecurityConfiguration(
         jwtAuthenticationFilter: JwtAuthenticationFilter,
     ): DefaultSecurityFilterChain {
         http
+            .cors {}
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
