@@ -4,6 +4,7 @@ import com.logisty.core.adapter.inbound.CreateOrderRequest
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.OrderId
 import com.logisty.core.domain.model.values.OrderRouteId
+import com.logisty.core.domain.model.values.OrderStatus
 import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.UserId
 import org.postgis.LineString
@@ -30,6 +31,7 @@ data class FixtureOrder(
     val orderId: OrderId,
     val fleetId: FleetId,
     val driverId: UserId,
+    val status: OrderStatus,
     val steps: List<FixtureOrderStep>,
     val route: FixtureOrderRoute,
     val createdBy: UserId,

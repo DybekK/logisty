@@ -5,7 +5,7 @@ import com.c0x12c.exposed.postgis.point
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-object OrderSteps : Table("order_steps") {
+    object OrderSteps : Table("order_steps") {
     val orderStepId = uuid("order_step_id")
     val orderId = uuid("order_id").references(Orders.orderId)
 
@@ -34,6 +34,7 @@ object Orders : Table() {
     val fleetId = uuid("fleet_id").references(Fleets.fleetId)
     val driverId = uuid("driver_id").references(Users.userId)
 
+    val status = varchar("status", 255)
     val estimatedStartedAt = timestamp("estimated_started_at")
     val estimatedEndedAt = timestamp("estimated_ended_at")
 

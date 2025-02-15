@@ -21,6 +21,13 @@ export interface OrderStep {
   actualArrivalAt?: string
 }
 
+export enum OrderStatus {
+  ASSIGNED = "ASSIGNED",
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+}
+
 export interface CreateOrderStep {
   description: string
   lat: number
@@ -49,6 +56,7 @@ export interface GetOrderResponse {
   driverId: string
   driverFirstName: string
   driverLastName: string
+  status: OrderStatus
   steps: OrderStep[]
   route: OrderRoute
   createdBy: string
@@ -64,6 +72,7 @@ export interface GetOrdersResponse {
 
 export interface GetOrdersQuery {
   fleetId: string
+  driverId?: string
   limit: number
   page: number
 }

@@ -10,7 +10,8 @@ import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.FleetName
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.LastName
-import com.logisty.core.domain.model.values.OrderId
+import com.logisty.core.domain.model.values.OrderId 
+import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserId
 import org.postgis.Point
@@ -29,6 +30,7 @@ interface Payload
     // order
     Type(value = OrderCreatedEvent::class, name = "ORDER_CREATED"),
     Type(value = OrderAssignedToDriverEvent::class, name = "ORDER_ASSIGNED_TO_DRIVER"),
+    Type(value = OrderReportedEvent::class, name = "ORDER_REPORTED"),
 )
 sealed interface InternalEvent {
     val fleetId: FleetId
@@ -147,4 +149,20 @@ data class OrderAssignedToDriverEvent(
             val estimatedArrivalAt: Instant?,
         )
     }
+}
+
+data class OrderReportedEvent(
+    override val fleetId: FleetId,
+    override val payload: OrderReportedPayload,
+    override val appendedAt: Instant,
+    override val eventId: InternalEventId = InternalEventId.generate(),
+) : InternalEvent {
+    override val type = InternalEventType.ORDER_REPORTED
+
+    data class OrderReportedPayload(
+        val orderId: OrderId,
+        val stepId: OrderStepId,
+        val actualArrivalAt: Instant,
+        val location: Point,
+    ) : Payload
 }

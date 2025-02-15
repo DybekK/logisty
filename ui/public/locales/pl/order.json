@@ -12,6 +12,32 @@
     "searchByEmail": "Szukaj używając email"
   },
   "filter": {
-    "empty": "Brak zleceń"
+    "statuses": {
+      "ASSIGNED": "Przypisane",
+      "PENDING": "Oczekujące",
+      "COMPLETED": "Wykonane",
+      "CANCELLED": "Anulowane"
+    },
+    "empty": "Brak zleceń",
+    "dispatcher": {
+      "status": "Status",
+      "orderId": "ID zlecenia",
+      "driver": "Kierowca",
+      "estimatedTimes": "Szacowane czasy",
+      "estimatedStart": "Start",
+      "estimatedEnd": "Koniec",
+      "orderSteps": "Etapy zlecenia",
+      "expectedStartTime": "Przewidywany start",
+      "plannedStartTime": "Planowany start"
+    },
+    "driver": {
+      "navigate": "Nawiguj",
+      "estimatedTimes": "Szacowane czasy",
+      "estimatedStart": "Start",
+      "estimatedEnd": "Koniec",
+      "orderSteps": "Etapy zlecenia",
+      "expectedStartTime": "Przewidywany czas",
+      "plannedStartTime": "Planowany czas"
+    }
   }
 }

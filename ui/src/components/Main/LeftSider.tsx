@@ -200,11 +200,7 @@ export const LeftSider: React.FC<LeftSiderProps> = ({
 
   if (isMobile) {
     return (
-      <Drawer
-        placement="left"
-        onClose={onDrawerClose}
-        open={drawerVisible}
-      >
+      <Drawer placement="left" onClose={onDrawerClose} open={drawerVisible}>
         {menuContent}
       </Drawer>
     )

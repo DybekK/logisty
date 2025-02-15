@@ -10,7 +10,7 @@ import {
   CreateInvitation,
   InvitationTable,
 } from "@/features/invitation"
-import { OrderTable } from "@/features/order/filter"
+import { OrderDispatcherTable, OrderDriverTable } from "@/features/order/filter"
 import { NewOrderForm } from "@/features/order/new"
 
 export enum Routes {
@@ -79,15 +79,15 @@ export const Router = () => {
         // order
         {
           path: Routes.ORDERS,
-          element: <OrderTable />,
+          element: <OrderDispatcherTable />,
+        },
+        {
+          path: Routes.DRIVER_ORDERS,
+          element: <OrderDriverTable />,
         },
         {
           path: Routes.NEW_ORDER,
           element: <NewOrderForm />,
-        },
-        {
-          path: Routes.DRIVER_ORDERS,
-          element: <OrderTable />,
         },
       ],
     },

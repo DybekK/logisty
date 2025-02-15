@@ -19,6 +19,7 @@ import com.logisty.core.domain.model.values.InvitationStatus
 import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.OrderId
 import com.logisty.core.domain.model.values.OrderRouteId
+import com.logisty.core.domain.model.values.OrderStatus
 import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.PhoneNumber
 import com.logisty.core.domain.model.values.PostalCode
@@ -128,6 +129,7 @@ class Fixtures {
                 orderId = orderId,
                 fleetId = fleet.fleetId,
                 driverId = driver.userId,
+                status = OrderStatus.ASSIGNED,
                 steps =
                     listOf(
                         FixtureOrderStep(

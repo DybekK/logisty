@@ -7,6 +7,7 @@ import com.logisty.core.domain.model.event.InvitationCreatedEvent
 import com.logisty.core.domain.model.event.InvitationExpiredEvent
 import com.logisty.core.domain.model.event.OrderAssignedToDriverEvent
 import com.logisty.core.domain.model.event.OrderCreatedEvent
+import com.logisty.core.domain.model.event.OrderReportedEvent
 import com.logisty.core.domain.model.event.notification.Notification
 import com.logisty.core.domain.model.event.notification.NotificationMessage
 import com.logisty.core.domain.model.event.notification.NotificationTitle
@@ -35,6 +36,7 @@ class NotificationMapper(
             // order
             is OrderCreatedEvent -> event.toNotification(locale)
             is OrderAssignedToDriverEvent -> event.toNotification(locale)
+            is OrderReportedEvent -> event.toNotification(locale)
         }
 
     private fun FleetCreatedEvent.toNotification(locale: Locale): Notification =
@@ -172,6 +174,30 @@ class NotificationMapper(
                 NotificationMessage(
                     messageSource.getMessage(
                         "event.order.assigned-to-driver.message",
+                        arrayOf(payload.orderId.value),
+                        locale,
+                    ),
+                ),
+            eventType = type,
+            notificationType = NotificationType.INFO,
+            appendedAt = appendedAt,
+        )
+
+    private fun OrderReportedEvent.toNotification(locale: Locale): Notification =
+        Notification(
+            eventId = eventId,
+            title =
+                NotificationTitle(
+                    messageSource.getMessage(
+                        "event.order.reported.title",
+                        null,
+                        locale,
+                    ),
+                ),
+            message =
+                NotificationMessage(
+                    messageSource.getMessage(
+                        "event.order.reported.message",
                         arrayOf(payload.orderId.value),
                         locale,
                     ),

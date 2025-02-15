@@ -17,6 +17,7 @@ export const App = () => {
   const layoutStyle = {
     background: colorBgLayout,
     height: "100vh",
+    overflow: "hidden",
   }
 
   const handleDrawerOpen = () => setDrawerVisible(true)

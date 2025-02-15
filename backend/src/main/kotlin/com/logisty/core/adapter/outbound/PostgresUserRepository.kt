@@ -23,6 +23,9 @@ import com.logisty.core.domain.model.values.UserRole
 import com.logisty.core.domain.port.DriverRepository
 import com.logisty.core.domain.port.UserRepository
 import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.count
+import org.jetbrains.exposed.sql.Count
+import org.jetbrains.exposed.sql.intLiteral
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -30,6 +33,7 @@ import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.anyFrom
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.leftJoin
+import org.jetbrains.exposed.sql.notExists
 import org.jetbrains.exposed.sql.not
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
@@ -112,18 +116,21 @@ class PostgresUserRepository(
 
     override fun findAvailableDrivers(query: GetAvailableDriversQuery): List<User> =
         Users
-            .leftJoin(Orders, { userId }, { driverId })
-            .select(Users.columns)
+            .selectAll()
             .where { Users.fleetId eq query.fleetId.value }
             .andWhere { stringParam(UserRole.DRIVER.name) eq anyFrom(Users.roles) }
             .andWhere { query.email?.let { Users.email like "%${it.value}%" } ?: Op.TRUE }
             .andWhere {
-                Orders.driverId.isNull() or
-                    not(
-                        (Orders.estimatedStartedAt less query.endAt) and
-                            (Orders.estimatedEndedAt greater query.startAt),
-                    )
-            }.map { it.toUser() }
+                notExists(
+                    Orders
+                        .selectAll()
+                        .where { Orders.driverId eq Users.userId }
+                        .andWhere { Orders.estimatedStartedAt less query.endAt }
+                        .andWhere { Orders.estimatedEndedAt greater query.startAt }
+                )
+            }
+            .orderBy(Users.createdAt to SortOrder.DESC)
+            .map { it.toUser() }
 
     override fun findUserById(id: UserId): User? =
         Users

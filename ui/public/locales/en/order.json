@@ -12,6 +12,32 @@
     "searchByEmail": "Search by email"
   },
   "filter": {
-    "empty": "No orders found"
+    "statuses": {
+      "ASSIGNED": "Assigned",
+      "PENDING": "Pending",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "empty": "No orders found",
+    "dispatcher": {
+      "status": "Status",
+      "orderId": "Order ID",
+      "driver": "Driver",
+      "estimatedTimes": "Estimated Times",
+      "estimatedStart": "Start",
+      "estimatedEnd": "End",
+      "orderSteps": "Order Steps",
+      "expectedStartTime": "Expected Arrival Time",
+      "plannedStartTime": "Planned Start Time"
+    },
+    "driver": {
+      "navigate": "Navigate",
+      "estimatedTimes": "Estimated Times",
+      "estimatedStart": "Start",
+      "estimatedEnd": "End",
+      "orderSteps": "Order Steps",
+      "expectedStartTime": "Expected Arrival",
+      "plannedStartTime": "Planned Start"
+    }
   }
 }

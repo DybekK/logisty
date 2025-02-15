@@ -4,6 +4,8 @@ import com.logisty.core.adapter.toBadRequestResponseEntity
 import com.logisty.core.adapter.toInternalServerErrorResponseEntity
 import com.logisty.core.domain.BusinessExceptions.FleetNotFoundException
 import com.logisty.core.domain.BusinessExceptions.OrderEstimatedStartTimeAfterEndTimeException
+import com.logisty.core.domain.BusinessExceptions.OrderNotFoundException
+import com.logisty.core.domain.BusinessExceptions.OrderStepNotFoundException
 import com.logisty.core.domain.BusinessExceptions.StepEstimatedArrivalTimeInFutureException
 import com.logisty.core.domain.BusinessExceptions.UserIsNotDispatcherException
 import com.logisty.core.domain.BusinessExceptions.UserIsNotDriverException
@@ -13,11 +15,14 @@ import com.logisty.core.domain.model.ExtendedOrder
 import com.logisty.core.domain.model.OrderRoute
 import com.logisty.core.domain.model.OrderStep
 import com.logisty.core.domain.model.command.CreateOrderCommand
+import com.logisty.core.domain.model.command.ReportOrderCommand
 import com.logisty.core.domain.model.query.GetOrdersQuery
 import com.logisty.core.domain.model.values.FirstName
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.OrderId
+import com.logisty.core.domain.model.values.OrderStatus
+import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.UserId
 import org.postgis.LineString
 import org.postgis.Point
@@ -84,6 +89,25 @@ data class CreateOrderResponse(
     val orderId: OrderId,
 )
 
+// report order
+data class ReportOrderRequest(
+    val actualArrivalAt: Instant,
+    val lat: Double,
+    val lon: Double,
+) {
+    fun toReportOrderCommand(
+        fleetId: FleetId,
+        orderId: OrderId,
+        stepId: OrderStepId,
+    ) = ReportOrderCommand(
+        fleetId = fleetId,
+        orderId = orderId,
+        stepId = stepId,
+        actualArrivalAt = actualArrivalAt,
+        location = Point(lon, lat),
+    )
+}
+
 // get orders
 data class GetOrderResponse(
     val orderId: OrderId,
@@ -91,6 +115,7 @@ data class GetOrderResponse(
     val driverId: UserId,
     val driverFirstName: FirstName,
     val driverLastName: LastName,
+    val status: OrderStatus,
     val steps: List<OrderStep>,
     val route: OrderRoute,
     val createdBy: UserId,
@@ -134,6 +159,7 @@ fun ExtendedOrder.toGetOrderResponse() =
         driverId = driverId,
         driverFirstName = driverFirstName,
         driverLastName = driverLastName,
+        status = status,
         steps = steps.map { it.toGetOrderStep() },
         route = route.toGetOrderRoute(),
         createdBy = createdBy,
@@ -145,6 +171,10 @@ fun ExtendedOrder.toGetOrderResponse() =
 data class GetOrdersResponse(
     val orders: List<GetOrderResponse>,
     val total: Long,
+)
+
+data class ReportOrderResponse(
+    val orderId: OrderId,
 )
 
 @RestController
@@ -169,6 +199,26 @@ class OrderController(
                 is StepEstimatedArrivalTimeInFutureException,
                 is OrderEstimatedStartTimeAfterEndTimeException,
                 -> it.toBadRequestResponseEntity()
+
+                else -> it.toInternalServerErrorResponseEntity(logger)
+            }
+        }
+
+    @PostMapping("/{fleetId}/orders/{orderId}/report/{stepId}")
+    fun reportOrder(
+        @PathVariable fleetId: FleetId,
+        @PathVariable orderId: OrderId,
+        @PathVariable stepId: OrderStepId,
+        @RequestBody request: ReportOrderRequest,
+    ) = runCatching { orderHub.reportOrder(request.toReportOrderCommand(fleetId, orderId, stepId)) }
+        .map { ResponseEntity.ok(ReportOrderResponse(it)) }
+        .getOrElse {
+            when (it) {
+                is FleetNotFoundException,
+                is OrderNotFoundException,
+                is OrderStepNotFoundException,
+                -> it.toBadRequestResponseEntity()
+
                 else -> it.toInternalServerErrorResponseEntity(logger)
             }
         }

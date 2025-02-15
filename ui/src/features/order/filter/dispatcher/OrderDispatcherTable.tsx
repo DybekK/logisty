@@ -17,7 +17,9 @@ import type { ColumnsType } from "antd/es/table"
 import { useAppSelector } from "@/common"
 import { Map3D } from "@/components"
 import { useFetchOrders } from "@/features/order/order.api"
-import { GetOrderResponse } from "@/features/order/order.types"
+import { GetOrderResponse, OrderStatus } from "@/features/order/order.types"
+import { StatusTag } from "@/features/order"
+import { TableRowSelection } from "antd/es/table/interface"
 
 const cardBodyStyle: React.CSSProperties = {
   height: "100%",
@@ -67,34 +69,33 @@ const orderStepCardStyle: React.CSSProperties = {
   marginBottom: 12,
 }
 
-export const OrderTable: React.FC = () => {
-  const { t } = useTranslation("order", { keyPrefix: "filter" })
-
+export const OrderDispatcherTable: React.FC = () => {
+  const { t } = useTranslation("order", { keyPrefix: "filter.dispatcher" })
   const { fleetId } = useAppSelector(state => state.auth.user!)
-
   const page = 1
   const pageSize = 10
-
   const { data, isLoading } = useFetchOrders({
     fleetId: fleetId,
     page: page - 1,
     limit: pageSize,
   })
-
-  const routes = data?.orders.map(order => order.route.route) ?? []
-
+  const [selectedRows, setSelectedRows] = React.useState<GetOrderResponse[]>([])
+  const selectedRoutes = selectedRows.map(order => order.route.route)
+  const rowSelection = {
+    type: "checkbox",
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: GetOrderResponse[]) => {
+      setSelectedRows(selectedRows)
+    },
+  }
   const columns: ColumnsType<GetOrderResponse> = [
     {
-      title: "Status",
+      title: t("status"),
       key: "status",
-      render: () => (
-        <Tag icon={<ClockCircleOutlined />} color="processing">
-          Active
-        </Tag>
-      ),
+      dataIndex: "status",
+      render: (status: OrderStatus) => <StatusTag status={status} />,
     },
     {
-      title: "Order ID",
+      title: t("orderId"),
       dataIndex: "orderId",
       key: "orderId",
       render: orderId => (
@@ -105,7 +106,7 @@ export const OrderTable: React.FC = () => {
       ),
     },
     {
-      title: "Driver",
+      title: t("driver"),
       key: "driver",
       render: (_, record) => (
         <Space>
@@ -115,7 +116,6 @@ export const OrderTable: React.FC = () => {
       ),
     },
   ]
-
   const expandedRowRender = (record: GetOrderResponse) => (
     <Space direction="vertical" style={{ width: "100%", marginTop: 0 }}>
       <Collapse
@@ -128,21 +128,21 @@ export const OrderTable: React.FC = () => {
             label: (
               <Space>
                 <CalendarOutlined />
-                {t("estimatedTimes", "Estimated Times")}
+                {t("estimatedTimes")}
               </Space>
             ),
             children: (
               <Space direction="vertical" style={estimatedTimesContentStyle}>
                 <Space>
                   <CarOutlined />
-                  {`${t("estimatedStart", "Start")}:`}
+                  {`${t("estimatedStart")}:`}
                   <Tag color="blue" style={timeValueStyle}>
                     {new Date(record.estimatedStartedAt).toLocaleString()}
                   </Tag>
                 </Space>
                 <Space>
                   <EnvironmentOutlined />
-                  {`${t("estimatedEnd", "End")}:`}
+                  {`${t("estimatedEnd")}:`}
                   <Tag color="green" style={timeValueStyle}>
                     {new Date(record.estimatedEndedAt).toLocaleString()}
                   </Tag>
@@ -155,7 +155,7 @@ export const OrderTable: React.FC = () => {
             label: (
               <Space>
                 <RightCircleOutlined />
-                {t("orderSteps", "Order Steps")}
+                {t("orderSteps")}
               </Space>
             ),
             children: (
@@ -173,15 +173,11 @@ export const OrderTable: React.FC = () => {
                         {`${t(
                           step.estimatedArrivalAt
                             ? "expectedStartTime"
-                            : "plannedStartTime",
-                          step.estimatedArrivalAt
-                            ? "Expected Arrival Time"
-                            : "Planned Start Time",
+                            : "plannedStartTime"
                         )}:`}
                         <Tag color="purple" style={timeValueStyle}>
                           {new Date(
-                            step.estimatedArrivalAt ||
-                              record.estimatedStartedAt,
+                            step.estimatedArrivalAt || record.estimatedStartedAt,
                           ).toLocaleString()}
                         </Tag>
                       </Space>
@@ -195,13 +191,13 @@ export const OrderTable: React.FC = () => {
       />
     </Space>
   )
-
   return (
     <MapProvider>
       <Card bodyStyle={cardBodyStyle} style={cardStyle}>
         <div style={listContainerStyle}>
           <Table
             style={tableStyle}
+            rowSelection={rowSelection as TableRowSelection<GetOrderResponse>}
             columns={columns}
             dataSource={data?.orders}
             loading={isLoading}
@@ -226,11 +222,9 @@ export const OrderTable: React.FC = () => {
             rowKey="orderId"
           />
         </div>
-
         <Divider type="vertical" style={dividerStyle} />
-
         <div style={mapContainerStyle}>
-          <Map3D id="filtrOrderMap" routes={routes} />
+          <Map3D id="filtrOrderMap" routes={selectedRoutes} />
         </div>
       </Card>
     </MapProvider>

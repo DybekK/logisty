@@ -7,25 +7,50 @@ import com.logisty.core.domain.model.Order
 import com.logisty.core.domain.model.OrderRoute
 import com.logisty.core.domain.model.OrderStep
 import com.logisty.core.domain.model.command.CreateOrderCommand
+import com.logisty.core.domain.model.command.ReportOrderCommand
 import com.logisty.core.domain.model.query.GetOrdersQuery
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.OrderId
 import com.logisty.core.domain.model.values.OrderRouteId
+import com.logisty.core.domain.model.values.OrderStatus
+import com.logisty.core.domain.model.values.OrderStatus.ASSIGNED
 import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.port.OrderRepository
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Repository
 import java.time.Instant
 
 @Repository
 class PostgresOrderRepository : OrderRepository {
+    override fun findById(id: OrderId): Order? {
+        val orderRow = Orders
+            .innerJoin(OrderRoutes)
+            .selectAll()
+            .where { Orders.orderId eq id.value }
+            .singleOrNull() ?: return null
+
+        val steps = OrderSteps
+            .selectAll()
+            .where { OrderSteps.orderId eq id.value }
+            .map { it.toOrderStep() }
+ 
+        val route = OrderRoutes
+            .selectAll()
+            .where { OrderRoutes.orderId eq id.value }
+            .map { it.toOrderRoute() }
+            .single()
+
+        return orderRow.toOrder(steps, route)
+    }
+
     override fun findOrders(query: GetOrdersQuery): Pair<List<Order>, Long> {
         val count =
             Orders
@@ -78,6 +103,17 @@ class PostgresOrderRepository : OrderRepository {
             insertOrderRoute(orderId, command.route)
         }
 
+    override fun reportOrder(command: ReportOrderCommand): OrderId {
+        OrderSteps.update({
+            (OrderSteps.orderStepId eq command.stepId.value) and (OrderSteps.orderId eq command.orderId.value)
+        }) {
+            it[actualArrivalAt] = command.actualArrivalAt
+            it[location] = command.location
+        }
+
+        return command.orderId
+    }
+
     private fun insertOrder(
         command: CreateOrderCommand,
         createdAt: Instant,
@@ -88,6 +124,7 @@ class PostgresOrderRepository : OrderRepository {
                 it[Orders.orderId] = orderId.value
                 it[Orders.fleetId] = command.fleetId.value
                 it[Orders.driverId] = command.driverId.value
+                it[Orders.status] = ASSIGNED.name
                 it[Orders.estimatedStartedAt] = command.estimatedStartedAt
                 it[Orders.estimatedEndedAt] = command.estimatedEndedAt
                 it[Orders.createdBy] = command.createdBy.value
@@ -148,6 +185,7 @@ private fun ResultRow.toOrder(
         orderId = OrderId(this[Orders.orderId]),
         fleetId = FleetId(this[Orders.fleetId]),
         driverId = UserId(this[Orders.driverId]),
+        status = OrderStatus.valueOf(this[Orders.status]),
         steps = steps,
         route = route,
         createdBy = UserId(this[Orders.createdBy]),

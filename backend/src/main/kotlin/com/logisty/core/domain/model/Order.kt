@@ -5,6 +5,7 @@ import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.LastName
 import com.logisty.core.domain.model.values.OrderId
 import com.logisty.core.domain.model.values.OrderRouteId
+import com.logisty.core.domain.model.values.OrderStatus
 import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.UserId
 import org.postgis.LineString
@@ -31,6 +32,7 @@ data class Order(
     val orderId: OrderId,
     val fleetId: FleetId,
     val driverId: UserId,
+    val status: OrderStatus,
     val steps: List<OrderStep>,
     val route: OrderRoute,
     val createdBy: UserId,
@@ -45,6 +47,7 @@ data class Order(
             driverId = driverId,
             driverFirstName = user.firstName,
             driverLastName = user.lastName,
+            status = status,
             steps = steps,
             route = route,
             createdBy = createdBy,
@@ -60,6 +63,7 @@ data class ExtendedOrder(
     val driverId: UserId,
     val driverFirstName: FirstName,
     val driverLastName: LastName,
+    val status: OrderStatus,
     val steps: List<OrderStep>,
     val route: OrderRoute,
     val createdBy: UserId,

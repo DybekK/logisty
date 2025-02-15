@@ -34,12 +34,14 @@ import {
 } from "@/features/auth"
 import { removeUser, setUser } from "@/features/auth"
 import { getDefaultRedirect } from "@/router"
+import { clearNotifications } from "@/features/notification"
 
 const layoutStyle: React.CSSProperties = {
   height: "100vh",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  overflow: "hidden",
 }
 
 const formContainerStyle: React.CSSProperties = {
@@ -113,6 +115,7 @@ export const Authenticate = () => {
       mutationFn: authenticate,
       onSuccess: tokens => {
         setTokens(tokens)
+        dispatch(clearNotifications())
         fetchCurrentUserMutate(tokens)
       },
       onError: (error: AxiosBackendError) => {
