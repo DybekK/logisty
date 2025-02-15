@@ -11,7 +11,8 @@
       "title": "Orders",
       "new": "Add order",
       "pending": "Pending",
-      "completed": "Completed"
+      "completed": "Completed",
+      "driver": "My orders"
     },
     "fleet": {
       "title": "Fleet",

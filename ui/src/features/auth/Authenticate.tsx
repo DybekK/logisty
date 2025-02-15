@@ -25,6 +25,7 @@ import {
   AxiosBackendError,
   patternErrors,
   useAppDispatch,
+  useAppSelector,
 } from "@/common"
 import { useAuth } from "@/components"
 import {
@@ -32,7 +33,7 @@ import {
   fetchCurrentUserAfterAuthentication,
 } from "@/features/auth"
 import { removeUser, setUser } from "@/features/auth"
-import { Routes } from "@/router"
+import { getDefaultRedirect } from "@/router"
 
 const layoutStyle: React.CSSProperties = {
   height: "100vh",
@@ -77,6 +78,8 @@ export const Authenticate = () => {
   const {
     token: { colorBgLayout },
   } = theme.useToken()
+
+  const roles = useAppSelector(state => state.auth.user?.roles) ?? []
 
   const { setTokens, isUserAvailable } = useAuth()
   const dispatch = useAppDispatch()
@@ -131,16 +134,16 @@ export const Authenticate = () => {
       fetchCurrentUserAfterAuthentication(tokens),
     onSuccess: user => {
       dispatch(setUser(user))
-      navigate(Routes.ORDERS)
+      navigate(getDefaultRedirect(user.roles))
     },
     onError: () => dispatch(removeUser()),
   })
 
   useEffect(() => {
     if (isUserAvailable()) {
-      navigate(Routes.ORDERS)
+      navigate(getDefaultRedirect(roles))
     }
-  }, [isUserAvailable, navigate])
+  }, [isUserAvailable, navigate, roles])
 
   return (
     <Layout style={{ ...layoutStyle, background: colorBgLayout }}>

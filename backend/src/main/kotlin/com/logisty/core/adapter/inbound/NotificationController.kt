@@ -7,12 +7,14 @@ import com.logisty.core.domain.model.event.notification.Notification
 import com.logisty.core.domain.model.event.notification.NotificationMessage
 import com.logisty.core.domain.model.event.notification.NotificationTitle
 import com.logisty.core.domain.model.event.notification.NotificationType
+import com.logisty.core.domain.model.query.GetNotificationsQuery
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.service.notification.NotificationService
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -53,13 +55,22 @@ class NotificationController(
     fun getNotifications(
         @PathVariable fleetId: FleetId,
         @RequestParam since: Instant,
+        @RequestHeader("Authorization") authorizationHeader: String,
         @RequestParam(required = false) locale: Locale?,
-    ) = runCatching { notificationService.getNotifications(locale ?: Locale.getDefault(), fleetId, since) }
-        .map { notifications ->
-            ResponseEntity.ok(
-                GetNotificationsResponse(
-                    notifications = notifications.map { it.toGetNotificationResponse() },
-                ),
-            )
-        }.getOrElse { it.toInternalServerErrorResponseEntity(logger) }
+    ) = runCatching {
+        notificationService.getNotifications(
+            GetNotificationsQuery(
+                locale = locale ?: Locale.getDefault(),
+                fleetId = fleetId,
+                timestamp = since,
+                authorizationHeader = authorizationHeader,
+            ),
+        )
+    }.map { notifications ->
+        ResponseEntity.ok(
+            GetNotificationsResponse(
+                notifications = notifications.map { it.toGetNotificationResponse() },
+            ),
+        )
+    }.getOrElse { it.toInternalServerErrorResponseEntity(logger) }
 }

@@ -2,6 +2,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom"
 
 import { UserTable } from "./features/user"
 
+import { UserRole } from "@/common"
 import { ProtectedRoute } from "@/components"
 import { Authenticate } from "@/features/auth/Authenticate"
 import {
@@ -26,6 +27,22 @@ export enum Routes {
   // order
   NEW_ORDER = "/orders/new",
   ORDERS = "/orders",
+  DRIVER_ORDERS = "/orders/driver",
+}
+
+const defaultRedirects = {
+  [UserRole.DISPATCHER]: Routes.ORDERS,
+  [UserRole.DRIVER]: Routes.DRIVER_ORDERS,
+}
+
+export const getDefaultRedirect = (roles: UserRole[]) => {
+  return (
+    defaultRedirects[
+      roles.find(
+        role => role in defaultRedirects,
+      ) as keyof typeof defaultRedirects
+    ] ?? Routes.LOGIN
+  )
 }
 
 export const Router = () => {
@@ -68,11 +85,15 @@ export const Router = () => {
           path: Routes.NEW_ORDER,
           element: <NewOrderForm />,
         },
+        {
+          path: Routes.DRIVER_ORDERS,
+          element: <OrderTable />,
+        },
       ],
     },
   ]
 
-  const router = createBrowserRouter([...protectedRoutes, ...publicRoutes])
+  const router = createBrowserRouter([...publicRoutes, ...protectedRoutes])
 
   return <RouterProvider router={router} />
 }

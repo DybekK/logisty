@@ -56,6 +56,12 @@ export const notificationSlice = createSlice({
     markAllAsRead: state => {
       state.read = state.notifications.map(notification => notification.eventId)
     },
+    clearNotifications: state => {
+      state.notifications = []
+      state.read = []
+      state.firstUpdatedAt = new Date().toISOString()
+      state.lastUpdatedAt = new Date().toISOString()
+    },
   },
 })
 
@@ -64,6 +70,7 @@ export const {
   refetchNotifications,
   markAsRead,
   markAllAsRead,
+  clearNotifications,
 } = notificationSlice.actions
 
 export const notificationReducer = notificationSlice.reducer

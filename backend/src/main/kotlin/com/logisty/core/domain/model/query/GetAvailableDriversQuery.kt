@@ -8,5 +8,5 @@ data class GetAvailableDriversQuery(
     val fleetId: FleetId,
     val startAt: Instant,
     val endAt: Instant,
-    val email: UserEmail?,
+    val email: UserEmail? = null,
 )

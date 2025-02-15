@@ -32,7 +32,7 @@ class GetNotificationsFunctionalTest : FunctionalTest() {
     }
 
     @Test
-    fun `should get notifications for driver`() {
+    fun `should not get notifications for unsupported role`() {
         val (dispatcherJwt, _) = routes.authenticateAndReturn(fixtures.dispatcher.email, fixtures.dispatcher.password)
         val (driverJwt, _) = routes.authenticateAndReturn(fixtures.driver.email, fixtures.driver.password)
 
@@ -51,6 +51,28 @@ class GetNotificationsFunctionalTest : FunctionalTest() {
             .andExpect(status().isOk)
             .andReturnResponse<GetNotificationsResponse>()
             .let { assertEquals(0, it.notifications.size) }
+    }
+
+    @Test
+    fun `should get notifications for supported user`() {
+        val (dispatcherJwt, _) = routes.authenticateAndReturn(fixtures.dispatcher.email, fixtures.dispatcher.password)
+        val (driverJwt, _) = routes.authenticateAndReturn(fixtures.driver.email, fixtures.driver.password)
+
+        // when
+        routes
+            .createOrder(
+                fleetId = fixtures.fleet.fleetId,
+                request = fixtures.order.toCreateOrderRequest(),
+                jwt = dispatcherJwt,
+            ).andExpect(status().isOk)
+
+        // when & then
+        val since = clock.instant().minus(Duration.ofDays(1))
+        routes
+            .getNotifications(fixtures.fleet.fleetId, since, driverJwt)
+            .andExpect(status().isOk)
+            .andReturnResponse<GetNotificationsResponse>()
+            .let { assertEquals(1, it.notifications.size) }
     }
 
     @Test

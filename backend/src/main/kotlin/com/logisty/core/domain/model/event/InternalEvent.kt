@@ -28,6 +28,7 @@ interface Payload
     Type(value = InvitationExpiredEvent::class, name = "INVITATION_EXPIRED"),
     // order
     Type(value = OrderCreatedEvent::class, name = "ORDER_CREATED"),
+    Type(value = OrderAssignedToDriverEvent::class, name = "ORDER_ASSIGNED_TO_DRIVER"),
 )
 sealed interface InternalEvent {
     val fleetId: FleetId
@@ -35,6 +36,8 @@ sealed interface InternalEvent {
     val type: InternalEventType
     val payload: Payload
     val appendedAt: Instant
+
+    fun visibleFor(userId: UserId): Boolean = true
 }
 
 // fleet
@@ -107,6 +110,31 @@ data class OrderCreatedEvent(
     override val type = InternalEventType.ORDER_CREATED
 
     data class OrderCreatedPayload(
+        val orderId: OrderId,
+        val driverId: UserId,
+        val steps: List<OrderStep>,
+        val estimatedStartedAt: Instant,
+        val estimatedEndedAt: Instant,
+    ) : Payload {
+        data class OrderStep(
+            val description: String,
+            val location: Point,
+            val estimatedArrivalAt: Instant?,
+        )
+    }
+}
+
+data class OrderAssignedToDriverEvent(
+    override val fleetId: FleetId,
+    override val payload: OrderAssignedToDriverPayload,
+    override val appendedAt: Instant,
+    override val eventId: InternalEventId = InternalEventId.generate(),
+) : InternalEvent {
+    override val type = InternalEventType.ORDER_ASSIGNED_TO_DRIVER
+
+    override fun visibleFor(userId: UserId): Boolean = payload.driverId == userId
+
+    data class OrderAssignedToDriverPayload(
         val orderId: OrderId,
         val driverId: UserId,
         val steps: List<OrderStep>,

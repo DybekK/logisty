@@ -11,7 +11,8 @@
       "title": "Zlecenia",
       "new": "Dodaj zlecenie",
       "pending": "W trakcie",
-      "completed": "Zakończone"
+      "completed": "Zakończone",
+      "driver": "Moje zlecenia"
     },
     "fleet": {
       "title": "Flota",

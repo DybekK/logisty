@@ -14,5 +14,6 @@ enum class InternalEventType(
     INVITATION_EXPIRED(visibleTo = setOf(UserRole.DISPATCHER)),
 
     // order
-    ORDER_CREATED(visibleTo = setOf(UserRole.DISPATCHER, UserRole.DRIVER)),
+    ORDER_CREATED(visibleTo = setOf(UserRole.DISPATCHER)),
+    ORDER_ASSIGNED_TO_DRIVER(visibleTo = setOf(UserRole.DRIVER)),
 }

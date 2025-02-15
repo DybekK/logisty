@@ -6,6 +6,8 @@ import com.logisty.core.domain.BusinessExceptions.StepEstimatedArrivalTimeInFutu
 import com.logisty.core.domain.BusinessExceptions.UserIsNotDispatcherException
 import com.logisty.core.domain.BusinessExceptions.UserIsNotDriverException
 import com.logisty.core.domain.model.command.CreateOrderCommand
+import com.logisty.core.domain.model.event.OrderAssignedToDriverEvent
+import com.logisty.core.domain.model.event.OrderAssignedToDriverEvent.OrderAssignedToDriverPayload
 import com.logisty.core.domain.model.event.OrderCreatedEvent
 import com.logisty.core.domain.model.event.OrderCreatedEvent.OrderCreatedPayload
 import com.logisty.core.domain.model.values.FleetId
@@ -40,6 +42,7 @@ class OrderCreator(
         return orderRepository
             .createOrder(command, clock.instant())
             .also { eventStore.append(command.toOrderCreatedEvent(it, clock)) }
+            .also { eventStore.append(command.toOrderAssignedToDriverEvent(it, clock)) }
     }
 
     private fun validateFleet(fleetId: FleetId) = fleetRepository.findById(fleetId) ?: throw FleetNotFoundException()
@@ -87,14 +90,37 @@ private fun CreateOrderCommand.toOrderCreatedEvent(
         OrderCreatedPayload(
             orderId = orderId,
             driverId = driverId,
-            steps = steps.map { it.toOrderStep() },
+            steps = steps.map { it.toOrderCreatedStep() },
             estimatedStartedAt = estimatedStartedAt,
             estimatedEndedAt = estimatedEndedAt,
         ),
 )
 
-private fun CreateOrderCommand.OrderStep.toOrderStep() =
+private fun CreateOrderCommand.OrderStep.toOrderCreatedStep() =
     OrderCreatedPayload.OrderStep(
+        description = description,
+        location = location,
+        estimatedArrivalAt = estimatedArrivalAt,
+    )
+
+private fun CreateOrderCommand.toOrderAssignedToDriverEvent(
+    orderId: OrderId,
+    clock: Clock,
+) = OrderAssignedToDriverEvent(
+    fleetId = fleetId,
+    appendedAt = clock.instant(),
+    payload =
+        OrderAssignedToDriverPayload(
+            orderId = orderId,
+            driverId = driverId,
+            steps = steps.map { it.toOrderAssignedToDriverStep() },
+            estimatedStartedAt = estimatedStartedAt,
+            estimatedEndedAt = estimatedEndedAt,
+        ),
+)
+
+private fun CreateOrderCommand.OrderStep.toOrderAssignedToDriverStep() =
+    OrderAssignedToDriverPayload.OrderStep(
         description = description,
         location = location,
         estimatedArrivalAt = estimatedArrivalAt,
