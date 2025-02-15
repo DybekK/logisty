@@ -187,4 +187,20 @@ class OrderController(
                 ),
             )
         }.getOrElse { it.toInternalServerErrorResponseEntity(logger) }
+
+    @GetMapping("/{fleetId}/orders/drivers/{driverId}")
+    fun getDriversOrders(
+        @PathVariable fleetId: FleetId,
+        @PathVariable driverId: UserId,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") limit: Int,
+    ) = runCatching { orderHub.getOrders(GetOrdersQuery(fleetId, page, limit, driverId)) }
+        .map { (orders, total) ->
+            ResponseEntity.ok(
+                GetOrdersResponse(
+                    orders = orders.map { it.toGetOrderResponse() },
+                    total = total,
+                ),
+            )
+        }.getOrElse { it.toInternalServerErrorResponseEntity(logger) }
 }

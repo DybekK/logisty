@@ -14,9 +14,11 @@ import com.logisty.core.domain.model.values.OrderRouteId
 import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.port.OrderRepository
+import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Repository
@@ -25,13 +27,19 @@ import java.time.Instant
 @Repository
 class PostgresOrderRepository : OrderRepository {
     override fun findOrders(query: GetOrdersQuery): Pair<List<Order>, Long> {
-        val count = Orders.selectAll().where { Orders.fleetId eq query.fleetId.value }.count()
+        val count =
+            Orders
+                .selectAll()
+                .where { Orders.fleetId eq query.fleetId.value }
+                .andWhere { query.driverId?.let { Orders.driverId eq it.value } ?: Op.TRUE }
+                .count()
 
         val orderRows =
             Orders
                 .innerJoin(OrderRoutes)
                 .selectAll()
                 .where { Orders.fleetId eq query.fleetId.value }
+                .andWhere { query.driverId?.let { Orders.driverId eq it.value } ?: Op.TRUE }
                 .orderBy(Orders.createdAt, SortOrder.ASC)
                 .limit(query.limit)
                 .offset((query.page * query.limit).toLong())

@@ -215,6 +215,18 @@ class FunctionalHttpTemplate(
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer ${jwt.value}"),
         )
+
+    fun getDriversOrders(
+        query: GetOrdersQuery,
+        jwt: JwtAccess,
+    ): ResultActions =
+        mockMvc.perform(
+            get("/api/fleets/${query.fleetId.value}/orders/drivers/${query.driverId!!.value}")
+                .param("page", query.page.toString())
+                .param("limit", query.limit.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ${jwt.value}"),
+        )
 }
 
 inline fun <reified T> ResultActions.andReturnResponse(): T = readResponse<T>(andReturn().response)
