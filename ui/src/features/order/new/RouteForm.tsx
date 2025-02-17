@@ -59,6 +59,7 @@ export const RouteForm: React.FC<RouteFormProps> = ({
           size="middle"
           value={startDate ? dayjs(startDate) : null}
           onChange={handleStartDateChange}
+          disabledDate={current => current && current < dayjs().startOf("day")}
         />
       </Form.Item>
       <Steps progressDot direction="vertical" current={steps.length - 1}>

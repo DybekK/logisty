@@ -17,4 +17,7 @@ enum class InternalEventType(
     ORDER_CREATED(visibleTo = setOf(UserRole.DISPATCHER)),
     ORDER_ASSIGNED_TO_DRIVER(visibleTo = setOf(UserRole.DRIVER)),
     ORDER_REPORTED(visibleTo = setOf(UserRole.DISPATCHER)),
+    ORDER_STARTED(visibleTo = setOf(UserRole.DISPATCHER)),
+    ORDER_COMPLETED(visibleTo = setOf(UserRole.DISPATCHER)),
+    ORDER_CANCELLED(visibleTo = setOf(UserRole.DISPATCHER, UserRole.DRIVER)),
 }

@@ -13,13 +13,13 @@ import {
 } from "@ant-design/icons"
 import { Card, Collapse, Divider, Empty, Space, Table, Tag } from "antd"
 import type { ColumnsType } from "antd/es/table"
+import { TableRowSelection } from "antd/es/table/interface"
 
 import { useAppSelector } from "@/common"
 import { Map3D } from "@/components"
+import { StatusTag } from "@/features/order"
 import { useFetchOrders } from "@/features/order/order.api"
 import { GetOrderResponse, OrderStatus } from "@/features/order/order.types"
-import { StatusTag } from "@/features/order"
-import { TableRowSelection } from "antd/es/table/interface"
 
 const cardBodyStyle: React.CSSProperties = {
   height: "100%",
@@ -56,6 +56,11 @@ const dividerStyle: React.CSSProperties = {
   height: "100%",
 }
 
+const spaceBetweenStyle: React.CSSProperties = {
+  width: "100%",
+  justifyContent: "space-between",
+}
+
 const estimatedTimesContentStyle: React.CSSProperties = {
   marginLeft: 24,
   marginTop: 0,
@@ -67,6 +72,16 @@ const timeValueStyle: React.CSSProperties = {
 
 const orderStepCardStyle: React.CSSProperties = {
   marginBottom: 12,
+}
+
+const stepItemStyle: React.CSSProperties = {
+  padding: "8px 0",
+  borderBottom: "1px solid #f0f0f0",
+}
+
+const stepDescriptionStyle: React.CSSProperties = {
+  fontWeight: 500,
+  marginBottom: 4,
 }
 
 export const OrderDispatcherTable: React.FC = () => {
@@ -83,7 +98,10 @@ export const OrderDispatcherTable: React.FC = () => {
   const selectedRoutes = selectedRows.map(order => order.route.route)
   const rowSelection = {
     type: "checkbox",
-    onChange: (_selectedRowKeys: React.Key[], selectedRows: GetOrderResponse[]) => {
+    onChange: (
+      _selectedRowKeys: React.Key[],
+      selectedRows: GetOrderResponse[],
+    ) => {
       setSelectedRows(selectedRows)
     },
   }
@@ -161,28 +179,36 @@ export const OrderDispatcherTable: React.FC = () => {
             children: (
               <div style={estimatedTimesContentStyle}>
                 {record.steps?.map((step, index) => (
-                  <Card
-                    key={index}
-                    size="small"
-                    style={orderStepCardStyle}
-                    title={`${index + 1}. ${step.description}`}
-                  >
+                  <div key={index} style={stepItemStyle}>
+                    <div style={stepDescriptionStyle}>
+                      {`${index + 1}. ${step.description}`}
+                    </div>
                     <Space direction="vertical" style={{ width: "100%" }}>
-                      <Space>
-                        <ClockCircleOutlined />
-                        {`${t(
-                          step.estimatedArrivalAt
-                            ? "expectedStartTime"
-                            : "plannedStartTime"
-                        )}:`}
-                        <Tag color="purple" style={timeValueStyle}>
+                      <Space style={spaceBetweenStyle}>
+                        <Space>
+                          <ClockCircleOutlined />
+                          {`${t("expectedStartTime")}:`}
+                        </Space>
+                        <Tag color="blue" style={timeValueStyle}>
                           {new Date(
-                            step.estimatedArrivalAt || record.estimatedStartedAt,
+                            step.estimatedArrivalAt ||
+                              record.estimatedStartedAt,
                           ).toLocaleString()}
                         </Tag>
                       </Space>
+                      {step.actualArrivalAt && (
+                        <Space style={spaceBetweenStyle}>
+                          <Space>
+                            <ClockCircleOutlined />
+                            {`${t("actualArrivalAt")}:`}
+                          </Space>
+                          <Tag color="success" style={timeValueStyle}>
+                            {new Date(step.actualArrivalAt).toLocaleString()}
+                          </Tag>
+                        </Space>
+                      )}
                     </Space>
-                  </Card>
+                  </div>
                 ))}
               </div>
             ),

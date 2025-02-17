@@ -23,19 +23,14 @@ import com.logisty.core.domain.model.values.UserRole
 import com.logisty.core.domain.port.DriverRepository
 import com.logisty.core.domain.port.UserRepository
 import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.Count
-import org.jetbrains.exposed.sql.intLiteral
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.anyFrom
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.leftJoin
-import org.jetbrains.exposed.sql.notExists
 import org.jetbrains.exposed.sql.not
-import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.notExists
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.stringParam
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -126,10 +121,9 @@ class PostgresUserRepository(
                         .selectAll()
                         .where { Orders.driverId eq Users.userId }
                         .andWhere { Orders.estimatedStartedAt less query.endAt }
-                        .andWhere { Orders.estimatedEndedAt greater query.startAt }
+                        .andWhere { Orders.estimatedEndedAt greater query.startAt },
                 )
-            }
-            .orderBy(Users.createdAt to SortOrder.DESC)
+            }.orderBy(Users.createdAt to SortOrder.DESC)
             .map { it.toUser() }
 
     override fun findUserById(id: UserId): User? =

@@ -1,5 +1,6 @@
 package com.logisty.core.domain
 
+import com.logisty.core.domain.ErrorCode.CANNOT_TRACK_DRIVER_LOCATION
 import com.logisty.core.domain.ErrorCode.FLEET_ALREADY_EXISTS
 import com.logisty.core.domain.ErrorCode.FLEET_NOT_FOUND
 import com.logisty.core.domain.ErrorCode.INVITATION_ALREADY_ACCEPTED
@@ -8,6 +9,8 @@ import com.logisty.core.domain.ErrorCode.INVITATION_EXPIRED
 import com.logisty.core.domain.ErrorCode.INVITATION_NOT_FOUND
 import com.logisty.core.domain.ErrorCode.ORDER_ESTIMATED_START_TIME_AFTER_END_TIME
 import com.logisty.core.domain.ErrorCode.ORDER_NOT_FOUND
+import com.logisty.core.domain.ErrorCode.ORDER_STEP_ALREADY_REPORTED
+import com.logisty.core.domain.ErrorCode.ORDER_STEP_INVALID_SEQUENCE
 import com.logisty.core.domain.ErrorCode.ORDER_STEP_NOT_FOUND
 import com.logisty.core.domain.ErrorCode.STEP_ESTIMATED_ARRIVAL_TIME_IN_FUTURE
 import com.logisty.core.domain.ErrorCode.USER_ALREADY_EXISTS
@@ -37,10 +40,13 @@ enum class ErrorCode {
     // order
     ORDER_NOT_FOUND,
     ORDER_STEP_NOT_FOUND,
+    ORDER_STEP_ALREADY_REPORTED,
+    ORDER_STEP_INVALID_SEQUENCE,
     USER_IS_NOT_DISPATCHER,
     USER_IS_NOT_DRIVER,
     STEP_ESTIMATED_ARRIVAL_TIME_IN_FUTURE,
     ORDER_ESTIMATED_START_TIME_AFTER_END_TIME,
+    CANNOT_TRACK_DRIVER_LOCATION,
 }
 
 object BusinessExceptions {
@@ -68,6 +74,10 @@ object BusinessExceptions {
 
     class OrderStepNotFoundException : BusinessException(ORDER_STEP_NOT_FOUND)
 
+    class OrderStepAlreadyReportedException : BusinessException(ORDER_STEP_ALREADY_REPORTED)
+
+    class OrderStepInvalidSequenceException : BusinessException(ORDER_STEP_INVALID_SEQUENCE)
+
     class UserIsNotDriverException : BusinessException(USER_IS_NOT_DRIVER)
 
     class UserIsNotDispatcherException : BusinessException(USER_IS_NOT_DISPATCHER)
@@ -75,4 +85,6 @@ object BusinessExceptions {
     class StepEstimatedArrivalTimeInFutureException : BusinessException(STEP_ESTIMATED_ARRIVAL_TIME_IN_FUTURE)
 
     class OrderEstimatedStartTimeAfterEndTimeException : BusinessException(ORDER_ESTIMATED_START_TIME_AFTER_END_TIME)
+
+    class CannotTrackDriverLocationException : BusinessException(CANNOT_TRACK_DRIVER_LOCATION)
 }

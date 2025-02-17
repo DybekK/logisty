@@ -15,6 +15,7 @@ export interface OrderRoute {
 }
 
 export interface OrderStep {
+  orderStepId: string
   description: string
   location: GeoPoint
   estimatedArrivalAt?: string
@@ -50,6 +51,12 @@ export interface CreateOrderRequest {
   estimatedEndedAt: string
 }
 
+export interface ReportOrderRequest {
+  arrivedAt: string
+  lat: number
+  lon: number
+}
+
 export interface GetOrderResponse {
   orderId: string
   fleetId: string
@@ -75,4 +82,22 @@ export interface GetOrdersQuery {
   driverId?: string
   limit: number
   page: number
+}
+
+export interface GetUpcomingOrderQuery {
+  fleetId: string
+  driverId: string
+}
+
+export interface GetUpcomingOrderResponse {
+  orderId: string
+  fleetId: string
+  driverId: string
+  status: OrderStatus
+  steps: OrderStep[]
+  route: OrderRoute
+  createdBy: string
+  createdAt: string
+  estimatedStartedAt: string
+  estimatedEndedAt: string
 }

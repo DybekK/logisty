@@ -20,6 +20,7 @@
     },
     "empty": "No orders found",
     "dispatcher": {
+      "empty": "No orders found",
       "status": "Status",
       "orderId": "Order ID",
       "driver": "Driver",
@@ -28,16 +29,35 @@
       "estimatedEnd": "End",
       "orderSteps": "Order Steps",
       "expectedStartTime": "Expected Arrival Time",
-      "plannedStartTime": "Planned Start Time"
+      "plannedStartTime": "Planned Start Time",
+      "actualArrivalAt": "Arrived"
     },
     "driver": {
+      "empty": "No orders found",
       "navigate": "Navigate",
       "estimatedTimes": "Estimated Times",
       "estimatedStart": "Start",
       "estimatedEnd": "End",
       "orderSteps": "Order Steps",
       "expectedStartTime": "Expected Arrival",
-      "plannedStartTime": "Planned Start"
+      "plannedStartTime": "Planned Start",
+      "actualArrivalAt": "Arrived"
+    }
+  },
+  "upcoming": {
+    "title": "Upcoming Order",
+    "startOrder": "Start Order",
+    "deliverySteps": "Delivery Steps",
+    "navigate": "Navigate",
+    "totalDistance": "Total Distance",
+    "estimatedDuration": "Estimated Duration",
+    "expectedStartTime": "Expected Start Time",
+    "actualArrivalAt": "Arrived",
+    "reportArrival": "Report arrival",
+    "reportArrivalSuccess": "Arrival reported",
+    "empty": "No upcoming orders",
+    "error": {
+      "reportArrival": "Failed to report arrival"
     }
   }
 }

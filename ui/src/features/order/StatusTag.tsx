@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next"
+
 import { ClockCircleOutlined } from "@ant-design/icons"
 import { Tag } from "antd"
+
 import { match } from "ts-pattern"
 
 import { OrderStatus } from "@/features/order"
@@ -11,6 +13,8 @@ interface StatusTagProps {
 
 export const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
   const { t } = useTranslation("order", { keyPrefix: "filter.statuses" })
+
+  console.log(status)
 
   const color = match(status)
     .with(OrderStatus.ASSIGNED, () => "blue")

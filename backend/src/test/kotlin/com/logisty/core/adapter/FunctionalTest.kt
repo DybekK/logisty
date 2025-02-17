@@ -68,6 +68,7 @@ open class FunctionalTest {
             fixtures.createFleet()
             fixtures.createInvitations()
             fixtures.createUsers()
+            fixtures.createOrder()
         }
     }
 }

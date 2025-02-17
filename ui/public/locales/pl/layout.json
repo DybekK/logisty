@@ -12,7 +12,8 @@
       "new": "Dodaj zlecenie",
       "pending": "W trakcie",
       "completed": "Zakończone",
-      "driver": "Moje zlecenia"
+      "driver": "Moje zlecenia",
+      "upcoming": "Nadchodzące"
     },
     "fleet": {
       "title": "Flota",

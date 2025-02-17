@@ -2,9 +2,12 @@ package com.logisty.core.adapter.inbound
 
 import com.logisty.core.adapter.toBadRequestResponseEntity
 import com.logisty.core.adapter.toInternalServerErrorResponseEntity
+import com.logisty.core.domain.BusinessExceptions.CannotTrackDriverLocationException
 import com.logisty.core.domain.BusinessExceptions.FleetNotFoundException
 import com.logisty.core.domain.BusinessExceptions.OrderEstimatedStartTimeAfterEndTimeException
 import com.logisty.core.domain.BusinessExceptions.OrderNotFoundException
+import com.logisty.core.domain.BusinessExceptions.OrderStepAlreadyReportedException
+import com.logisty.core.domain.BusinessExceptions.OrderStepInvalidSequenceException
 import com.logisty.core.domain.BusinessExceptions.OrderStepNotFoundException
 import com.logisty.core.domain.BusinessExceptions.StepEstimatedArrivalTimeInFutureException
 import com.logisty.core.domain.BusinessExceptions.UserIsNotDispatcherException
@@ -12,10 +15,13 @@ import com.logisty.core.domain.BusinessExceptions.UserIsNotDriverException
 import com.logisty.core.domain.BusinessExceptions.UserNotFoundException
 import com.logisty.core.domain.hub.OrderHub
 import com.logisty.core.domain.model.ExtendedOrder
+import com.logisty.core.domain.model.Order
 import com.logisty.core.domain.model.OrderRoute
 import com.logisty.core.domain.model.OrderStep
 import com.logisty.core.domain.model.command.CreateOrderCommand
 import com.logisty.core.domain.model.command.ReportOrderCommand
+import com.logisty.core.domain.model.command.TrackDriverLocationCommand
+import com.logisty.core.domain.model.query.GetOrderQuery
 import com.logisty.core.domain.model.query.GetOrdersQuery
 import com.logisty.core.domain.model.values.FirstName
 import com.logisty.core.domain.model.values.FleetId
@@ -35,6 +41,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.Clock
+import java.time.Duration
 import java.time.Instant
 
 // create order
@@ -91,7 +99,7 @@ data class CreateOrderResponse(
 
 // report order
 data class ReportOrderRequest(
-    val actualArrivalAt: Instant,
+    val arrivedAt: Instant,
     val lat: Double,
     val lon: Double,
 ) {
@@ -103,10 +111,14 @@ data class ReportOrderRequest(
         fleetId = fleetId,
         orderId = orderId,
         stepId = stepId,
-        actualArrivalAt = actualArrivalAt,
+        arrivedAt = arrivedAt,
         location = Point(lon, lat),
     )
 }
+
+data class ReportOrderResponse(
+    val orderId: OrderId,
+)
 
 // get orders
 data class GetOrderResponse(
@@ -124,6 +136,7 @@ data class GetOrderResponse(
     val estimatedEndedAt: Instant,
 ) {
     data class OrderStep(
+        val orderStepId: OrderStepId,
         val description: String,
         val location: Point,
         val estimatedArrivalAt: Instant?,
@@ -139,6 +152,7 @@ data class GetOrderResponse(
 
 fun OrderStep.toGetOrderStep() =
     GetOrderResponse.OrderStep(
+        orderStepId = orderStepId,
         description = description,
         location = location,
         estimatedArrivalAt = estimatedArrivalAt,
@@ -173,13 +187,88 @@ data class GetOrdersResponse(
     val total: Long,
 )
 
-data class ReportOrderResponse(
+// get upcoming or active order
+data class GetUpcomingOrderResponse(
+    val orderId: OrderId,
+    val fleetId: FleetId,
+    val driverId: UserId,
+    val status: OrderStatus,
+    val steps: List<OrderStep>,
+    val route: OrderRoute,
+    val createdBy: UserId,
+    val createdAt: Instant,
+    val estimatedStartedAt: Instant,
+    val estimatedEndedAt: Instant,
+) {
+    data class OrderStep(
+        val orderStepId: OrderStepId,
+        val description: String,
+        val location: Point,
+        val estimatedArrivalAt: Instant?,
+        val actualArrivalAt: Instant?,
+    )
+
+    data class OrderRoute(
+        val route: LineString,
+        val routePoints: LineString?,
+        val duration: Double,
+        val distance: Double,
+    )
+}
+
+fun OrderStep.toGetUpcomingOrderStep() =
+    GetUpcomingOrderResponse.OrderStep(
+        orderStepId = orderStepId,
+        description = description,
+        location = location,
+        estimatedArrivalAt = estimatedArrivalAt,
+        actualArrivalAt = actualArrivalAt,
+    )
+
+fun OrderRoute.toGetUpcomingOrderRoute() =
+    GetUpcomingOrderResponse.OrderRoute(
+        route = route,
+        routePoints = routePoints,
+        duration = duration,
+        distance = distance,
+    )
+
+fun Order.toGetUpcomingOrderResponse() =
+    GetUpcomingOrderResponse(
+        orderId = orderId,
+        fleetId = fleetId,
+        driverId = driverId,
+        status = status,
+        steps = steps.map { it.toGetUpcomingOrderStep() },
+        route = route.toGetUpcomingOrderRoute(),
+        createdBy = createdBy,
+        createdAt = createdAt,
+        estimatedStartedAt = estimatedStartedAt,
+        estimatedEndedAt = estimatedEndedAt,
+    )
+
+// track driver location
+data class TrackDriverLocationRequest(
+    val route: LineString,
+) {
+    fun toTrackDriverLocationCommand(
+        fleetId: FleetId,
+        orderId: OrderId,
+    ) = TrackDriverLocationCommand(
+        fleetId = fleetId,
+        orderId = orderId,
+        route = route,
+    )
+}
+
+data class TrackDriverLocationResponse(
     val orderId: OrderId,
 )
 
 @RestController
 @RequestMapping("api/fleets")
 class OrderController(
+    private val clock: Clock,
     private val orderHub: OrderHub,
 ) {
     private val logger = LoggerFactory.getLogger(OrderController::class.java)
@@ -217,11 +306,50 @@ class OrderController(
                 is FleetNotFoundException,
                 is OrderNotFoundException,
                 is OrderStepNotFoundException,
+                is OrderStepAlreadyReportedException,
+                is OrderStepInvalidSequenceException,
                 -> it.toBadRequestResponseEntity()
 
                 else -> it.toInternalServerErrorResponseEntity(logger)
             }
         }
+
+    @PostMapping("/{fleetId}/orders/{orderId}/track")
+    fun trackDriverLocation(
+        @PathVariable fleetId: FleetId,
+        @PathVariable orderId: OrderId,
+        @RequestBody request: TrackDriverLocationRequest,
+    ) = runCatching { orderHub.trackDriverLocation(request.toTrackDriverLocationCommand(fleetId, orderId)) }
+        .map { ResponseEntity.ok(TrackDriverLocationResponse(it)) }
+        .getOrElse {
+            when (it) {
+                is FleetNotFoundException,
+                is OrderNotFoundException,
+                is CannotTrackDriverLocationException,
+                -> it.toBadRequestResponseEntity()
+
+                else -> it.toInternalServerErrorResponseEntity(logger)
+            }
+        }
+
+    @GetMapping("/{fleetId}/orders/drivers/{driverId}/upcoming")
+    fun getUpcomingOrder(
+        @PathVariable fleetId: FleetId,
+        @PathVariable driverId: UserId,
+    ) = runCatching {
+        orderHub.getUpcomingOrActiveOrder(
+            GetOrderQuery(
+                fleetId = fleetId,
+                driverId = driverId,
+                nearestTo = clock.instant(),
+                lookupRange = Duration.ofMinutes(10),
+            ),
+        )
+    }.map { order ->
+        order
+            ?.let { ResponseEntity.ok(it.toGetUpcomingOrderResponse()) }
+            ?: ResponseEntity.notFound().build()
+    }.getOrElse { it.toInternalServerErrorResponseEntity(logger) }
 
     @GetMapping("/{fleetId}/orders")
     fun getOrders(

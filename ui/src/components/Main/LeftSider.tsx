@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 
 import {
   AppstoreAddOutlined,
+  CalendarOutlined,
   LaptopOutlined,
   Loading3QuartersOutlined,
   LogoutOutlined,
@@ -107,6 +108,17 @@ export const LeftSider: React.FC<LeftSiderProps> = ({
               key: "driver",
               icon: <UserOutlined />,
               onClick: () => handleNavigation(Routes.DRIVER_ORDERS),
+            },
+          ],
+        ),
+        ...getRoleBasedMenuItems(
+          [UserRole.DRIVER],
+          [
+            {
+              label: t("leftbar.orders.upcoming"),
+              key: "upcoming",
+              icon: <CalendarOutlined />,
+              onClick: () => handleNavigation(Routes.UPCOMING_ORDERS),
             },
           ],
         ),

@@ -10,7 +10,7 @@ import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.FleetName
 import com.logisty.core.domain.model.values.InvitationId
 import com.logisty.core.domain.model.values.LastName
-import com.logisty.core.domain.model.values.OrderId 
+import com.logisty.core.domain.model.values.OrderId
 import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.UserEmail
 import com.logisty.core.domain.model.values.UserId
@@ -31,6 +31,9 @@ interface Payload
     Type(value = OrderCreatedEvent::class, name = "ORDER_CREATED"),
     Type(value = OrderAssignedToDriverEvent::class, name = "ORDER_ASSIGNED_TO_DRIVER"),
     Type(value = OrderReportedEvent::class, name = "ORDER_REPORTED"),
+    Type(value = OrderStartedEvent::class, name = "ORDER_STARTED"),
+    Type(value = OrderCompletedEvent::class, name = "ORDER_COMPLETED"),
+    Type(value = OrderCancelledEvent::class, name = "ORDER_CANCELLED"),
 )
 sealed interface InternalEvent {
     val fleetId: FleetId
@@ -164,5 +167,44 @@ data class OrderReportedEvent(
         val stepId: OrderStepId,
         val actualArrivalAt: Instant,
         val location: Point,
+    ) : Payload
+}
+
+data class OrderStartedEvent(
+    override val fleetId: FleetId,
+    override val payload: OrderStartedPayload,
+    override val appendedAt: Instant,
+    override val eventId: InternalEventId = InternalEventId.generate(),
+) : InternalEvent {
+    override val type = InternalEventType.ORDER_STARTED
+
+    data class OrderStartedPayload(
+        val orderId: OrderId,
+    ) : Payload
+}
+
+data class OrderCompletedEvent(
+    override val fleetId: FleetId,
+    override val payload: OrderCompletedPayload,
+    override val appendedAt: Instant,
+    override val eventId: InternalEventId = InternalEventId.generate(),
+) : InternalEvent {
+    override val type = InternalEventType.ORDER_COMPLETED
+
+    data class OrderCompletedPayload(
+        val orderId: OrderId,
+    ) : Payload
+}
+
+data class OrderCancelledEvent(
+    override val fleetId: FleetId,
+    override val payload: OrderCancelledPayload,
+    override val appendedAt: Instant,
+    override val eventId: InternalEventId = InternalEventId.generate(),
+) : InternalEvent {
+    override val type = InternalEventType.ORDER_CANCELLED
+
+    data class OrderCancelledPayload(
+        val orderId: OrderId,
     ) : Payload
 }

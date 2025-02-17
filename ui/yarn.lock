@@ -182,10 +182,22 @@
   dependencies:
     tslib "^2.1.0"
 
+"@capacitor/geolocation@^7.1.0":
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/@capacitor/geolocation/-/geolocation-7.1.0.tgz#1c4d3b66295c5c9564d9837ef6d59e2a17e92950"
+  integrity sha512-/BNPCNiQCJjmQzamNnRlbNEbfdYmFzJs4MciECKnboEdUgpedugyYn0ZwnxRSjckwfLsQnkexpqHN+7oxCXwFg==
+  dependencies:
+    "@capacitor/synapse" "^1.0.1"
+
 "@capacitor/ios@^7.0.1":
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-7.0.1.tgz#f175f74543edc5faa13de927ababfffff450776f"
   integrity sha512-RN6S1C1k7ue57DFmJM4EizzsYBrahTTiMhcnlHspFLaojgHbFWZbYq1VriuRKysPU1ka/P+klsdtRFsB5K9jyw==
+
+"@capacitor/synapse@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/synapse/-/synapse-1.0.1.tgz#8e47582722bbdff39e5d492fafe6e8f645370cee"
+  integrity sha512-eLSoIccv6dqJ9GQePlQfHizE91tn9+6Ysj9ZWTi4JwV4OX4As6y505CvEYuM99MiLkdpL+Vcx3jNp8AEeQG5VA==
 
 "@ctrl/tinycolor@^3.6.1":
   version "3.6.1"

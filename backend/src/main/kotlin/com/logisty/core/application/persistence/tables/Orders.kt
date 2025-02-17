@@ -5,7 +5,7 @@ import com.c0x12c.exposed.postgis.point
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-    object OrderSteps : Table("order_steps") {
+object OrderSteps : Table("order_steps") {
     val orderStepId = uuid("order_step_id")
     val orderId = uuid("order_id").references(Orders.orderId)
 
@@ -23,6 +23,8 @@ object OrderRoutes : Table("order_routes") {
     val orderId = uuid("order_id").references(Orders.orderId).uniqueIndex()
 
     val route = lineString("geometry")
+    val routePoints = lineString("driver_route_points").nullable()
+
     val duration = double("duration")
     val distance = double("distance")
 

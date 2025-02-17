@@ -14,12 +14,12 @@
   "filter": {
     "statuses": {
       "ASSIGNED": "Przypisane",
-      "PENDING": "Oczekujące",
-      "COMPLETED": "Wykonane",
+      "PENDING": "Trwa realizacja",
+      "COMPLETED": "Zakończone",
       "CANCELLED": "Anulowane"
     },
-    "empty": "Brak zleceń",
     "dispatcher": {
+      "empty": "Brak zleceń",
       "status": "Status",
       "orderId": "ID zlecenia",
       "driver": "Kierowca",
@@ -28,16 +28,35 @@
       "estimatedEnd": "Koniec",
       "orderSteps": "Etapy zlecenia",
       "expectedStartTime": "Przewidywany start",
-      "plannedStartTime": "Planowany start"
+      "plannedStartTime": "Planowany start",
+      "actualArrivalAt": "Przybyto"
     },
     "driver": {
+      "empty": "Brak zleceń",
       "navigate": "Nawiguj",
       "estimatedTimes": "Szacowane czasy",
       "estimatedStart": "Start",
       "estimatedEnd": "Koniec",
       "orderSteps": "Etapy zlecenia",
       "expectedStartTime": "Przewidywany czas",
-      "plannedStartTime": "Planowany czas"
+      "plannedStartTime": "Planowany czas",
+      "actualArrivalAt": "Przybyto"
+    }
+  },
+  "upcoming": {
+    "title": "Nadchodzące zlecenie",
+    "startOrder": "Rozpocznij zlecenie",
+    "deliverySteps": "Etapy dostawy",
+    "navigate": "Nawiguj",
+    "totalDistance": "Całkowita odległość",
+    "estimatedDuration": "Szacowany czas",
+    "actualArrivalAt": "Przybyto",
+    "expectedStartTime": "Przewidywany czas",
+    "reportArrival": "Zgłoś przybycie",
+    "empty": "Brak nadchodzących zleceń",
+    "reportArrivalSuccess": "Przybycie zgłoszone",
+    "error": {
+      "reportArrival": "Nie udało się zgłosić przybycia"
     }
   }
 }

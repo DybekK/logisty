@@ -33,8 +33,8 @@ import {
   fetchCurrentUserAfterAuthentication,
 } from "@/features/auth"
 import { removeUser, setUser } from "@/features/auth"
-import { getDefaultRedirect } from "@/router"
 import { clearNotifications } from "@/features/notification"
+import { getDefaultRedirect } from "@/router"
 
 const layoutStyle: React.CSSProperties = {
   height: "100vh",

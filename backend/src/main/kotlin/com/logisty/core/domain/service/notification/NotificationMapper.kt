@@ -6,8 +6,11 @@ import com.logisty.core.domain.model.event.InvitationAcceptedEvent
 import com.logisty.core.domain.model.event.InvitationCreatedEvent
 import com.logisty.core.domain.model.event.InvitationExpiredEvent
 import com.logisty.core.domain.model.event.OrderAssignedToDriverEvent
+import com.logisty.core.domain.model.event.OrderCancelledEvent
+import com.logisty.core.domain.model.event.OrderCompletedEvent
 import com.logisty.core.domain.model.event.OrderCreatedEvent
 import com.logisty.core.domain.model.event.OrderReportedEvent
+import com.logisty.core.domain.model.event.OrderStartedEvent
 import com.logisty.core.domain.model.event.notification.Notification
 import com.logisty.core.domain.model.event.notification.NotificationMessage
 import com.logisty.core.domain.model.event.notification.NotificationTitle
@@ -37,6 +40,9 @@ class NotificationMapper(
             is OrderCreatedEvent -> event.toNotification(locale)
             is OrderAssignedToDriverEvent -> event.toNotification(locale)
             is OrderReportedEvent -> event.toNotification(locale)
+            is OrderStartedEvent -> event.toNotification(locale)
+            is OrderCompletedEvent -> event.toNotification(locale)
+            is OrderCancelledEvent -> event.toNotification(locale)
         }
 
     private fun FleetCreatedEvent.toNotification(locale: Locale): Notification =
@@ -131,7 +137,7 @@ class NotificationMapper(
                     ),
                 ),
             eventType = type,
-            notificationType = NotificationType.INFO,
+            notificationType = NotificationType.WARNING,
             appendedAt = appendedAt,
         )
 
@@ -204,6 +210,69 @@ class NotificationMapper(
                 ),
             eventType = type,
             notificationType = NotificationType.INFO,
+            appendedAt = appendedAt,
+        )
+
+    private fun OrderStartedEvent.toNotification(locale: Locale): Notification =
+        Notification(
+            eventId = eventId,
+            title = NotificationTitle(messageSource.getMessage("event.order.started.title", null, locale)),
+            message =
+                NotificationMessage(
+                    messageSource.getMessage(
+                        "event.order.started.message",
+                        arrayOf(payload.orderId.value),
+                        locale,
+                    ),
+                ),
+            eventType = type,
+            notificationType = NotificationType.INFO,
+            appendedAt = appendedAt,
+        )
+
+    private fun OrderCompletedEvent.toNotification(locale: Locale): Notification =
+        Notification(
+            eventId = eventId,
+            title =
+                NotificationTitle(
+                    messageSource.getMessage(
+                        "event.order.completed.title",
+                        null,
+                        locale,
+                    ),
+                ),
+            NotificationMessage(
+                messageSource.getMessage(
+                    "event.order.completed.message",
+                    arrayOf(payload.orderId.value),
+                    locale,
+                ),
+            ),
+            eventType = type,
+            notificationType = NotificationType.INFO,
+            appendedAt = appendedAt,
+        )
+
+    private fun OrderCancelledEvent.toNotification(locale: Locale): Notification =
+        Notification(
+            eventId = eventId,
+            title =
+                NotificationTitle(
+                    messageSource.getMessage(
+                        "event.order.cancelled.title",
+                        null,
+                        locale,
+                    ),
+                ),
+            NotificationMessage(
+                messageSource.getMessage(
+                    "event.order.cancelled.message",
+                    arrayOf(payload.orderId.value),
+                    locale,
+                ),
+            ),
+            eventType = type,
+            notificationType = NotificationType.ERROR,
             appendedAt = appendedAt,
         )
 }

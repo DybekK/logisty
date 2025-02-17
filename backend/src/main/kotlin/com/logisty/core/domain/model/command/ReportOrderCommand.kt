@@ -10,6 +10,6 @@ data class ReportOrderCommand(
     val fleetId: FleetId,
     val orderId: OrderId,
     val stepId: OrderStepId,
-    val actualArrivalAt: Instant,
+    val arrivedAt: Instant,
     val location: Point,
 )

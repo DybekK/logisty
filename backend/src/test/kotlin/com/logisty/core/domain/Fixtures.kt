@@ -2,6 +2,9 @@ package com.logisty.core.domain
 
 import com.logisty.core.application.persistence.tables.Fleets
 import com.logisty.core.application.persistence.tables.Invitations
+import com.logisty.core.application.persistence.tables.OrderRoutes
+import com.logisty.core.application.persistence.tables.OrderSteps
+import com.logisty.core.application.persistence.tables.Orders
 import com.logisty.core.application.persistence.tables.Users
 import com.logisty.core.domain.model.FixtureFleet
 import com.logisty.core.domain.model.FixtureInvitation
@@ -122,7 +125,6 @@ class Fixtures {
         run {
             val orderId = OrderId.generate()
             val orderRouteId = OrderRouteId.generate()
-            val orderStepId = OrderStepId.generate()
             val startedAt = Instant.now()
             val endedAt = startedAt.plus(Duration.ofMinutes(20))
             FixtureOrder(
@@ -133,12 +135,12 @@ class Fixtures {
                 steps =
                     listOf(
                         FixtureOrderStep(
-                            orderStepId = orderStepId,
+                            orderStepId = OrderStepId.generate(),
                             description = "step-1",
                             location = Point(1.0, 2.0),
                         ),
                         FixtureOrderStep(
-                            orderStepId = orderStepId,
+                            orderStepId = OrderStepId.generate(),
                             description = "step-2",
                             location = Point(3.0, 4.0),
                             estimatedArrivalAt = endedAt,
@@ -210,6 +212,37 @@ class Fixtures {
                 it[createdAt] = user.createdAt
             }
         }
+
+    fun createOrder() {
+        Orders.insert {
+            it[orderId] = order.orderId.value
+            it[fleetId] = order.fleetId.value
+            it[driverId] = order.driverId.value
+            it[status] = order.status.name
+            it[createdBy] = order.createdBy.value
+            it[createdAt] = order.createdAt
+            it[estimatedStartedAt] = order.estimatedStartedAt
+            it[estimatedEndedAt] = order.estimatedEndedAt
+        }
+
+        order.steps.forEach { step ->
+            OrderSteps.insert {
+                it[orderStepId] = step.orderStepId.value
+                it[orderId] = order.orderId.value
+                it[description] = step.description
+                it[location] = step.location
+                it[estimatedArrivalAt] = step.estimatedArrivalAt
+            }
+        }
+
+        OrderRoutes.insert {
+            it[orderRouteId] = order.route.orderRouteId.value
+            it[orderId] = order.orderId.value
+            it[route] = order.route.route
+            it[duration] = order.route.duration
+            it[distance] = order.route.distance
+        }
+    }
 }
 
 fun generateUserEmail() = UserEmail("user_${UUID.randomUUID()}@example.com")

@@ -24,6 +24,7 @@ data class OrderRoute(
     val orderRouteId: OrderRouteId,
     val orderId: OrderId,
     val route: LineString,
+    val routePoints: LineString?,
     val duration: Double,
     val distance: Double,
 )

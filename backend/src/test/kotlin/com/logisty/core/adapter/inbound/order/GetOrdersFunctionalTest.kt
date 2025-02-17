@@ -18,6 +18,7 @@ class GetOrdersFunctionalTest : FunctionalTest() {
         val limit = 10
         val page = 0
         val orders = generateOrders(limit + 10, jwt)
+        val ordersSize = orders.size + 1
 
         // when
         val response =
@@ -28,7 +29,7 @@ class GetOrdersFunctionalTest : FunctionalTest() {
 
         // then
         assertThat(response.orders).hasSize(limit)
-        assertThat(response.total).isEqualTo(orders.size.toLong())
+        assertThat(response.total).isEqualTo(ordersSize.toLong())
     }
 
     @Test
@@ -39,6 +40,7 @@ class GetOrdersFunctionalTest : FunctionalTest() {
         val limit = 5
         val page = 2
         val orders = generateOrders(limit + 10, jwt)
+        val ordersSize = orders.size + 1
 
         // when
         val response =
@@ -50,7 +52,7 @@ class GetOrdersFunctionalTest : FunctionalTest() {
         // then
         val expectedSize = minOf(limit, maxOf(0, orders.size - page * limit))
         assertThat(response.orders).hasSize(expectedSize)
-        assertThat(response.total).isEqualTo(orders.size.toLong())
+        assertThat(response.total).isEqualTo(ordersSize.toLong())
     }
 
     private fun generateOrders(

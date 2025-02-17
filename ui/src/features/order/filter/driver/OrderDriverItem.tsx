@@ -11,8 +11,9 @@ import {
 } from "@ant-design/icons"
 import { Button, Card, Collapse, Space, Tag } from "antd"
 
-import { GetOrderResponse } from "@/features/order/order.types"
+import { createGoogleMapsLink } from "@/common"
 import { StatusTag } from "@/features/order"
+import { GetOrderResponse } from "@/features/order/order.types"
 
 const cardStyle: React.CSSProperties = {
   width: "100%",
@@ -42,20 +43,13 @@ const stepDescriptionStyle: React.CSSProperties = {
   marginBottom: 4,
 }
 
-interface OrderItemProps {
-  order: GetOrderResponse
+const spaceBetweenStyle: React.CSSProperties = {
+  width: "100%",
+  justifyContent: "space-between",
 }
 
-const createGoogleMapsLink = (steps: Array<[number, number]>): string => {
-  if (steps.length < 2) return ""
-
-  const locations = steps.map(([long, lat]) => `${lat},${long}`)
-
-  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-    return `comgooglemaps://?saddr=${locations[0]}&daddr=${locations[1]}&waypoints=${locations.slice(2).join("|")}&directionsmode=driving`
-  }
-
-  return `https://www.google.com/maps/dir/${locations.join("/")}`
+interface OrderItemProps {
+  order: GetOrderResponse
 }
 
 export const OrderDriverItem: React.FC<OrderItemProps> = ({ order }) => {
@@ -85,7 +79,7 @@ export const OrderDriverItem: React.FC<OrderItemProps> = ({ order }) => {
   return (
     <Card style={cardStyle}>
       <Space direction="vertical" style={{ width: "100%" }}>
-        <Space style={headerSpaceStyle}>
+        <Space style={spaceBetweenStyle}>
           <Space>
             <StatusTag status={order.status} />
             <Space>
@@ -116,16 +110,20 @@ export const OrderDriverItem: React.FC<OrderItemProps> = ({ order }) => {
               ),
               children: (
                 <Space direction="vertical" style={estimatedTimesContentStyle}>
-                  <Space>
-                    <CarOutlined />
-                    {`${t("estimatedStart")}:`}
+                  <Space style={spaceBetweenStyle}>
+                    <Space>
+                      <CarOutlined />
+                      {`${t("estimatedStart")}:`}
+                    </Space>
                     <Tag color="blue" style={timeValueStyle}>
                       {new Date(order.estimatedStartedAt).toLocaleString()}
                     </Tag>
                   </Space>
-                  <Space>
-                    <EnvironmentOutlined />
-                    {`${t("estimatedEnd")}:`}
+                  <Space style={spaceBetweenStyle}>
+                    <Space>
+                      <EnvironmentOutlined />
+                      {`${t("estimatedEnd")}:`}
+                    </Space>
                     <Tag color="green" style={timeValueStyle}>
                       {new Date(order.estimatedEndedAt).toLocaleString()}
                     </Tag>
@@ -148,18 +146,30 @@ export const OrderDriverItem: React.FC<OrderItemProps> = ({ order }) => {
                       <div style={stepDescriptionStyle}>
                         {`${index + 1}. ${step.description}`}
                       </div>
-                      <Space>
-                        <ClockCircleOutlined />
-                        {`${t(
-                          step.estimatedArrivalAt
-                            ? "expectedStartTime"
-                            : "plannedStartTime"
-                        )}:`}
-                        <Tag color="purple" style={timeValueStyle}>
-                          {new Date(
-                            step.estimatedArrivalAt || order.estimatedStartedAt,
-                          ).toLocaleString()}
-                        </Tag>
+                      <Space direction="vertical">
+                        <Space style={spaceBetweenStyle}>
+                          <Space>
+                            <ClockCircleOutlined />
+                            {`${t("expectedStartTime")}:`}
+                          </Space>
+                          <Tag color="blue" style={timeValueStyle}>
+                            {new Date(
+                              step.estimatedArrivalAt ||
+                                order.estimatedStartedAt,
+                            ).toLocaleString()}
+                          </Tag>
+                        </Space>
+                        {step.actualArrivalAt && (
+                          <Space style={spaceBetweenStyle}>
+                            <Space>
+                              <ClockCircleOutlined />
+                              {`${t("actualArrivalAt")}:`}
+                            </Space>
+                            <Tag color="success" style={timeValueStyle}>
+                              {new Date(step.actualArrivalAt).toLocaleString()}
+                            </Tag>
+                          </Space>
+                        )}
                       </Space>
                     </div>
                   ))}

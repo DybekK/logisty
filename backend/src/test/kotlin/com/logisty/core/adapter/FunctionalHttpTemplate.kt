@@ -8,6 +8,8 @@ import com.logisty.core.adapter.inbound.CreateInvitationRequest
 import com.logisty.core.adapter.inbound.CreateInvitationResponse
 import com.logisty.core.adapter.inbound.CreateOrderRequest
 import com.logisty.core.adapter.inbound.RefreshTokenRequest
+import com.logisty.core.adapter.inbound.ReportOrderRequest
+import com.logisty.core.adapter.inbound.TrackDriverLocationRequest
 import com.logisty.core.application.mapper
 import com.logisty.core.application.security.SecurityErrorCode
 import com.logisty.core.application.security.jwt.values.JwtAccess
@@ -20,7 +22,10 @@ import com.logisty.core.domain.model.query.GetOrdersQuery
 import com.logisty.core.domain.model.query.GetUsersQuery
 import com.logisty.core.domain.model.values.FleetId
 import com.logisty.core.domain.model.values.InvitationId
+import com.logisty.core.domain.model.values.OrderId
+import com.logisty.core.domain.model.values.OrderStepId
 import com.logisty.core.domain.model.values.UserEmail
+import com.logisty.core.domain.model.values.UserId
 import com.logisty.core.domain.model.values.UserPassword
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.hasItem
@@ -202,6 +207,44 @@ class FunctionalHttpTemplate(
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer ${jwt.value}")
                 .content(mapper.writeValueAsString(request)),
+        )
+
+    fun reportOrder(
+        fleetId: FleetId,
+        orderId: OrderId,
+        stepId: OrderStepId,
+        request: ReportOrderRequest,
+        jwt: JwtAccess,
+    ): ResultActions =
+        mockMvc.perform(
+            post("/api/fleets/${fleetId.value}/orders/${orderId.value}/report/${stepId.value}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ${jwt.value}")
+                .content(mapper.writeValueAsString(request)),
+        )
+
+    fun trackDriverLocation(
+        fleetId: FleetId,
+        orderId: OrderId,
+        request: TrackDriverLocationRequest,
+        jwt: JwtAccess,
+    ): ResultActions =
+        mockMvc.perform(
+            post("/api/fleets/${fleetId.value}/orders/${orderId.value}/track")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ${jwt.value}")
+                .content(mapper.writeValueAsString(request)),
+        )
+
+    fun getUpcomingOrder(
+        fleetId: FleetId,
+        driverId: UserId,
+        jwt: JwtAccess,
+    ): ResultActions =
+        mockMvc.perform(
+            get("/api/fleets/${fleetId.value}/orders/drivers/${driverId.value}/upcoming")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ${jwt.value}"),
         )
 
     fun getOrders(

@@ -12,6 +12,7 @@ import {
 } from "@/features/invitation"
 import { OrderDispatcherTable, OrderDriverTable } from "@/features/order/filter"
 import { NewOrderForm } from "@/features/order/new"
+import { UpcomingOrderForm } from "@/features/order/upcoming"
 
 export enum Routes {
   LOGIN = "/login",
@@ -28,6 +29,7 @@ export enum Routes {
   NEW_ORDER = "/orders/new",
   ORDERS = "/orders",
   DRIVER_ORDERS = "/orders/driver",
+  UPCOMING_ORDERS = "/orders/upcoming",
 }
 
 const defaultRedirects = {
@@ -88,6 +90,10 @@ export const Router = () => {
         {
           path: Routes.NEW_ORDER,
           element: <NewOrderForm />,
+        },
+        {
+          path: Routes.UPCOMING_ORDERS,
+          element: <UpcomingOrderForm />,
         },
       ],
     },

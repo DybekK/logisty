@@ -5,10 +5,21 @@ import {
   CreateOrderRequest,
   GetOrdersQuery,
   GetOrdersResponse,
+  GetUpcomingOrderQuery,
+  GetUpcomingOrderResponse,
+  ReportOrderRequest,
 } from "@/features/order"
 
 const fetchOrdersKey = "fetchOrders"
 const fetchDriverOrdersKey = "fetchDriverOrders"
+const fetchUpcomingOrderKey = "fetchUpcomingOrder"
+
+export const fetchUpcomingOrder = async (
+  query: GetUpcomingOrderQuery,
+): Promise<GetUpcomingOrderResponse> =>
+  authAxiosInstance
+    .get(`/fleets/${query.fleetId}/orders/drivers/${query.driverId}/upcoming`)
+    .then(handleAxiosResponse)
 
 export const fetchOrders = async (
   query: GetOrdersQuery,
@@ -34,6 +45,28 @@ export const fetchDriverOrders = async (
     })
     .then(handleAxiosResponse)
 
+export const createOrder = async (fleetId: string, order: CreateOrderRequest) =>
+  authAxiosInstance
+    .post(`/fleets/${fleetId}/orders`, order)
+    .then(handleAxiosResponse)
+
+export const reportOrder = async (
+  fleetId: string,
+  orderId: string,
+  stepId: string,
+  request: ReportOrderRequest,
+) =>
+  authAxiosInstance
+    .post(`/fleets/${fleetId}/orders/${orderId}/report/${stepId}`, request)
+    .then(handleAxiosResponse)
+
+export const useFetchUpcomingOrder = (query: GetUpcomingOrderQuery) =>
+  useQuery({
+    retry: false,
+    queryKey: [fetchUpcomingOrderKey, query],
+    queryFn: () => fetchUpcomingOrder(query),
+  })
+
 export const useFetchOrders = (query: GetOrdersQuery) =>
   useQuery({
     queryKey: [fetchOrdersKey, query],
@@ -45,8 +78,3 @@ export const useFetchDriverOrders = (query: GetOrdersQuery) =>
     queryKey: [fetchDriverOrdersKey, query],
     queryFn: () => fetchDriverOrders(query),
   })
-
-export const createOrder = async (fleetId: string, order: CreateOrderRequest) =>
-  authAxiosInstance
-    .post(`/fleets/${fleetId}/orders`, order)
-    .then(handleAxiosResponse)
