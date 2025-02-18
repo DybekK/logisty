@@ -11,9 +11,8 @@ import {
   RightCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons"
-import { Card, Collapse, Divider, Empty, Space, Table, Tag } from "antd"
+import { Card, Collapse, Empty, Space, Table, Tag } from "antd"
 import type { ColumnsType } from "antd/es/table"
-import { TableRowSelection } from "antd/es/table/interface"
 
 import { useAppSelector } from "@/common"
 import { Map3D } from "@/components"
@@ -37,8 +36,6 @@ const listContainerStyle: React.CSSProperties = {
   flexDirection: "column",
   zIndex: 1,
   width: "40%",
-  padding: 20,
-  boxShadow: "8px 0px 15px -5px rgba(0, 0, 0, 0.025)",
   overflowY: "auto",
 }
 
@@ -50,10 +47,6 @@ const mapContainerStyle: React.CSSProperties = {
 
 const tableStyle: React.CSSProperties = {
   width: "100%",
-}
-
-const dividerStyle: React.CSSProperties = {
-  height: "100%",
 }
 
 const spaceBetweenStyle: React.CSSProperties = {
@@ -68,10 +61,6 @@ const estimatedTimesContentStyle: React.CSSProperties = {
 
 const timeValueStyle: React.CSSProperties = {
   fontWeight: 500,
-}
-
-const orderStepCardStyle: React.CSSProperties = {
-  marginBottom: 12,
 }
 
 const stepItemStyle: React.CSSProperties = {
@@ -94,15 +83,27 @@ export const OrderDispatcherTable: React.FC = () => {
     page: page - 1,
     limit: pageSize,
   })
-  const [selectedRows, setSelectedRows] = React.useState<GetOrderResponse[]>([])
-  const selectedRoutes = selectedRows.map(order => order.route.route)
+  const [selectedRow, setSelectedRow] = React.useState<GetOrderResponse | null>(
+    null,
+  )
+  const selectedRoute = selectedRow
+    ? {
+        coordinates: selectedRow.route.route.coordinates,
+      }
+    : undefined
+  const selectedDriverRoute = selectedRow?.route.routePoints
+    ? {
+        coordinates: selectedRow.route.routePoints.coordinates,
+      }
+    : undefined
+
   const rowSelection = {
-    type: "checkbox",
+    type: "radio" as const,
     onChange: (
       _selectedRowKeys: React.Key[],
       selectedRows: GetOrderResponse[],
     ) => {
-      setSelectedRows(selectedRows)
+      setSelectedRow(selectedRows[0] || null)
     },
   }
   const columns: ColumnsType<GetOrderResponse> = [
@@ -223,7 +224,14 @@ export const OrderDispatcherTable: React.FC = () => {
         <div style={listContainerStyle}>
           <Table
             style={tableStyle}
-            rowSelection={rowSelection as TableRowSelection<GetOrderResponse>}
+            components={{
+              body: {
+                cell: (props: any) => (
+                  <td {...props} style={{ borderBottom: "none" }} />
+                ),
+              },
+            }}
+            rowSelection={rowSelection}
             columns={columns}
             dataSource={data?.orders}
             loading={isLoading}
@@ -248,9 +256,13 @@ export const OrderDispatcherTable: React.FC = () => {
             rowKey="orderId"
           />
         </div>
-        <Divider type="vertical" style={dividerStyle} />
         <div style={mapContainerStyle}>
-          <Map3D id="filtrOrderMap" routes={selectedRoutes} />
+          <Map3D
+            id="filtrOrderMap"
+            plannedRoute={selectedRoute}
+            driverRoute={selectedDriverRoute}
+            steps={selectedRow?.steps || []}
+          />
         </div>
       </Card>
     </MapProvider>

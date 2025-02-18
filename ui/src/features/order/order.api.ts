@@ -8,6 +8,7 @@ import {
   GetUpcomingOrderQuery,
   GetUpcomingOrderResponse,
   ReportOrderRequest,
+  TrackDriverLocationRequest,
 } from "@/features/order"
 
 const fetchOrdersKey = "fetchOrders"
@@ -58,6 +59,15 @@ export const reportOrder = async (
 ) =>
   authAxiosInstance
     .post(`/fleets/${fleetId}/orders/${orderId}/report/${stepId}`, request)
+    .then(handleAxiosResponse)
+
+export const trackDriverLocation = async (
+  fleetId: string,
+  orderId: string,
+  request: TrackDriverLocationRequest,
+) =>
+  authAxiosInstance
+    .post(`fleets/${fleetId}/orders/${orderId}/track`, request)
     .then(handleAxiosResponse)
 
 export const useFetchUpcomingOrder = (query: GetUpcomingOrderQuery) =>

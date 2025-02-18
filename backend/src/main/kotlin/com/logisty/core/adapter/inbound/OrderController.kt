@@ -145,6 +145,7 @@ data class GetOrderResponse(
 
     data class OrderRoute(
         val route: LineString,
+        val routePoints: LineString?,
         val duration: Double,
         val distance: Double,
     )
@@ -162,6 +163,7 @@ fun OrderStep.toGetOrderStep() =
 fun OrderRoute.toGetOrderRoute() =
     GetOrderResponse.OrderRoute(
         route = route,
+        routePoints = routePoints,
         duration = duration,
         distance = distance,
     )

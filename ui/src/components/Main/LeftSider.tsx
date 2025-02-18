@@ -22,6 +22,10 @@ import { Routes } from "@/router"
 
 const { Sider } = Layout
 
+const mobileDrawerStyle: React.CSSProperties = {
+  paddingTop: "env(safe-area-inset-top)",
+}
+
 interface LeftSiderProps {
   isMobile?: boolean
   drawerVisible?: boolean
@@ -93,8 +97,8 @@ export const LeftSider: React.FC<LeftSiderProps> = ({
           [UserRole.DISPATCHER],
           [
             {
-              label: t("leftbar.orders.pending"),
-              key: "pending",
+              label: t("leftbar.orders.dispatcher"),
+              key: "dispatcher",
               icon: <Loading3QuartersOutlined />,
               onClick: () => handleNavigation(Routes.ORDERS),
             },
@@ -212,7 +216,12 @@ export const LeftSider: React.FC<LeftSiderProps> = ({
 
   if (isMobile) {
     return (
-      <Drawer placement="left" onClose={onDrawerClose} open={drawerVisible}>
+      <Drawer
+        placement="left"
+        onClose={onDrawerClose}
+        open={drawerVisible}
+        style={mobileDrawerStyle}
+      >
         {menuContent}
       </Drawer>
     )

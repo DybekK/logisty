@@ -10,7 +10,7 @@ interface StatusTagProps {
   status: InvitationStatus
 }
 
-export const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
+export const InvitationStatusTag: React.FC<StatusTagProps> = ({ status }) => {
   const { t } = useTranslation("invitation")
 
   const color = match(status)

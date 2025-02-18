@@ -28,11 +28,6 @@ const timeValueStyle: React.CSSProperties = {
   fontWeight: 500,
 }
 
-const headerSpaceStyle: React.CSSProperties = {
-  width: "100%",
-  justifyContent: "space-between",
-}
-
 const stepItemStyle: React.CSSProperties = {
   padding: "8px 0",
   borderBottom: "1px solid #f0f0f0",

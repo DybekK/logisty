@@ -14,8 +14,6 @@ interface StatusTagProps {
 export const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
   const { t } = useTranslation("order", { keyPrefix: "filter.statuses" })
 
-  console.log(status)
-
   const color = match(status)
     .with(OrderStatus.ASSIGNED, () => "blue")
     .with(OrderStatus.PENDING, () => "processing")

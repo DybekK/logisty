@@ -4,9 +4,10 @@ import Map from "react-map-gl/maplibre"
 
 import { Flex, Skeleton } from "antd"
 
-import { FeatureCollection, LineString } from "geojson"
+import { Feature, FeatureCollection, LineString } from "geojson"
 
 import { SourceLayer } from "@/components"
+import { StepMarker } from "@/components/Map3D/StepMarker"
 
 const { VITE_MAP_GL_STYLE } = import.meta.env
 
@@ -26,21 +27,49 @@ interface Route {
   coordinates: number[][]
 }
 
+interface Point {
+  type: string
+  coordinates: number[]
+}
+
+interface Step {
+  location: Point
+}
+
 interface Map3DProps {
   id: string
-  routes: Route[]
+  plannedRoute?: Route
+  driverRoute?: Route
+  steps: Step[]
 }
 
 const transformRoutesToGeoJSON = (
-  routes: Route[],
+  plannedRoute?: Route,
+  driverRoute?: Route,
 ): FeatureCollection<LineString> => {
-  const features = routes.map(route => {
-    return {
-      type: "Feature" as const,
-      properties: {},
-      geometry: route as LineString,
-    }
-  })
+  const features: Array<Feature<LineString>> = []
+
+  if (plannedRoute?.coordinates) {
+    features.push({
+      type: "Feature",
+      properties: { routeType: "planned" },
+      geometry: {
+        type: "LineString",
+        coordinates: plannedRoute.coordinates,
+      },
+    })
+  }
+
+  if (driverRoute?.coordinates) {
+    features.push({
+      type: "Feature",
+      properties: { routeType: "driver" },
+      geometry: {
+        type: "LineString",
+        coordinates: driverRoute.coordinates,
+      },
+    })
+  }
 
   return {
     type: "FeatureCollection",
@@ -70,13 +99,18 @@ const fitRoutesToBounds = (routes: Route[], mapInstance?: MapRef): void => {
   }
 }
 
-export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
+export const Map3D: React.FC<Map3DProps> = ({
+  id,
+  plannedRoute,
+  driverRoute,
+  steps,
+}) => {
   const [coordinates, setCoordinates] = useState<Coordinates>({
     lat: 0,
     lon: 0,
   })
   const [loadingCoordinates, setLoadingCoordinates] = useState(true)
-  const { features } = transformRoutesToGeoJSON(routes)
+  const { features } = transformRoutesToGeoJSON(plannedRoute, driverRoute)
   const mapInstance = useMap()
 
   useEffect(() => {
@@ -88,10 +122,12 @@ export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
       setLoadingCoordinates(false)
     })
   }, [])
-
   useEffect(() => {
+    const routes = []
+    if (plannedRoute) routes.push(plannedRoute)
+    if (driverRoute) routes.push(driverRoute)
     fitRoutesToBounds(routes, mapInstance[id])
-  }, [mapInstance[id], routes])
+  }, [mapInstance[id], plannedRoute, driverRoute])
 
   if (loadingCoordinates) {
     return (
@@ -111,13 +147,16 @@ export const Map3D: React.FC<Map3DProps> = ({ id, routes }) => {
       }}
       mapStyle={VITE_MAP_GL_STYLE}
     >
-      {[...features].reverse().map((feature, index) => (
+      {features.map((feature, index) => (
         <SourceLayer
           key={index}
           index={index}
           featuresLength={features.length}
           feature={feature}
         />
+      ))}
+      {steps.map((step, stepIndex) => (
+        <StepMarker key={stepIndex} step={step} index={stepIndex} />
       ))}
     </Map>
   )

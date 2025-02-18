@@ -10,6 +10,7 @@ export interface GeoLineString {
 
 export interface OrderRoute {
   route: GeoLineString
+  routePoints?: GeoLineString
   duration: number
   distance: number
 }
@@ -100,4 +101,8 @@ export interface GetUpcomingOrderResponse {
   createdAt: string
   estimatedStartedAt: string
   estimatedEndedAt: string
+}
+
+export interface TrackDriverLocationRequest {
+  route: GeoLineString
 }

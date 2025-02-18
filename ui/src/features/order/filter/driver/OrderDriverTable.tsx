@@ -14,7 +14,7 @@ const listContainerStyle: React.CSSProperties = {
 }
 
 export const OrderDriverTable: React.FC = () => {
-  const { t } = useTranslation("order", { keyPrefix: "filter" })
+  const { t } = useTranslation("order")
   const { fleetId } = useAppSelector(state => state.auth.user!)
 
   const page = 1
@@ -40,7 +40,7 @@ export const OrderDriverTable: React.FC = () => {
           emptyText: (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={t("empty")}
+              description={t("filter.driver.empty")}
             />
           ),
         }}

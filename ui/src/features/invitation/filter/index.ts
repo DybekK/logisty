@@ -1,3 +1,3 @@
 export * from "./InvitationTable"
 export * from "./InvitationTableTitle"
-export * from "./StatusTag"
+export * from "./InvitationStatusTag"

@@ -140,6 +140,23 @@ export const NewOrderForm: React.FC = () => {
     },
   })
 
+  const stepsWithCoordinates = steps
+    .filter(step => step.lat != null && step.lon != null)
+    .map(step => ({
+      location: {
+        type: "Point",
+        coordinates: [step.lon!, step.lat!],
+      },
+    }))
+
+  const plannedRouteWithCoordinates =
+    routes.length > 0
+      ? {
+          coordinates: routes.flatMap(route => route.geometry.coordinates),
+          type: "LineString",
+        }
+      : undefined
+
   return (
     <MapProvider>
       <Card bodyStyle={cardBodyStyle} style={cardStyle}>
@@ -153,7 +170,11 @@ export const NewOrderForm: React.FC = () => {
           <Divider />
           <DriversPanel />
         </Flex>
-        <Map3D id={mapId} routes={routes.map(route => route.geometry)} />
+        <Map3D
+          id={mapId}
+          steps={stepsWithCoordinates}
+          plannedRoute={plannedRouteWithCoordinates}
+        />
       </Card>
     </MapProvider>
   )

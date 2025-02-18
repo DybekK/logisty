@@ -10,8 +10,7 @@
     "orders": {
       "title": "Zlecenia",
       "new": "Dodaj zlecenie",
-      "pending": "W trakcie",
-      "completed": "Zakończone",
+      "dispatcher": "Zlecenia",
       "driver": "Moje zlecenia",
       "upcoming": "Nadchodzące"
     },

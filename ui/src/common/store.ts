@@ -6,7 +6,7 @@ import storage from "redux-persist/lib/storage"
 
 import { authReducer } from "@/features/auth"
 import { notificationReducer } from "@/features/notification"
-import { createNewOrderReducer } from "@/features/order"
+import { createNewOrderReducer, trackingReducer } from "@/features/order"
 
 const authPersistConfig = {
   key: "auth",
@@ -18,9 +18,15 @@ const notificationPersistConfig = {
   storage,
 }
 
+const trackingPersistConfig = {
+  key: "tracking",
+  storage,
+}
+
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   notification: persistReducer(notificationPersistConfig, notificationReducer),
+  tracking: persistReducer(trackingPersistConfig, trackingReducer),
   createNewOrder: createNewOrderReducer,
 })
 

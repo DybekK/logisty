@@ -6,7 +6,10 @@ import { Empty, Modal, Table } from "antd"
 import debounce from "lodash/debounce"
 
 import { parseToLocaleString, useAppSelector } from "@/common"
-import { InvitationTableTitle, StatusTag } from "@/features/invitation"
+import {
+  InvitationStatusTag,
+  InvitationTableTitle,
+} from "@/features/invitation"
 import { CreateInvitation } from "@/features/invitation"
 import { useFetchInvitations } from "@/features/invitation/invitation.api"
 import {
@@ -19,7 +22,9 @@ const getColumns = (t: (key: string) => string) => [
     title: t("filterInvitations.status"),
     dataIndex: "status",
     key: "status",
-    render: (status: InvitationStatus) => <StatusTag status={status} />,
+    render: (status: InvitationStatus) => (
+      <InvitationStatusTag status={status} />
+    ),
   },
   {
     title: t("filterInvitations.firstName"),

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -25,9 +26,13 @@ import {
 import { Geolocation } from "@capacitor/geolocation"
 
 import { createGoogleMapsLink, useAppSelector } from "@/common"
-import { OrderStatus, StatusTag } from "@/features/order"
-
-import { reportOrder, useFetchUpcomingOrder } from "../order.api"
+import {
+  OrderStatus,
+  StatusTag,
+  reportOrder,
+  useBackgroundGeolocation,
+  useFetchUpcomingOrder,
+} from "@/features/order"
 
 const { Title, Text } = Typography
 
@@ -102,12 +107,26 @@ export const UpcomingOrderForm = () => {
 
   const {
     data: order,
+    isError,
     isLoading,
     refetch,
   } = useFetchUpcomingOrder({
     fleetId,
     driverId,
   })
+
+  const { startWatching, stopWatching } = useBackgroundGeolocation({
+    fleetId,
+    orderId: order?.orderId,
+  })
+
+  useEffect(() => {
+    if (order?.status === OrderStatus.PENDING) {
+      startWatching()
+    } else {
+      stopWatching()
+    }
+  }, [order?.status])
 
   const { mutateAsync: reportArrival, isPending: reportArrivalPending } =
     useMutation({
@@ -177,7 +196,7 @@ export const UpcomingOrderForm = () => {
     )
   }
 
-  if (!order) {
+  if (!order || isError) {
     return (
       <Card>
         <div style={emptyContainerStyle}>

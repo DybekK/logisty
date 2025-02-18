@@ -147,6 +147,11 @@
     "@babel/helper-string-parser" "^7.25.9"
     "@babel/helper-validator-identifier" "^7.25.9"
 
+"@capacitor-community/background-geolocation@^1.2.20":
+  version "1.2.20"
+  resolved "https://registry.yarnpkg.com/@capacitor-community/background-geolocation/-/background-geolocation-1.2.20.tgz#9c75a38ace02fcce8a19fa92d89e03e1ecd71fba"
+  integrity sha512-c5iN1XV3kxiWBkrtge4mJDf20tFaxp5S/mQS7sWwj/fXXtSGnC1j5Bx3+lhjxe99sV+LMSqCHX5ezvynYj8//A==
+
 "@capacitor/android@^7.0.1":
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/@capacitor/android/-/android-7.0.1.tgz#16c45a305edeb8bcf0b083ea52abcc62ca4e5e70"
@@ -193,6 +198,11 @@
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-7.0.1.tgz#f175f74543edc5faa13de927ababfffff450776f"
   integrity sha512-RN6S1C1k7ue57DFmJM4EizzsYBrahTTiMhcnlHspFLaojgHbFWZbYq1VriuRKysPU1ka/P+klsdtRFsB5K9jyw==
+
+"@capacitor/local-notifications@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@capacitor/local-notifications/-/local-notifications-7.0.0.tgz#15616348ea71154efc71efede404de0401d4e124"
+  integrity sha512-+k93w1W0hZTVxM8rjttEyUKkkHxOW776POFM4snDcwv+sAxWX+YK+oqIwNtln6N5Plp3Z9TkQS0RufwZbl7GUw==
 
 "@capacitor/synapse@^1.0.1":
   version "1.0.1"

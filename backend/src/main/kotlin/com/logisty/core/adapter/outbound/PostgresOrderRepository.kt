@@ -77,7 +77,8 @@ class PostgresOrderRepository : OrderRepository {
                             (Orders.estimatedStartedAt greaterEq (query.nearestTo - query.lookupRange)) and
                                 (Orders.estimatedStartedAt lessEq (query.nearestTo + query.lookupRange))
                         )
-                }.orderBy(Orders.estimatedStartedAt, SortOrder.ASC)
+                }
+                .orderBy(Orders.estimatedStartedAt, SortOrder.ASC)
                 .limit(1)
                 .singleOrNull() ?: return null
 
@@ -85,6 +86,8 @@ class PostgresOrderRepository : OrderRepository {
             OrderSteps
                 .selectAll()
                 .where { OrderSteps.orderId eq orderRow[Orders.orderId] }
+                .orderBy(OrderSteps.estimatedArrivalAt.isNull(), SortOrder.DESC)
+                .orderBy(OrderSteps.estimatedArrivalAt, SortOrder.ASC)
                 .map { it.toOrderStep() }
 
         val route =
@@ -199,7 +202,6 @@ class PostgresOrderRepository : OrderRepository {
             (OrderSteps.orderStepId eq command.stepId.value) and (OrderSteps.orderId eq command.orderId.value)
         }) {
             it[actualArrivalAt] = command.arrivedAt
-            it[location] = command.location
         }
 
         return command.orderId

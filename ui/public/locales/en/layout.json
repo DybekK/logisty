@@ -10,8 +10,7 @@
     "orders": {
       "title": "Orders",
       "new": "Add order",
-      "pending": "Pending",
-      "completed": "Completed",
+      "dispatcher": "Orders",
       "driver": "My orders",
       "upcoming": "Upcoming"
     },

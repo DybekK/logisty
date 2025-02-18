@@ -58,5 +58,8 @@
     "error": {
       "reportArrival": "Nie udało się zgłosić przybycia"
     }
+  },
+  "tracking": {
+    "error": "Pobieranie lokalizacji nie powiodło się"
   }
 }

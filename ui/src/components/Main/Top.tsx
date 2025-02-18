@@ -35,7 +35,7 @@ const headerStyle: React.CSSProperties = {
 
 const mobileHeaderStyle: React.CSSProperties = {
   ...headerStyle,
-  padding: "0 16px",
+  padding: `calc(env(safe-area-inset-top) + 16px) 16px 16px`,
 }
 
 const mobileMenuButtonStyle: React.CSSProperties = {
